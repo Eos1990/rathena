@@ -1,0 +1,748 @@
+prt_church,97,100,4	script	Wedding Staff#w	71,{
+	cutin "wedding_marry01",2;
+	if (Upper == 2) {
+		mes "[Marry Happy]";
+		mes "สวัสดี~";
+		mes "ฉันชื่อ Marry Happy";
+		mes "และฉันมีข้อกำหนดให้กับคุณ";
+		mes "กับข้อมูลที่เกี่ยวข้องกับ";
+		mes "การแต่งงาน.";
+		mes "คุณมีคำถามไหม?";
+		next;
+		if (select("ฉันต้องการแต่งงาน.:ไม่มีอะไรทั้งนั้น!") == 1) {
+			mes "[Marry Happy]";
+			mes "มันอาจจะไม่ง่ายและไม่สนุก";
+			mes "เหมือนความสุขในวัยเด็ก?";
+			goto L_End;
+		}
+		mes "[Marry Happy]";
+		mes "โอ้, แน่นอน คุณ";
+		mes "ตอน เด็ก ๆ";
+		mes "ไม่สามารถจะแต่งงานได้";
+		mes "มีกฏหมายที่ต่อต้านอยู่";
+		goto L_End;
+	}
+	mes "[Marry Happy]";
+	mes "การแต่งงานเป็นสิ่งสวยงาม";
+	mes "การคบกันที่มีสองจิตใจ";
+	mes "เลือกที่จะอยู่ด้วยกันตลอดไป,";
+	mes "เพื่อแบ่งปันความสุขและชีวิตของพวกเขา.";
+	mes "มีคนพิเศษคนหนึ่ง";
+	mes "เหมือนอยู่ในชีวิตของคุณ?";
+	next;
+	switch(select("สอบถามถึงพิธีแต่งงาน:สอบถามถึงขั้นตอนการแต่งงาน:สมัครเข้าพิธีแต่งงาน:อ้า ไม่ล่ะ พวกเราคือกองทัพคนโสดไร้พ่าย!!!!")) {
+	case 1:
+		mes "[Marry Happy]";
+		mes "พระมหากษัตริย์ Tristram III ใช้";
+		mes "การดำเนินพิธีการแต่งงาน,";
+		mes "แต่เขาไม่สามารถที่จะทำได้";
+		mes "ที่เป็นอย่างนี้ก็เพราะว่าของพระราชกรณียกิจของเขา";
+		mes "และระยะเวลาในการทำงานที่รุมเร้า.";
+		next;
+		mes "[Marry Happy]";
+		mes "บาทหลวง";
+		mes "เป็นคนแสดงความรักต่อหน้าและเป็นผู้กระทำพิธีให้ในตอนสำคัญ";
+		mes "ของพิธีในงานแต่งงาน.";
+		mes "เขาจะเป็นคนมีมีเกียริมาก";
+		mes "ในราชอาณาจักร Rune-Midgarts .";
+		next;
+		mes "[Marry Happy]";
+		mes "เมื่อคุณแต่งงานกับใครสักคน,";
+		mes "มันจะเป็นการใช้ชีวิทั้งชีวิตของคุณ ดังนั้นก่อนที่คุณจะตัดสินใจคุณควรตัดสินใจให้ดี";
+		mes "รับข้อเสอในการแต่งงาน.";
+		mes "โปรดเลือกชายคนใดคนหนึ่งเท่านั้น";
+		mes "ในทางกลับกันชายก็แต่งงานกับผู้หญิง.";
+		next;
+		mes "[Marry Happy]";
+		mes "ถ้าคุณโชคดีพอที่จะ";
+		mes "หาคนที่คุณเจอจริงๆ";
+		mes "ต้องการที่จะใช้เติมเต็มส่วนที่เหลือ";
+		break;
+
+	case 2:
+		mes "[Marry Happy]";
+		mes "อันดับแรก";
+		mes "ขั้นตอนแต่งงานคือ";
+		mes "กรอกใบสมัคร.";
+		mes "หากอีกฝ่ายเสร็จ";
+		mes "คุณจำเป็นต้องสร้างปาร์ตี้เพื่อคุณสองคน.";
+		next;
+		mes "[Marry Happy]";
+		mes "หลังจากที่สร้างปาร์ตี้ขึ้นแล้ว,";
+		mes "ทั้งคู่ต้องไปพูดกับ";
+		mes "บาทหลวง. เจ้าบ่าว";
+		mes "พูดต้องเป็นคนที่พูดคุยกับบาทหลวงเกี่ยวกับ";
+		mes "ชื่อของเจ้าสาวให้บาทหลวงรู้ มิฉะนั้นจะหยุดพิธี.";
+		next;
+		mes "[Marry Happy]";
+		mes "หลังจากนั้นเจ้าสาวจะต้อง";
+		mes "พูดคุยกับบาทหลวงและบอก";
+		mes "ชื่อของเจ้าบ่าวของเธอ.";
+		mes "ถ้าชื่อที่บอกนั้นถูกต้องแล้ว";
+		mes "บอกให้บาทหลวงทำพิธีต่อ พวกเขาก็จะ";
+		mes "ทำการเเลกเปลี่ยนแหวน.";
+		next;
+		mes "[Marry Happy]";
+		mes "เมื่อแหวนแต่งงานมี";
+		mes "การเปลี่ยน, ทั้งคู่ก็จะมีข้อผูกมัดกันไว้อย่างแน่นอน,";
+		mes "ในจุด เพื่อไม่ให้มีโอกาสที่จะเปลี่ยนความคิดของคุณเพื่อให้ ...";
+		next;
+		mes "[Marry Happy]";
+		mes "มีโอการเลือกสิ่งต่างๆมากมาย";
+		mes "ใครบ้างคนก็ต้องการพบกับคู่รัก";
+		mes "โปรดแต่งงานในครั้งเดียว";
+		next;
+		mes "[Marry Happy]";
+		mes "สุดท้าย ให้ทั้งคู่แน่ใจว่าแล้ว";
+		mes "ให้พูดคุยกับบาทหลวง และหนุ่มสาวทั้งคู่";
+		mes "ต้องพูดคุยกับบาทหลวง แต่ ถ้าคุณใช้เวลานานเกินไป,";
+		mes "พิธีจะหยุดโดยอัตโนมัติและคุณจะต้องลงทะเบียนใหม่อีกครั้ง.";
+		next;
+		mes "[Marry Happy]";
+		mes "เจ้าสาวจำ มีเวลาเพียง";
+		mes "3 นาที ที่จะต้องพูดคุยกับบาทหลวงให้เสร็จ";
+		mes "หลังจากที่เจ้าบ่าวได้พูดคุยกับบาทหลวง";
+		mes "เสร็จสิ้น.";
+		next;
+		if (select("ขอบคุณ,ช่วยเราได้เยอะมากเลย:วิธีที่ง่ายที่สุดที่จะพูดชื่อผู้ร่วมงานของฉัน") == 1) {
+			mes "[Marry Happy]";
+			mes "ดี,ฉันพร้อมให้ความช่วยเหลือ";
+			mes "โปรดดำเนินการต่อไปเพื่อทำให้งานแต่งงาน";
+			mes "เป็นไปได้อย่างอย่างราบรื่นที่สุดเท่าที่ทำได้.";
+			mes "ถ้ามีบางสิ่งบางอย่าง";
+			mes "คุณไม่เข้าใจ,";
+			mes "อย่าลังเลที่จะถามฉันอีก.";
+			goto L_End;
+		}
+		mes "[Marry Happy]";
+		mes "วิธีที่ง่ายที่สุดในการเขียน";
+		mes "ชื่อคู่ของคุณ";
+		mes "บาทหลวงก็จะทำการส่ง";
+		mes "ข้อความที่เกี่ยวกับส่วนของคุณและ";
+		mes "แล้วคลิกซ้ายเพื่อดูรายละเอียดชื่อที่ส่งให้.";
+		next;
+		mes "[Marry Happy]";
+		mes "กด Ctrl+C";
+		mes "คีย์ในการคัดลอกชื่อ จากนั้น,";
+		mes "คุณสามารถวางชื่อ";
+		mes "โดยการกด Shift + Insert มันคือสิ่งที่ง่ายที่สุด";
+		next;
+		mes "[Marry Happy]";
+		mes "เอาล่ะตอนนี้เรามาลอง";
+		mes "ในการปฏิบัติเกี่ยวกับ";
+		mes "ชื่อของคู่ของคุณ";
+		mes "ในสิ่งที่ฉันได้เพิ่งอธิบาย.";
+		next;
+		input .@partner$;
+		mes "[Marry Happy]";
+		mes "เอาล่ะหลังจากที่คุณได้";
+		mes "ตัดสินใจที่จะแต่งงาน,";
+		mes "กลับมาหาฉันและ";
+		mes "ส่งใบสมัครของคุณ.";
+		break;
+
+	case 3:
+		cutin "wedding_marry02",2;
+		if (sex) {
+			mes "[Marry Happy]";
+			mes "ดังนั้นคุณต้องการที่จะแต่งงาน?";
+			mes "ในฐานะเจ้าบ่าวคุณจะต้องเตรียมความพร้อม";
+			mes "^3377FF1 Tuxedo^000000 และจ่าย ^3377FF1,300,000 zeny^000000.";
+			mes "ต้องจัดเตรียมชุดแต่งงานของตัวเองและจ่ายค่า";
+			mes "ของ 1,200,000 zeny.";
+		}
+		else {
+			mes "[Marry Happy]";
+			mes "ดังนั้นคุณต้องการที่จะแต่งงาน?";
+			mes "เป็นเจ้าสาว, คุณต้องเตรียม";
+			mes "1 ชุดแต่งงานและชำระค่าบริการ";
+			mes "ของ 1,200,000 zeny กรูมส์ต้อง";
+			mes "นำ Tuxedo และจ่ายเงิน 1,300,000 zeny จะแต่งงาน.";
+		}
+		next;
+		mes "[Marry Happy]";
+		mes "เจ้าบ่าวและเจ้าสาวยังต้อง";
+		mes "มีแหวน ^3377FF1 Diamond Ring^000000 อีกด้วย";
+		mes "สำหรับแลกเปลี่ยนกันในตอนแต่งงาน.";
+		mes "และคุณจะต้องใช้มันหลังจากยื่น";
+		mes "ใบสมัครงานแต่งงาน.";
+		next;
+		mes "[Marry Happy]";
+		mes "เจ้าสาวและเจ้าบ่าวจะต้องลงทะเบียนให้เสร็จสิ้น";
+		mes "ขั้นตอนการสมัครก่อน";
+		mes "งานแต่งงานจะเกิดขึ้น.";
+		mes "ถ้าคุณต้องการ";
+		mes "แต่งงานในตอนนี้?";
+		next;
+		if (select("ใช่:ไม่ใช่") == 1) {
+			if (getpartnerid()) {
+				cutin "งานแต่งงาน02",2;
+				mes "[Marry Happy]";
+				mes "ฉันเสียใจ, แต่คุณไม่สามารถ";
+				mes "ที่จะขอแต่งงานได้อีก!";
+				mes "ฉันไม่สามารถช่วยให้คุณหย่ากับ";
+				mes "คู่สมรสของคุณ";
+				break;
+			}
+			else if (wedding_sign == 1) {
+				mes "[Marry Happy]";
+				mes "คุณไม่ได้";
+				mes "กรอกใบสมัครให้เสร็จ?";
+				mes "อืม, ตรวจสอบให้แน่ใจว่าของคุณ";
+				mes "มีความสัมพันธ์กับผู้อื่นหรือไม่";
+				mes "หากต้องการแต่งงาน จงทำตามขั้นตอนการสมัครและ";
+				mes "จากนั้นก็พูดคุยกับบาทหลวง.";
+				break;
+			}
+			else if (BaseLevel < 45) {
+				mes "[Marry Happy]";
+				mes "อืม, คุณจะต้อง";
+				mes "แข็งแรงพอที่จะป้องกัน";
+				mes "คนที่คุณรักก่อน";
+				mes "คุณสามารถพิจารณาการแต่งงาน.";
+				goto L_End;
+			}
+			else if (countitem(2613) < 1) {
+				mes "[Marry Happy]";
+				mes "คุณลืม";
+				mes "นำแหวนเพชร";
+				mes "เพื่อแลกเปลี่ยนกับคู่ของคุณ";
+				mes "ในระหว่างพิธีแต่งงาน?";
+				goto L_End;
+			}
+			else if (sex) {
+				if (zeny < 1300000) {
+					mes "[Marry Happy]";
+					mes "ฉันขอโทษแต่คุณไม่ได้";
+					mes "มี 1,300,000 zeny";
+					mes "ที่เจ้าบ่าวทุกคนจะต้องจ่ายเงิน";
+					mes "สำหรับงานแต่งงาน.";
+					goto L_End;
+				}
+				else if (countitem(7170) < 1) {
+					mes "[Marry Happy]";
+					mes "Tuxedo ของคุณอยู่ที่ไหน?";
+					mes "คุณจะต้องสวมใส่ในระหว่างงานแต่งงาน";
+					mes "นำมาสวมใส่ซะ";
+					mes "ก่อนที่จะเริ่มแต่งงาน?";
+					goto L_End;
+				}
+			}
+			else if (sex == 0) {
+				if (zeny < 1200000) {
+					mes "[Marry Happy]";
+					mes "ฉันขอโทษ แต่เจ้าสาว";
+					mes "ต้องจ่ายเงินทั้งหมด 1,200,000 Zeny";
+					mes "เพื่อดำเนิน";
+					mes "การแต่งงาน";
+					goto L_End;
+				}
+				else if (countitem(2338) < 1) {
+					mes "[Marry Happy]";
+					mes "คุณลืม";
+					mes "ชุดแต่งงานของคุณ?";
+					mes "กรุณารีบหามัน คุณอาจจะได้สวมใส่มัน";
+					mes "สำหรับงานแต่งงาน!";
+					goto L_End;
+				}
+			}
+			mes "[Marry Happy]";
+			mes "ดูเหมือนว่าคุณ";
+			mes "มีทุกอย่างพร้อม.";
+			mes "ถึงแม้ว่าฉันไม่แน่ใจว่าใคร";
+			mes "คือคู่ของคุณ  ขอให้ฉันเป็น";
+			mes "คนแรกที่แสดงความยินดีกับคุณ";
+			mes "ในวันแต่งงานที่จะเกิดขึ้นของคุณ~";
+			next;
+			mes "[Marry Happy]";
+			mes "ตอนนี้เอาล่ะ";
+			mes "กรุณาเขียนใบสมัคร";
+			mes "ลงชื่อที่แน่นอนของคุณที่นี่.";
+			next;
+			while(1) {
+				input .@name$;
+				if (.@name$ != strcharinfo(0)) {
+					mes "[Marry Happy]";
+					mes "อืมม, คุณต้องเขียน";
+					mes "ให้ตรงตามชื่อของคุณ";
+					mes "มันจะปรากฏขึ้น. บางทีคุณอาจจะ";
+					mes "ต้องคัดลอกและวาง?";
+					next;
+				}
+				else 
+					break;
+			}
+			mes "[Marry Happy]";
+			mes "มันดูเหมือนว่า";
+			mes "ใบสมัครของคุณเสร็จแล้ว.";
+			mes "โปรดจำไว้ว่าคุณจะต้อง";
+			mes "จะบอกบาทหลวง";
+			mes "เกี่ยวกับชื่อที่ของคู่สมรส";
+			next;
+			mes "[Marry Happy]";
+			mes "เมื่อคู่ของคุณ";
+			mes "พร้อมกับใบสมัคร";
+			mes "สิ่งต่อไปคือคุณควร";
+			mes "พูดคุยกับบาทหลวงเพื่อเริ่มต้น";
+			mes "การฉลองงานแต่งงาน.";
+			Emotion ET_THROB;
+			next;
+			mes "[Marry Happy]";
+			if (sex) {
+				mes "เนื่องจากคุณเป็นเจ้าบ่าว,";
+				mes "คุณจำเป็นต้องพูดคุยกับบาทหลวงก่อน";
+				mes "หลังจากนั้นเจ้าสาวต้องพูดคุยกับบาทหลวงเป็นคนต่อไป";
+				set zeny,zeny-1300000;
+				delitem 7170,1; //Tuxedo
+			}
+			else {
+				mes "เนื่องจากคุณเป็นเจ้าสาว,";
+				mes "คุณจำเป็นต้องรอให้";
+				mes "เจ้าบ่าวพูดคุยกับบาทหลวงเสียก่อน";
+				mes "เมื่อเจ้าบ่าวพูดคุยเสร็จแล้ว จะถึงตาคุณ";
+				set zeny,zeny-1200000;
+				delitem 2338,1; //Wedding_Dress
+			}
+			delitem 2613,1; //Diamond_Ring
+			set wedding_sign,1;
+			goto L_End;
+		}
+		mes "[Marry Happy]";
+		mes "คุณสามารถกลับมาได้เสมอ";
+		mes "เมื่อต้องการแต่งงาน";
+		break;
+
+	case 4:
+		cutin "wedding_marry02",2;
+		donpcevent "Single Army#Prontera::OnEnable";
+		donpcevent "Single Army#Geffen::OnEnable";
+		donpcevent "Single Army#Morocc::OnEnable";
+		donpcevent "Single Army#Payon::OnEnable";
+		donpcevent "Single Army#Amatsu::OnEnable";
+		donpcevent "Single Army#Gonryun::OnEnable";
+		Emotion ET_HUK;
+		mes "[Single Army]";
+		mes "^CC9933ท่านต้องสวมใส่";
+		mes "แหวนนั้น";
+		mes "ด้วยตัวเอง!^000000";
+		emotion ET_ROCK,"Single Army#Prontera";
+		next;
+		mes "[Single Army]";
+		mes "^330099It's a waste to";
+		mes "จากคนที่ไม่เคยมีอะไรเลย";
+		mes "ฉันสามารถ";
+		mes "ทำมันด้วยตัวของฉันเอง!^000000";
+		emotion ET_ROCK,"Single Army#Geffen";
+		next;
+		mes "[Single Army]";
+		mes "^666666Hell, ฉันได้รับการฝึกอบรม";
+		mes "ทั้งหมดด้วยตัวเองตั้งแต่";
+		mes "เกิด, ทั้งหมดทุกอย่าง";
+		mes "เปลี่ยนความคิดของฉัน!^000000";
+		emotion ET_ROCK,"Single Army#Morocc";
+		next;
+		mes "[Single Army]";
+		mes "^666600I CHOOSE to spend";
+		mes "คริสมาสต์เพียงอย่างเดียว...";
+		mes "และการเล่นไพ่คนเดียว^000000";
+		emotion ET_ROCK,"Single Army#Payon";
+		next;
+		mes "[Single Army]";
+		mes "^CC9966ผู้หญิงทำอาจร้ายฉัน";
+		mes "ฉันกลัวเหลือเกิน";
+		mes "ตอนนี้ฉันไม่มีอะไรเหลือ^000000";
+		emotion ET_ROCK,"Single Army#Amatsu";
+		next;
+		mes "[Single Army]";
+		mes "^669900...เราเป็นคนของกองทัพ";
+		mes "เพื่อปกป้องบ้านเมือง^000000";
+		emotion ET_ROCK,"Single Army#Gonryun";
+		close2;
+		cutin "wedding_marry01",255;
+		Emotion ET_SWEAT;
+		donpcevent "Single Army#Prontera::OnInit";
+		donpcevent "Single Army#Geffen::OnInit";
+		donpcevent "Single Army#Morocc::OnInit";
+		donpcevent "Single Army#Payon::OnInit";
+		donpcevent "Single Army#Amatsu::OnInit";
+		donpcevent "Single Army#Gonryun::OnInit";
+		end;
+	}
+	close2;
+	cutin "wedding_marry01",255;
+	end;
+
+L_End:
+	close2;
+	cutin "",255;
+	end;
+}
+
+prt_church,97,102,0	script	Single Army#Prontera	105,{
+	mes "[Single Army]";
+	mes "^CC9933คุณมีการปรับแต่ง";
+	mes "ไอเทมในตัวคุณ";
+	mes "ทำห้มันยิ่งดีขึ้น!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Prontera";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Prontera";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,98,102,0	script	Single Army#Geffen	705,{
+	mes "[Single Army]";
+	mes "^330099มันคือของเสีย";
+	mes "จากผู้คนใน";
+	mes "ดันเจี้ยน! ฉันสามารถ";
+	mes "เอามันไปให้เจ้าของได้!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Geffen";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Geffen";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,99,102,0	script	Single Army#Morocc	707,{
+	mes "[Single Army]";
+	mes "^666666เฮ้, ฉันได้รับงานฝึก";
+	mes "ทุกๆอย่างในตัวฉันตั้งแต่";
+	mes "ฉันเกิด, ทุกวิธีทาง";
+	mes "มันคือการเปลี่ยนอาชีพ!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Morocc";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Morocc";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,100,102,0	script	Single Army#Payon	708,{
+	mes "[Single Army]";
+	mes "^666600ฉันเลือกที่จะ";
+	mes "Christmas อยู่คนเดียว...";
+	mes "การเล่นไพ่คนเดียวและ";
+	mes "เล่นจิกซอร์คนเดียว!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Payon";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Payon";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,101,102,0	script	Single Army#Amatsu	767,{
+	mes "[Single Army]";
+	mes "^CC9966ผู้หญิงอาจจะทำให้";
+	mes " วิญาณของฉัน, แต่พวกเขาไม่สามารถ";
+	mes "เอามันไปจาก... ความเป็นอิสระของฉัน!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Amatsu";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Amatsu";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,102,102,0	script	Single Army#Gonryun	780,{
+	mes "[Single Army]";
+	mes "^669900...พวกเราไม่เสียเงิน! พวกเรา";
+	mes "เป็นทหารที่มีความเป็นคงกระพัน!^000000";
+	close;
+
+OnInit:
+	hideonnpc "Single Army#Gonryun";
+	end;
+
+OnEnable:
+	hideoffnpc "Single Army#Gonryun";
+	emotion ET_GO;
+	end;
+}
+
+prt_church,100,128,4	script	Bishop#w	60,{
+	cutin "wedding_bomars01",2;
+	if (Upper == 2) {
+		mes "[Vomars]";
+		mes "เยี่ยมๆ,เด็กน้อย.";
+		mes "ฉันทำมันหาญไหม? อืมมมม.";
+		mes "คุณรู้ไหมว่า";
+		mes "แม่กับพ่อของคุณอยู่ไหน?";
+		close2;
+		cutin "wedding_bomars01",255;
+		end;
+	}
+
+	if (!getpartnerid()) {
+		if (!$wedding) {
+			if (wedding_sign == 1) {
+				getpartymember(getcharid(1));
+				set .@partymembercount,$@partymembercount;
+				if (.@partymembercount == 2) {
+					if (sex) {
+						set $wedding,1;
+						initnpctimer;
+						mes "[Vomars]";
+						mes "คนรักวัยเด็ก, โปรด";
+						mes "จำช่วงเวลานี้";
+						mes "ส่วนที่เหลือของชีวิตคุณในอนาคตของคุณอาจได้รับพรด้วยความสงบ";
+						mes "และความสุข คุณอาจได้แบ่งปันความรักร่วมกัน";
+						mes "เติบโตไปพร้อมกับวันที่ผ่านแต่ละวัน.";
+						next;
+						mapannounce "prt_church","It's the marriage proposal from the groom, Mr. " + strcharinfo(0) + "...",bc_map;
+						mes "[Vomars]";
+						mes "จนกว่าจะสิ้นสุด";
+						mes "โลก,คุณอาจจะยืนอยู่";
+						mes "โดยข้างใดข้างหนึ่ง";
+						mes "คนที่คุณรักให้การสนับสนุน";
+						mes "สำหรับเธอและเขาอาจปกป้องคุณ";
+						mes "ผมทราบชื่อของเจ้าสาวของคุณ?";
+						next;
+						input $wed_bride$;
+						mes "[Vomars]";
+						mes "นาย"+ strcharinfo (0) + "...";
+						mes "คุณสาบานต่อชีวิตของคุณ";
+						mes "ชั่วชีวิตที่นิรันดร์ที่คุณจะยึดมั่น";
+						mes "การดูแลและสำหรับเจ้าสาวของคุณ,";
+						mes "นางสาว"+ $wed_bride$ +"?";
+						next;
+						select("ใช่.");
+						set $wed_groom$,strcharinfo(0);
+						mes "[Vomars]";
+						mes "ตอนนี้ก็เป็นเวลา";
+						mes "ของเจ้าสาวเพื่อให้";
+						mes "รับปากรับคำแต่งงานของเธอ....";
+						mes "ถ้าเธอจะมาข้างหน้า...";
+						close2;
+						mapannounce "prt_church","The groom, Mr. " + strcharinfo(0) + ", has made his vows to Miss " + $wed_bride$ + "...",bc_map;
+						cutin "",255;
+						end;
+					}
+					mes "[Vomars]";
+					mes "ฉันขอโทษ แต่เจ้าบ่าว";
+					mes "ต้องพูดกับฉันครั้งแรกใน";
+					mes "เพื่อที่จะเริ่มจัดงานแต่งงาน.";
+					mes "มันเป็นโพรโทคอแฟชั่น เก่า,";
+					mes "แต่ก็ยอมรับว่ามันไม่";
+					mes "เก็บสิ่งที่ทำงานได้อย่างราบรื่น.";
+					goto L_End;
+				}
+				mes "[Vomars]";
+				mes "ก่อนที่คุณจะสามารถ";
+				mes "แต่งงานแล้วคุณจะต้อง";
+				mes "รูปแบบแรกของงาน";
+				mes "สองกับคู่ของคุณ.";
+				mes "จากนั้นเราจะสามารถดำเนินการต่อไป";
+				mes "กับพิธี.";
+				goto L_End;
+			}
+			mes "[Vomars]";
+			mes "คุณจะต้องยื่นขอ";
+			mes "การแต่งงานให้มีความสุข";
+			mes "ก่อนที่คุณจะได้แต่งงาน.";
+			mes "Happy Marry จะแจ้งให้คุณทราบ";
+			mes "อะไรที่คุณจะต้องทำ";
+			mes "เพื่อเตรียมความพร้อมสำหรับการแต่งงาน.";
+			goto L_End;
+		}
+		else if ($wedding == 1) {
+			if (wedding_sign == 1) {
+				getpartymember(getcharid(1));
+				set .@partymembercount,$@partymembercount;
+				if (.@partymembercount == 2) {
+					if (sex == 0) {
+						if (strcharinfo(0) == $wed_bride$) {
+							mes "[Vomars]";
+							mes "คนรักวัยหนุ่มสาว โปรด";
+							mes "จำช่วงเวลานี้";
+							mes "ส่วนที่เหลือของชีวิตคุณในอนาคตของคุณอาจได้รับพรด้วยความสงบ";
+							mes "และความสุข คุณอาจได้แบ่งปันความรักร่วมกัน";
+							mes "เติบโตไปพร้อมกับวันที่ผ่านแต่ละวัน.";
+							next;
+							mapannounce "prt_church","Let's hear what the bride, Miss "+$wed_bride$+", has to say...",bc_map;
+							mes "[Vomars]";
+							mes "นางสาว "+$wed_bride$+"...";
+							mes "คุณสาบานที่จะอยู่";
+							mes "เพื่อ "+$wed_groom$+",";
+							mes "ที่จะอยู่เคียงข้างเขาไม่ว่า";
+							mes "สิ่งที่อันตรายที่อาจจะเกิดขึ้น?";
+							next;
+							if (select("^FF0000ไม่.^000000:ฉันทำ.") == 1) {
+								cutin "wedding_bomars03",2;
+								mapannounce "prt_church","คู่ต่อไป, โปรดดำเนินการต่อ...",bc_map;
+								mes "[Vomars]";
+								mes "เพราะ "+$wed_groom$;
+								mes "ไม่ใช่คุณคนเดียว";
+								mes "ต้องการแต่งงาน.";
+								set $wedding,0;
+								close2;
+								stopnpctimer;
+								cutin "",255;
+								end;
+							}
+							mes "[Vomars]";
+							mes "คุณจะสาบานไหมว่าจะมี";
+							mes "ความจงรักภักดีและความอดทน?";
+							mes "คุณจะแต่งงานกับ "+$wed_groom$+"?";
+							next;
+							if (select("ใช่.:^FF0000ไม่ใช่.^000000") == 1) {
+								if (isloggedin(getcharid(3,$wed_groom$))) {
+									if (marriage($wed_groom$)) {
+										//Call Wedding effect
+										wedding;
+										//Give ring to Bride, and change to wedding sprite.
+										sc_start SC_Wedding,3600000,1;
+										getitem 2635,1; //Bride_Ring
+										//Give ring to Groom, and change to wedding sprite.
+										attachrid(getcharid(3,$wed_groom$));
+										sc_start SC_Wedding,3600000,1;
+										getitem 2634,1; //Bridegroom_Ring
+										detachrid;
+										//Switch Script progression back to Bride
+										attachrid(getcharid(3,$wed_bride$));
+										cutin "wedding_bomars02",2;
+										mapannounce "prt_church","I now pronounce you, "+$wed_groom$+" and "+$wed_bride$+", husband and wife.",bc_map;
+										mes "[Vomars]";
+										mes "ด้วยพลังอันศักดิ์สิทธิ์";
+										mes "ฉันเป็นบาทหลวง";
+										mes "ในราชอาณาจักร Rune-Midgarts ,";
+										mes "ตอนนี้ผมคาดว่าคุณจะเป็นสามี";
+										mes "และภรรยา. อนาคตของคุณอาจมี";
+										mes "ความสุขกับความสุขที่ดีมาก.";
+										next;
+										mes "[Vomars]";
+										mes "และสุดท้าย...";
+										mes "จะมีความสุขทุกครั้ง,";
+										mes "ที่รัก "+$wed_bride$+"...";
+										set $wed_groom$,"";
+										set $wed_bride$,"";
+										set $wedding,0;
+										close2;
+										stopnpctimer;
+										cutin "",255;
+										detachrid;
+										end;
+									}
+								}
+								cutin "wedding_bomars03",2;
+								mes "[Vomars]";
+								mes "อืมม. ดูเหมือน่วา";
+								mes "เจ้าบ่าวของคุณได้ไปก่อน";
+								mes "พิธีแต่งงานจะเสร็จ";
+								mes "โปรดพยายามใหม่อีกครั้ง";
+								mes "ทำให้เขากลับมา.";
+								goto L_End;
+							}
+							else {
+								cutin "wedding_bomars03",2;
+								mapannounce "prt_church","Alas! "+$wed_bride$+" has rejected "+$wed_groom$+"'s marriage proposal!",bc_map;
+								mes "[Vomars]";
+								mes "อืมม. ดูเหมือนว่า";
+								mes "คุณเปลี่ยนใจของ";
+								mes "คุณแล้ว. แม้ว่าฉันรู้สึก";
+								mes "ไม่ดีกับเจ้าบ่าว, แต่คุณ";
+								mes "จะทำยังไงกับใจของคุณ";
+								mes "บอกตัวคุณว่ามันถูกแล้ว.ตอนนี้เลย, เร็ว!";
+							}
+							set $wed_groom$,"";
+							set $wed_bride$,"";
+							set $wedding,0;
+							close2;
+							stopnpctimer;
+							cutin "",255;
+							end;
+						}
+						callsub S_Busy;
+					}
+					callsub S_Busy;
+				}
+				callsub S_Busy;
+			}
+			if (strcharinfo(0) == $wed_bride$) {
+				mes "[Vomars]";
+				mes "อืม.ดูเหมือนว่า";
+				mes "คุณยังไม่ได้กรอกใบสมัคร";
+				mes "การแต่งงานของคุณ";
+				mes "กรุณาพูดกับ Happy Marry";
+				mes "เพื่อให้เราสามารถเริ่มต้น";
+				mes "ในพิธีงานแต่งงาน.";
+				goto L_End;
+			}
+			callsub S_Busy;
+		}
+		callsub S_Busy;
+	}
+	mes "[Vomars]";
+	mes "ฉันขอให้คุณมีความสุข";
+	mes "ไปตลอดกาล. ไม่ว่าตอนนี้";
+	mes "มันจะมืดมนไปสักแค่ไหน";
+	mes "เราจะยืนอยู่ข้างคุณเสมอ";
+	mes "จะมีความรักอยู่ข้างตัวคุณ";
+	mes "และในอนาคตด้วย.";
+
+L_End:
+	close2;
+	cutin  "",255;
+	end;
+
+S_Busy:
+	if ($wed_groom$ != "" && $wed_bride$ != "") {
+		mes "[Vomars]";
+		mes "การแต่งงานของ";
+		mes "นางสาว "+ $wed_bride$ +" และ";
+		mes "นาย "+ $wed_groom$;
+		mes "ขณะนี้กำลังดำเนินการอยู่.";
+		mes "กรุณาเก็บเสียงของคุณลง.";
+		goto L_End;
+	}
+	mes "[Vomars]";
+	mes "ฉันกำลังดำเนินการจัดงานแต่งงาน";
+	mes "สำหรับคู่อื่นในขณะนี้,ดังนั้น";
+	mes "โปรดรอสักครู่";
+	mes "แล้วค่อยกลับมาใหม่ ขอขอบคุณที่ให้ความเข้าใจ... ^FFFFFF ^000000";
+	goto L_End;
+
+OnInit:
+	set $wedding,0;
+	end;
+
+OnStop:
+	stopnpctimer;
+	end;
+
+OnReset:
+	set $wed_groom$,"";
+	set $wed_bride$,"";
+	set $wedding,0;
+	end;
+
+OnTimer180000:
+	mapannounce "prt_church","คุณได้ตอบช้าเกินไป ... คู่ต่อไปโปรดดำเนินการต่อไป.",bc_map;
+	set $wed_groom$,"";
+	set $wed_bride$,"";
+	set $wedding,0;
+	stopnpctimer;
+	end;
+}

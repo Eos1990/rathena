@@ -1,0 +1,52 @@
+//===== eAthena Script =======================================
+//= Prontera Sewers(Culvert) Dungeon Monster Spawn Script
+//===== By: ==================================================
+//= Athena (1.0)
+//===== Current Version: =====================================
+//= 1.2
+//===== Compatible With: =====================================
+//= Any Athena Version
+//===== Additional Comments: =================================
+//= 1.1 Official kRO 10.1 spawns [Playtester]
+//= 1.2 Corrected MVP spawn variance. [L0ne_W0lf]
+//============================================================
+
+//==================================================
+// prt_sewb1 - Prontera Culvert F1
+//==================================================
+prt_sewb1,0,0,0,0	monster	Farmiliar	1005,20
+prt_sewb1,0,0,0,0	monster	Spore	1014,20
+prt_sewb1,0,0,0,0	monster	Thief Bug Egg	1048,40
+prt_sewb1,0,0,0,0	monster	Thief Bug Female	1051,100
+prt_sewb1,0,0,0,0	monster	Tarou	1175,20
+
+//==================================================
+// prt_sewb2 - Prontera Culvert F2
+//==================================================
+prt_sewb2,0,0,0,0	monster	Farmiliar	1005,10
+prt_sewb2,0,0,0,0	monster	Spore	1014,35
+prt_sewb2,0,0,0,0	monster	Thief Bug Egg	1048,30
+prt_sewb2,0,0,0,0	monster	Thief Bug Female	1051,80
+prt_sewb2,0,0,0,0	monster	Thief Bug Male	1053,40
+prt_sewb2,0,0,0,0	monster	Plankton	1161,5
+prt_sewb2,0,0,0,0	monster	Tarou	1175,50
+
+//==================================================
+// prt_sewb3 - Prontera Culvert F3
+//==================================================
+prt_sewb3,0,0,0,0	monster	Farmiliar	1005,20
+prt_sewb3,0,0,0,0	monster	Poporing	1031,15
+prt_sewb3,0,0,0,0	monster	Thief Bug Egg	1048,10
+prt_sewb3,0,0,0,0	monster	Thief Bug Female	1051,85
+prt_sewb3,0,0,0,0	monster	Thief Bug Male	1053,75
+prt_sewb3,0,0,0,0	monster	Hydra	1068,5
+prt_sewb3,0,0,0,0	monster	Tarou	1175,45
+
+//==================================================
+// prt_sewb4 - Prontera Culvert F4
+//==================================================
+prt_sewb4,0,0,0,0	monster	Thief Bug Egg	1048,40
+prt_sewb4,0,0,0,0	monster	Thief Bug Female	1051,60
+prt_sewb4,0,0,0,0	monster	Thief Bug Male	1053,60
+prt_sewb4,0,0,0,0	monster	Thief Bug	1054,60
+prt_sewb4,0,0,0,0	monster	Golden Bug	1086,1,3600000

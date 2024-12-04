@@ -1,0 +1,31 @@
+//===== eAthena Script =======================================
+//= City Monster Spawn Script
+//===== By: ==================================================
+//= massdriller
+//===== Current Version: =====================================
+//= 1.1
+//===== Compatible With: =====================================
+//= Any Athena Version
+//===== Description: =========================================
+//= Spawns monsters to clean up city. Apparently spawning
+//= occured in iRO and kRO. Enable this if you want. 
+//= 0.1a Added a few more towns to spawn Wild rose [MasterOfMuppets]
+//= 0.1b And even more from Poki#3 [Komurka]
+//= 1.0 Removed unofficial city cleaners [Playtester]
+//= 1.1 Added other city spawns [Playtester]
+//============================================================
+
+prontera,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+morocc,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+alberta,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+aldebaran,0,0,0,0	monster	ลุงซานต้า		1247,5,160000,36000
+geffen,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+payon,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+comodo,0,0,0,0	monster	ลุงซานต้า		1247,10,160000,36000
+izlude,0,0,0,0	monster	ลุงซานต้า		1247,5,160000,36000
+yuno,0,0,0,0	monster	Wild Rose	1261,1,7200000,3600000
+
+//==================================================
+// payon_in02 - Inside Payon
+//==================================================
+payon_in02,23,68,5,5	monster	Thief Bug	1051,7,1200000,600000

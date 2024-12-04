@@ -1,0 +1,224 @@
+// -- # Ragnarok Online EP 4.0 BY Kelberwitz Blade's
+// -- # ARCHER Job Change
+// -- # =============================================
+
+payon_in02,64,71,4	script	Archer Guildsman#archer	85,{
+
+	if (Upper == 1) {
+		if (Class == Job_Novice_High && (ADVJOB == Job_Sniper || ADVJOB == Job_Clown || ADVJOB == Job_Gypsy)) {
+			mes "^0066FF[ Archer Guildsman ]^000000";
+			mes "เฮ้, ข้าจำเจ้าได้";
+			mes "เจ้าเคยมาทดสอบ";
+			mes "ก่อนหน้านี้ ใช่ไหม?";
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "อา, เจ้าจะต้องไป";
+			mes "เริ่มต้นเกิดใหม่";
+			mes "ว้าว, ฟังดูน่าประใจจริงๆ!";
+			next;
+			if (getskilllv("NV_BASIC") < 9) {
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "เอิ่มมมมม...";
+				mes "เจ้าควรจะเรียนรู้ Basic Skills ทั้งหมดก่อนที่เจ้าจะเป็น Archer.";
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "ไว้พบกันใหม่";
+				close;
+			}
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "เอาล่ะถ้าเช่นนั้น";
+			mes "ข้าคงไม่ต้องพูดอะไรอีก";
+			mes "ข้ารู้ว่าเจ้าจะเป็น Archer ที่ดี";
+			next;
+			skill 143,0,0;
+			jobchange Job_Archer_high;
+			skill 147,1,0;
+			skill 148,1,0;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ถึงแม้ว่าไม่มีรางวัลพิเศษอะไร";
+			mes "ให้เจ้าในเวลานี้ ข้าหวังว่าเจ้าจะเข้าใจ ดูแลตัวเองด้วย";
+			close;
+		}
+		else {
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "โอ้...?";
+			mes "เฮ้,..";
+			mes "เจ้ามาทำอะไรที่นี่...?";
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ข้าบอกได้เลยว่าเจ้าไม่ได้ถูกตัดออกจากการเป็น Archer มันรู้สึกเหมือน";
+			mes "เจ้ากำลังทำอะไรซักอย่าง...";
+			close;
+		}
+	}
+	mes "^0066FF[  Archer Guildsman ]^000000";
+	mes "วันนี้เป็นวันดี... มีอะไรให้ข้าช่วยหรือ?";
+	next;
+	switch(select("^ff0000•^000000 ข้าต้องจะเป็น Archer:^ff0000•^000000 ข้าต้องการรู้เกี่ยวกับ Archer.:^ff0000•^000000 ไม่มีอะไร, ขอบคุณ")) {
+	case 1:
+		if (BaseJob == Job_Archer) {
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "เจ้าเป็น Archer อยู่แล้ว...";
+			close;
+		}
+		else if (BaseJob != Job_Archer && BaseJob != Job_Novice) {
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ฮืมม...";
+			mes "เจ้าไม่ได้ดูเหมือน Novice ไปทั้งหมดนะ...";
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "อย่าไรก็ตาม ไม่ว่าเจ้าเป็นอะไร เจ้าไม่สามารถเลือกเป็น Archer ได้เพราะเจ้าได้มีอาชีพอื่นอยู่แล้ว";
+			close;
+		}
+		if (job_archer_q == 0) {
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "เจ้าต้องการที่จะเป็น Archer งั้นหรือ?";
+			mes "ถ้าอย่างนั้น เจ้าจำเป็นที่จะต้องกรอกแบบฟอร์มนี้";
+			next;
+			if (select("^ff0000•^000000 กรอกแบบฟอร์ม:^ff0000•^000000 ยกเลิก") == 1) {
+				set job_archer_q,1;
+				setquest 1004;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "โอเค, เซ็นตรงนี้... เอาละ, ข้าจะให้สิ่งที่เจ้าต้องการ";
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "เจ้าคิดว่าพร้อมหรือยัง เราจะเช็คอีกทีนะ";
+				mes "พร้อมหรือยัง?";
+				next;
+				if (select("^ff0000•^000000 ใช่, ข้าพร้อม:^ff0000•^000000 ไม่, ยังไม่พร้อม") == 1) {
+					mes "^0066FF[  Archer Guildsman ]^000000";
+					mes "ตกลง ให้ข้าตรวจสอบ..";
+					next;
+				}
+				else {
+					mes "^0066FF[  Archer Guildsman ]^000000";
+					mes "ข้าเข้าใจ กลับมาถ้าเจ้าอยากได้สิ่งที่ต้องการเป็น";
+					close;
+				}
+			}
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ถ้างั้น.. ไว้พบกันใหม่";
+			close;
+		}
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "เจ้าคือ..." + strcharinfo(0) + "?";
+		next;
+		if (getskilllv("NV_BASIC") < 9) {
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "อืมม, เจ้ายังมี job level ไม่ถูกต้อง...โปรดตรวจสอบอีกครั้ง";
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "เจ้าต้องมี job level อย่างน้อยคือ 10, และอย่าลืมเรียนรู้ Basic Skills ทั้งหมด..ถ้าทำได้แบบนั้นแล้ว กลับมาใหม่";
+			close;
+		}
+		if (job_archer_q == 1) {
+			set .@archer_item1,countitem(1066) * 5;
+			set .@archer_item2,countitem(1067) * 3;
+			set .@archer_item3,countitem(1068) * 2;
+			set .@archer_item4,countitem(1019);
+			set .@total_archer,.@archer_item1 + .@archer_item2 + .@archer_item3 + .@archer_item4;
+			set .@total_archer2,(((.@archer_item2 + .@archer_item3) * 2) + .@archer_item4);
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ยอดเยี่ยมมาก!";
+			mes "เอาล่ะ,";
+			mes "ไหนดูซิ...";
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ข้าจะประเมินมูลค่าของ Trunks ที่จะใช้ทำ Bow ที่เจ้านำมันมา";
+			next;
+			if (countitem(1066) == 0 && countitem(1067) == 0 && countitem(1068) == 0 && countitem(1019) == 0) {
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "อืม...";
+				mes "น่าเสียดายที่เจ้าไม่ได้นำอะไรมาเลย ไม่มีอะไรที่ต้องประเมินค่า";
+				close;
+			}
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			if (countitem(1066) != 0) mes " Grade S : " + countitem(1066) + " ea, Grade: " + .@archer_item1 + " . ";
+			if (countitem(1067) != 0) mes " Grade A : " + countitem(1067) + " ea, Grade : " + .@archer_item2 + " . ";
+			if (countitem(1068) != 0) mes " Grade B : " + countitem(1068) + " ea, Grade : " + .@archer_item3 + " . ";
+			if (countitem(1019) != 0) mes " Grade C : " + countitem(1019) + " ea, Grade : " + .@archer_item4 + " . ";
+			if (.@total_archer < 25) {
+				mes "Total Grades: ^FF0000" + .@total_archer + "^000000 / 40";
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "น้อยกว่า 25!? เจ้าได้เกรดของอย่างน้อยคือ 25! เอาล่ะ, พยายามให้มากกว่าเดิม!";
+				close;
+			}
+			else {
+				mes "Total Grades: ^0000FF" + .@total_archer + "^000000 / 40";
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				if (.@total_archer > 40) {
+					mes "ว้าววว! มากกว่า 40!";
+					mes "ยอดเยี่ยมมาก! ยินดีด้วย!";
+				}
+				else if (.@total_archer > 30) {
+					mes "มากกว่า 30! ทำได้ดี!";
+					mes "ยินดีด้วย!";
+				}
+				else {
+					mes "*เอาล่ะ, ผ่านหวุดหวิดจริงๆ... ยังไงก็ตาม ทำได้ดีแล้ว";
+				}
+			}
+			next;
+			mes "^0066FF[  Archer Guildsman ]^000000";
+			mes "ข้าจะนำ Trunks พวกนี้ไปยังฝ่ายที่ผลิต Bow ของพวกเรา. ตอนนี้เจ้าผ่านตามข้อกำหนดแล้ว, ข้าจะทำให้เดี๋ยวนี้!";
+			if (countitem(1066) != 0) delitem 1066,countitem(1066); //Tree_Of_Archer_1
+			if (countitem(1067) != 0) delitem 1067,countitem(1067); //Tree_Of_Archer_2
+			if (countitem(1068) != 0) delitem 1068,countitem(1068); //Tree_Of_Archer_3
+			if (countitem(1019) != 0) delitem 1019,countitem(1019); //Wooden_Block
+		}
+		next;
+		callfunc "Job_Change",Job_Archer;
+		callfunc "F_ClearJobVar";
+		completequest 1004;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "ยินดีด้วย!";
+		mes "เจ้าได้เป็น Archer แล้ว!";
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "แน่นอน เราคาดหวังว่าเจ้าจะมีประโยชน์ต่อ Archer Guild ในอนาคตจากความพยายามของเจ้า";
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "อาา, ธนูของเจ้าถูกส่งมาจากฝ่ายผลิตของเราแล้ว นี่ไงเอาไป มันเป็นของเจ้า~";
+		getitem 1702,1; //Bow_
+		getitem 1750,.@total_archer2; //Arrow
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "ตอนนี้ ออกไปล่าด้วยความภาคภูมิใจ ให้รู้ว่าเจ้าได้รับการฝึกจากคนที่ดีที่สุดแล้ว!";
+		close;
+	case 2:
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "ข้าจะอธิบายข้อกำหนดในการเป็น Archer ให้ฟัง";
+		if (BaseJob != Job_Novice) {
+			if (BaseJob == Job_Archer) {
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "แต่...";
+				mes "เจ้าเป็น Archer อยู่แล้วนี่ น่าจะรู้เรื่องทั้งหมดแล้ว...";
+			}
+			else {
+				next;
+				mes "^0066FF[  Archer Guildsman ]^000000";
+				mes "เด๊่ยวก่อนนะ... เจ้าได้เลือกอาชีพอื่นไปแล้ว...เจ้าไม่จำเป็นต้องรู้เรื่องนี้~";
+			}
+			mes "So...Yeah...ไม่เหตุผลอะไร ที่ต้องบอกเจ้า..";
+		}
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "ก่อนอื่น, เจ้าจะต้องมี Job Level 9 โดยเป็น Novice, และเรียนรู้ Basic Skills ทั้งหมดแล้ว";
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "Archer ต้องการความใส่ใจสูงและตอบสนองได้รวดเร็ว ดังนั้นเราไม่รับคนที่มีความอดทนต่ำ";
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "เจ้าจะต้องไปรวบรวม^FF0000Trunks^000000 มันมี 4 ชนิดแตกต่างกันไป, รวมทั้งคุณภาพ เจ้าจะได้รับ Trunk ในเกรดที่แตกต่างขึ้นอยู่กับคุณภาพของมัน";
+		next;
+		mes "^0066FF[  Archer Guildsman ]^000000";
+		mes "ในการที่จะได้เป็น Archer เจ้าจะต้องได้เกรดไม่ต่ำกว่า ^0000FF25^000000 ไปจนถึง 40 แต้ม เจ้าสามารถหามันได้จาก Willow ระวังด้วย พวกมันเป็นมากกว่ามอนสเตอร์ทั่วไป";
+		close;
+	case 3:
+		close;
+	}
+}
+

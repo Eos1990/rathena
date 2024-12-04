@@ -1,0 +1,42 @@
+//===== eAthena Script =======================================
+//= Coal Mine(Dead pit) Dungeon Monster Spawn Script
+//===== By: ==================================================
+//= Athena (1.0)
+//===== Current Version: =====================================
+//= 1.1
+//===== Compatible With: =====================================
+//= Any Athena Version
+//===== Additional Comments: =================================
+//= 1.1 Official kRO 10.1 spawns [Playtester]
+//============================================================
+
+//==================================================
+// mjo_dun01 - Mjolnir Dead Pit F1
+//==================================================
+mjo_dun01,0,0,0,0	monster	Farmiliar	1005,10
+mjo_dun01,0,0,0,0	monster	Smokie	1056,20
+mjo_dun01,0,0,0,0	monster	Andre	1095,15
+mjo_dun01,0,0,0,0	monster	Deniro	1105,15
+mjo_dun01,0,0,0,0	monster	Drainliar	1111,40
+mjo_dun01,0,0,0,0	monster	Giearth	1121,10,300000,150000,1
+mjo_dun01,0,0,0,0	monster	Martin	1145,15
+mjo_dun01,0,0,0,0	monster	Piere	1160,15
+mjo_dun01,0,0,0,0	monster	Skel Worker	1169,5,300000,150000,1
+mjo_dun01,0,0,0,0	monster	Tarou	1175,40
+
+//==================================================
+// mjo_dun02 - Mjolnir Dead Pit F2
+//==================================================
+mjo_dun02,0,0,0,0	monster	Drainliar	1111,20
+mjo_dun02,0,0,0,0	monster	Martin	1145,65
+mjo_dun02,0,0,0,0	monster	Skel Worker	1169,55
+mjo_dun02,0,0,0,0	monster	Giearth	1121,70,300000,150000,1
+
+//==================================================
+// mjo_dun03 - Mjolnir Dead Pit F3
+//==================================================
+mjo_dun03,0,0,0,0	monster	Evil Druid	1117,5,300000,100000
+mjo_dun03,0,0,0,0	monster	Martin	1145,15
+mjo_dun03,0,0,0,0	monster	Myst	1151,35
+mjo_dun03,0,0,0,0	monster	Skel Worker	1169,150
+mjo_dun03,0,0,0,0	monster	Giearth	1121,20,300000,150000,1

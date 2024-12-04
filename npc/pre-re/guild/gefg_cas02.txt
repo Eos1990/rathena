@@ -1,0 +1,133 @@
+//===== rAthena Script =======================================
+//= War of Emperium (Geffen) - Eeyorbriggar
+//===== โดย: ==================================================
+//= L0ne_W0lf
+//===== แปลไทยโดย: =====================================
+//= Athena Studio
+//===== เวอร์ชั่นปัจจุบัน: =====================================
+//= 1.2
+//===== ใช้ได้กับ: =====================================
+//= rAthena Project
+//===== คำอธิบาย: =========================================
+//= NPCs ที่เกี่ยวข้องกับ Geffen Guild Castle 2
+//===== ความเห็นเพิ่มเติม: =================================
+//= 1.0 เวอร์ชั่นแรก. ยกเลิกการใช้ฟังก์ชั่น. [L0ne_W0lf]
+//= 1.1 ลบการโต้ตอบจากธงภายในปราสาท. [L0ne_W0lf]
+//= 1.2 เขียนสคริปต์เพิ่มเติม. [Masao]
+//============================================================
+
+// ธงกิลด์ (ภายนอกปราสาท)
+//============================================================
+-	script	Eeyorbriggar#1::OutsideFlagsG2	722,{
+
+	set .@GID, GetCastleData("gefg_cas02",1);
+
+	if (.@GID == 0) {
+		mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+		mes " ";
+		mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+		mes "เราขอประกาศว่า";
+		mes "ยังไม่มีผู้ครอบครองปราสาทอย่างเป็นทางการของปราสาทแห่งนี้.";
+		mes " ";
+		mes "2. สำหรับใครทีสามารถครอบครองได้ ";
+		mes "ชนะการทดสอบทั้งหมด";
+		mes "และ สามารถทำลาย Emperium,";
+		mes "กษัตริย์จะทรงยกปราสาทแห่งนี้ให้เป็นผู้ครอบครอง";
+		close;
+	}
+	if (getcharid(2) == .@GID) {
+		mes "[ เสียงตอบกลับ ]";
+		mes "ผู้กล้าหาญ...";
+		mes "คุณต้องการกลับไปยังสถานที่อันทรงเกียรติของคุณหรือไม่ ?";
+		next;
+		if(select("กลับไปเข้าไปในปราสาท.:ยกเลิก.") == 1) {
+			close2;
+			if (getcharid(2) == GetCastleData("gefg_cas02",1)) {
+				warp "gefg_cas02",178,43;
+				end;
+			}
+			end;
+		}
+		close;
+	}
+	mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+	mes " ";
+	mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+	mes "เราได้อนุมัติให้สถานที่แห่งนี้เป็นของ";
+	mes "กิลด์ ^ff0000"+GetGuildName(.@GID)+"^000000.";
+	mes " ";
+	mes "2. กิลด์ผู้ครอบครองปราสาท ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "และ หัวหน้ากิลด์ ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+	mes "ถ้าหากผู้ใดก็ตามที่คัดค้านเรื่องนี้,";
+	mes "จงพิสูจน์ความแข็งแกร่ง และ เกียรติของคุณ ด้วยมือของคุณ.";
+	close;
+
+OnRecvCastleG02:
+	FlagEmblem GetCastleData("gefg_cas02",1);
+	end;
+}
+
+gef_fild13,303,243,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#1-2	722
+gef_fild13,312,243,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#2	722
+gef_fild13,290,243,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#3	722
+gef_fild13,324,243,4	duplicate(OutsideFlagsG2)	Eeyorbriggar#4	722
+
+// ธงกิลด์ (ภายในปราสาท)
+//============================================================
+-	script	Eeyorbriggar#5::InsideFlagsG2	722,{
+	end;
+
+OnRecvCastleG02:
+	FlagEmblem GetCastleData("gefg_cas02",1);
+	end;
+}
+
+gefg_cas02,65,130,5	duplicate(InsideFlagsG2)	Eeyorbriggar#5-2	722
+gefg_cas02,30,123,5	duplicate(InsideFlagsG2)	Eeyorbriggar#6	722
+gefg_cas02,65,139,6	duplicate(InsideFlagsG2)	Eeyorbriggar#7	722
+gefg_cas02,37,177,6	duplicate(InsideFlagsG2)	Eeyorbriggar#8	722
+gefg_cas02,37,168,6	duplicate(InsideFlagsG2)	Eeyorbriggar#9	722
+gefg_cas02,68,47,2	duplicate(InsideFlagsG2)	Eeyorbriggar#10	722
+gefg_cas02,68,36,2	duplicate(InsideFlagsG2)	Eeyorbriggar#11	722
+
+// ธงกิลด์ (เมืองหลวง)
+//============================================================
+geffen,112,129,1	duplicate(InsideFlagsG2)	Eeyorbriggar#12	722
+
+// พนักงานคาฟรา
+//============================================================
+gefg_cas02,23,66,3	duplicate(guildkafra)	Kafra Staff#gefg_cas02	117
+
+// คนรับใช้
+//============================================================
+gefg_cas02,12,66,5	duplicate(cm)	Esmarehk#gefg_cas02	55
+
+// ทางออกห้องสมบัติ
+//============================================================
+gefg_cas02,145,114,0	script	#lever_G02	111,{
+	mes " ";
+	mes "มีคันโยกเล็กๆ. คุณต้องการที่จะดึงมัน ?";
+	next;
+	if(select("ดึง.:อย่าดึง.") == 1) {
+		close2;
+		warp "gefg_cas02",12,67;
+		end;
+	}
+	close;
+}
+
+// ทางเข้ากิลด์ดันเจี้ยน
+//============================================================
+gefg_cas02,167,40,0	duplicate(gdlever)	#gefg_cas02	111
+
+// จุดเกิดสมบัติ
+//============================================================
+gefg_cas02,140,116,0	duplicate(Gld_Trea_Spawn)	Treasure#gefg_cas02	-1
+
+// จัดการปราสาท
+//============================================================
+gefg_cas02,176,178,0	duplicate(Gld_Agit_Manager)	Agit#gefg_cas02	-1
+
+// การ์เดี้ยน
+//============================================================
+gefg_cas02,12,66,5	duplicate(Gld_Guard_Template)	Guardian#gefg_cas02	-1

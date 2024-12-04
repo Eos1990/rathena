@@ -1,0 +1,506 @@
+//===== rAthena Script ======================================= 
+//= Cash Shop Functions
+//===== By: ================================================== 
+//= L0ne_W0lf
+//===== Current Version: ===================================== 
+//= 1.8
+//===== Compatible With: ===================================== 
+//= rAthena Project
+//===== Description: ========================================= 
+//= Used for Cash shop items:
+//= - Kafra Card
+//= - Giant Fly Wing
+//= - Neuralizer
+//= - Dungeon Teleport Scroll
+//= Also included are functions related to the VIP system.
+//===== Additional Comments: ================================= 
+//= 1.0 First version. [L0ne_W0lf]
+//=     F_CashPartyCall Optimized by Trancid.
+//= 1.1 Updated Dungeon Teleport Scroll. [L0ne_W0lf]
+//=     Added Town Teleport Scroll Function
+//=     Added Seige Teleport Scroll Function
+//= 1.2 Updated the dungeon teleport scroll menu. [L0ne_w0lf]
+//= 1.3 Implemented Aozi Giant Flywing Fix. (bugreport:4242) [L0ne_w0lf]
+//= 1.4 Simplified Giant Flywing function using warpparty. [L0ne_w0lf]
+//= 1.5 Neuralizer is no longer consumed upon failure. [Euphy]
+//= 1.6 Updated Teleport functions and added Curious_Snowball. [Euphy]
+//= 1.7 Added Dungeon Teleport Scroll II maps. [Euphy]
+//= 1.8 Added VIP function. [Euphy]
+//= 1.9 Added checkdragon() in F_CashReset. [Capuche]
+//= 2.0 Moved VIP_Third_Class function into other/re/CashShop_Functions. [Capuche]
+//============================================================ 
+
+// Kafra Card
+//============================================================ 
+// - Open player's storage.
+// - No arguments.
+function	script	F_CashStore	{
+	cutin "kafra_01",2;
+	mes "[Kafra Employee]";
+	mes "ยินดีต้อนรับสู่บริการ Kafra Corporation.";
+	mes "เอาล่ะ,ใช้งานคลังเก็บของได้ทันที";
+	close2;
+	openstorage;
+	cutin "",255;
+	return;
+}
+
+// Giant Fly Wing
+//============================================================ 
+// - Warp party leader to random spot on the map.
+// - Summon Party members on party leader map to a 3x3 location around the leader.
+// - No arguments.
+function	script	F_CashPartyCall	{
+	if (is_party_leader())
+		warpparty "RandomAll", 0, 0, getcharid(1), strcharinfo(3), 3, 3;
+	else
+		itemskill "AL_TELEPORT",1;
+	return;
+}
+
+// Neuralizer
+//============================================================ 
+// - Reset players skills. Weight must be 0, options must be off.
+// - No arguments.
+function	script	F_CashReset	{
+	mes "^0066FF[ Reset Skill ]^000000";
+	mes "หากท่านต้องการที่จะรีสกิล";
+	mes "ท่านจะต้องทำการปลดอุปกรณ์";
+	mes "นก รถเข็น หรือ ปิโกะออกก่อน ";
+	mes "เข้าใจตรงกันนะ ? ";
+	next;
+	switch(select("^ff0000•^000000 โอเค !! ข้าพร้อมแล้ว !:^ff0000•^000000 ช้าก่อน..")) {
+	case 1:
+		if (Weight >= 1) {
+			if (checkriding() || checkfalcon() || checkcart()) {
+			mes "^0066FF[ Reset Skill ]^000000";
+			mes "โปรดตรวจสอบให้แน่ใจว่า..";
+			mes "ท่านได้ปลดอุปกรณ์ที่ใช้งานอยู่";
+			mes "ออกหมเทุกอย่างแล้ว !!";
+			close;
+		}
+			if (countitem(12213) > 0) {
+				mes "^0066FF[ Reset Skill ]^000000";
+				mes "ข้าได้ทำการรีเซทสกิล !!";
+				mes "ให้กับท่านเรียบร้อยแล้ว ~";
+				mes "หวังว่าเจ้าจะมีความสุข";
+				mes "ก่อนอัพสกิลใหม่ก็เช็คดี ๆ ล่ะ !!";
+				delitem 12213,1;
+				resetskill;
+				sc_end SC_ALL;
+				close;
+			}
+			else {
+				mes "^0066FF[ Reset Skill ]^000000";
+				mes "เห้ ! ช้าก่อนเจ้าเด็กน้อย";
+				mes "เจ้าคิดว่าข้าโง่ใช่ไหม หืม ?";
+				mes "ข้าว่าเจ้าทำหนังสือหล่นหายไปนะ!";
+				end;
+			}
+		} else {
+			mes "^0066FF[ Reset Skill ]^000000";
+			mes "โปรดตรวจสอบให้แน่ใจว่า..";
+			mes "น้ำหนักตัวท่านเป็น 0 แล้ว";
+			mes "ดูเหมือนว่าท่านยังไม่พร้อมนะ";
+			close;
+		}
+case 2:
+	mes "^0066FF[ Reset Skill ]^000000";
+	mes "โอเค..";
+	mes "ไว้เจ้าพร้อมเมื่อไหร่";
+	mes "เรียกใช้งานข้าได้ทุกเมื่อ...";
+	close;
+	}
+}
+
+// Dungeon Teleport Scroll
+//============================================================ 
+// - Warp player to the selected dungeon.
+// - Arg(0) = type of scroll.
+function	script	F_CashDungeon	{
+	mes "[ Dungeon Scroll ]";
+	mes "^FF0000คำเตือน : คุณมีเวลาเลือกสถานที่ เพียง 1นาที นับจากกดใช้งาน ไม่งั้นคุณจะเสียวาร์ปทันที^000000";
+	next;
+	switch(getarg(0)) {
+	case 1:
+		switch(select("~ Mjolnir Dead Pit:~ Payon Dungeon:~ Toy Dungeon:~ Glast Heim Underprison:~ Izlude Undersea Tunnel:~ Clock Tower B2:~ Clock Tower B3:~ Glast Heim Culvert 2F:~ Sphinx Dungeon 4F:~ Inside Pyramid 4F:~ Prontera Culvert 3F:~ Geffen Dungeon 1F")) {
+		case 1: warp "mjo_dun02",80,297; end;	// Mjolnir Dead Pit
+		case 2: warp "pay_dun03",155,150; end;	// Payon Caves
+		case 3: warp "xmas_dun01",133,130; end;	// Toy Factory
+		case 4: warp "gl_prison",140,15; end;	// Glast Heim Prison
+		case 5: warp "iz_dun02",350,335; end;	// Izlude Undersea Tunnel
+		case 6: warp "alde_dun02",127,169; end;	// Clocktower B2 // ดันไฮ
+		case 7: warp "alde_dun03",278,174; end;	// Clocktower B3 // ไฮดร้าแดง
+		case 8: warp "gl_sew02",292,295; end;	// Glast Heim Sewers 2F
+		case 9: warp "in_sphinx4",120,120; end;	// Sphinx Dungeon 4F
+		case 10: warp "moc_pryd04",195,4; end;	// Pyramid Dungeon 4F
+		case 11: warp "prt_sewb3",20,175; end;	// Prontera Culverts 3F
+		case 12: warp "gef_dun00",103,98; end;	// Geffen Dungeon 1F
+		}
+	}
+	return;
+}
+
+// Coloured Butterly Wings
+//============================================================ 
+// - Warp player to different cities acording to the scroll.
+// - Arg(0) = type of scroll.
+function	script	F_CashCity	{
+	switch(getarg(0)) {
+	case 1: // Yellow - Rune-Midgarts
+		switch(select("Prontera:Izlude:Geffen:Payon:Morocc:Alberta:Al de Baran")) {
+			case 1: warp "prontera",122,87; end;
+			case 2: if (checkre(0)) warp "izlude",130,90; else warp "izlude",91,105; end;
+			case 3: warp "geffen",128,48; end;
+			case 4: warp "payon",164,123; end;
+			case 5: warp "morocc",160,100; end;
+			case 6: warp "alberta",117,50; end;
+			case 7: warp "aldebaran",140,110; end;
+		}
+	case 2: // Green - Schwarzwald
+		switch(select("Juno:Lighthalzen:Einbroch:Einbech:Hugel")) {
+			case 1: warp "yuno",160,170; end;
+			case 2: warp "lighthalzen",190,310; end;
+			case 3: warp "einbroch",230,190; end;
+			case 4: warp "einbech",187,120; end;
+			case 5: warp "hugel",92,165; end;
+		}
+	case 3: // Red - Arunafeltz
+		switch(select("Rachel:Veins")) {
+			case 1: warp "rachel",120,125; end;
+			case 2: warp "veins",215,105; end;
+		}
+	case 4: // Blue - Islands
+		switch(select("Amatsu:Kunlun:Ayothaya:Luoyang")) {
+			case 1: warp "amatsu",110,140; end;
+			case 2: warp "gonryun",160,115; end;
+			case 3: warp "ayothaya",220,170; end;
+			case 4: warp "louyang",217,95; end;
+		}
+	case 5: // Blue - Islands (Renewal)
+		switch(select("Amatsu:Kunlun:Ayothaya:Luoyang:Moscovia:Dewata:Brasilis")) {
+			case 1: warp "amatsu",110,140; end;
+			case 2: warp "gonryun",160,115; end;
+			case 3: warp "ayothaya",220,170; end;
+			case 4: warp "louyang",217,95; end;
+			case 5: warp "moscovia",224,195; end;
+			case 6: warp "dewata",200,107; end;
+			case 7: warp "brasilis",196,181; end;
+		}
+	}
+	return;
+}
+
+// Teleport Scrolls
+//============================================================ 
+// - Warp player to save point or city acording to the scroll.
+// - Arg(0) = type of scroll.
+function	script	F_CashTele	{
+	switch(getarg(0)) {
+	case 1:
+		switch(select("Prontera:Geffen:Al de Baran:Izlude:Savepoint")) {
+		case 1: warp "prontera",119,77; end;
+		case 2: warp "geffen",119,39; end;
+		case 3: warp "aldebaran",165,107; end;
+		case 4: if (checkre(0)) warp "izlude",128,105; else warp "izlude",91,105; end;
+		case 5: warp "SavePoint",0,0; end;
+		}
+	case 2:
+		switch(select("Payon:Alberta:Morocc:Comodo:Savepoint")) {
+		case 1: warp "payon",158,55; end;
+		case 2: warp "alberta",115,57; end;
+		case 3: warp "morocc",158,48; end;
+		case 4: warp "comodo",217,148; end;
+		case 5: warp "SavePoint",0,0; end;
+		}
+	case 3:
+		switch(select("Luoyang:Amatsu:Kunlun Field:Ayothaya:Savepoint")) {
+		case 1: warp "louyang",214,101; end;
+		case 2: warp "amatsu",112,145; end;
+		case 3: warp "gonryun",160,118; end;
+		case 4: warp "ayothaya",216,175; end;
+		case 5: warp "SavePoint",0,0; end;
+		}
+	case 4:
+		switch(select("Lutie Field:Umbala:Niflheim:Savepoint")) {
+		case 1: warp "xmas",148,131; end;
+		case 2: warp "umbala",93,154; end;
+		case 3: warp "niflheim",187,189; end;
+		case 4: warp "SavePoint",0,0; end;
+		}
+	case 5:
+		switch(select("Juno:Einbroch:Lighthalzen:Hugel:Savepoint")) {
+		case 1: warp "yuno",157,124; end;
+		case 2: warp "einbroch",230,192; end;
+		case 3: warp "lighthalzen",158,94; end;
+		case 4: warp "hugel",93,159; end;
+		case 5: warp "SavePoint",0,0; end;
+		}
+	case 6:
+		switch(select("Rachel:Veins:Savepoint")) {
+		case 1: warp "rachel",118,132; end;
+		case 2: warp "veins",214,125; end;
+		case 3: warp "SavePoint",0,0; end;
+		}
+	}
+	return;
+}
+
+// Siege Teleport Scroll
+//============================================================ 
+// - Warp player to selected guild castle.
+// - No arguments.
+function	script	F_CashSiegeTele	{
+	switch(select("Neuschwanstein (aldeg_cas01):Hohenschwangau (aldeg_cas02):Nuernberg (aldeg_cas03):Wuerzburg (aldeg_cas04):Rothenburg (aldeg_cas05):Repherion (gefg_cas01):Eeyorbriggar (gefg_cas02):Yesnelph (gefg_cas03):Bergel (gefg_cas04):Mersetzdeitz (gefg_cas05):Bright Arbor (payg_cas01):Sacred Altar (payg_cas02):Holy Shadow (payg_cas03):Scarlet Palace (payg_cas04):Bamboo Grove Hill (payg_cas05):Kriemhild (prtg_cas01):Swanhild (prtg_cas02):Fadhgridh (prtg_cas03):Skoegul (prtg_cas04):Gondul (prtg_cas05)")) {
+	case 1: warp "alde_gld",48,91; end;
+	case 2: warp "alde_gld",103,245; end;
+	case 3: warp "alde_gld",142,87; end;
+	case 4: warp "alde_gld",236,243; end;
+	case 5: warp "alde_gld",269,90; end;
+	case 6: warp "gef_fild13",217,75; end;
+	case 7: warp "gef_fild13",307,237; end;
+	case 8: warp "gef_fild13",77,297; end;
+	case 9: warp "gef_fild13",190,276; end;
+	case 10: warp "gef_fild13",312,91; end;
+	case 11: warp "pay_gld",121,232; end;
+	case 12: warp "pay_gld",297,116; end;
+	case 13: warp "pay_gld",318,293; end;
+	case 14: warp "pay_gld",140,164; end;
+	case 15: warp "pay_gld",202,264; end;
+	case 16: warp "prt_gld",141,64; end;
+	case 17: warp "prt_gld",240,131; end;
+	case 18: warp "prt_gld",153,133; end;
+	case 19: warp "prt_gld",126,240; end;
+	case 20: warp "prt_gld",195,240; end;
+	}
+	return;
+}
+
+// Curious Snowball
+//============================================================ 
+// - You can get an effect of Restore, Endure, or Wing of Butterfly.
+// - No arguments.
+function	script	F_Snowball	{
+	cutin "rutie_snownow03",2;
+	mes "[Snowman]";
+	mes "สุขสันต์วันคริสต์มาส!";
+	switch(select("ฟื้นฟู HP/SP บางตัว:เสริมสร้างร่างกายของฉัน!:ฟื้นฟู SP ของฉันอย่างสมบูรณ์:กลับจุดเซฟ")) {
+	case 1:
+		mes "อะฮา!";
+		mes "คืนที่เงียบสงบ ~";
+		percentheal 70,70;
+		close2;
+		cutin "",255;
+		break;
+	case 2:
+		mes "กำลังขอพร";
+		mes "คืนศักดิ์สิทธิ์~";
+		unitskilluseid getcharid(3),"SM_ENDURE",10;
+		close2;
+		cutin "",255;
+		break;
+	case 3:
+		mes "เฮ้!";
+		mes "คริสต์มาสสีขาว~";
+		percentheal 0,100;
+		close2;
+		cutin "",255;
+		break;
+	case 4:
+		mes "กระดิ่งกริ๊ง~";
+		mes "กระดิ่งกริ๊ง~ กระดิ่งกริ๊ง!";
+		close2;
+		cutin "",255;
+		warp "SavePoint",0,0;
+		break;
+	}
+	end;
+}
+
+// Status reduction potion
+//============================================================
+// - Permanently reduces base stat <type> by <val>.
+// - Returns status points equals to points needed to raise
+//   that stat to original value.
+// - Doesn't work if base status <type> would become lower than 1 after reduction.
+// * callfunc("F_CashReduceStat",<type>{,<val>,<itemid>});
+function	script	F_CashReduceStat	{
+	.@type = getarg(0);
+	.@amount = getarg(1, -1);
+	.@itemid = getarg(2, 0);
+	
+	if((readparam(.@type) + .@amount) < 1) return;
+	
+	if(.@itemid) {
+		if(countitem(.@itemid))
+			delitem .@itemid,1;
+		else
+			return;
+	}
+	StatusPoint += needed_status_point(.@type, .@amount);
+	statusup2 .@type,.@amount;
+	return;
+}
+
+// Trait Status reduction potion
+//============================================================
+// - Permanently reduces base trait stat <type> by <val>.
+// - Returns trait status points equals to points needed to raise
+//   that trait stat to original value.
+// - Doesn't work if base trait status <type> would become lower than 0 after reduction.
+// * callfunc("F_CashReduceTraitStat",<type>{,<val>,<itemid>});
+function	script	F_CashReduceTraitStat	{
+	.@type = getarg(0);
+	.@amount = getarg(1, -1);
+	.@itemid = getarg(2, 0);
+	
+	if((readparam(.@type) + .@amount) < 0) return;
+	
+	if(.@itemid) {
+		if(countitem(.@itemid))
+			delitem .@itemid,1;
+		else
+			return;
+	}
+	TraitPoint += needed_trait_point(.@type, .@amount);
+	traitstatusup2 .@type,.@amount;
+	return;
+}
+
+// Weight UP Book
+//============================================================ 
+function	script	F_WeightUp	{
+	mes "^0066FF[ Weight UP Book ]^000000";
+	mes "สกิล Enlarge Weight Limit";
+	mes "สกิลนี้ทำให้ถือของได้หนักขึ้น";
+	mes "น้ำหนัก +200 / 1 ครั้ง ที่ใช้งาน";
+	mes "1 ตัวละครสามารถเรียนได้ 10 ครั้ง ";
+	mes "เข้าใจตรงกันนะ ? ";
+	next;
+	switch(select("^ff0000•^000000 เยส..เซอร์!! ลุย !:^ff0000•^000000 ช้าก่อน..")) {
+	case 1:
+		if (gympassmemory < 10) {
+			set .@add_carry,gympassmemory + 1;
+			set .@remain_carry,10 - .@add_carry;
+			if (countitem(22300) > 0) {
+				mes "^0066FF[ Weight UP Book ]^000000";
+				mes "เตรียมตัวให้พร้อม..";
+				mes "ทำใจให้ สงบ เตรียมรับพลัง!!";
+				mes "1 2 3 4 . . .";
+				next;
+				mes "^0066FF[ Weight UP Book ]^000000";
+				mes "ฮึ๊บ ฮึ๊บ ~";
+				specialeffect2 EF_EARTHSPIKE;
+				specialeffect2 EF_DEVIL;
+				specialeffect2 EF_COIN;
+				specialeffect2 EF_SIGHTRASHER;
+				next;
+				mes "^0066FF[ Weight UP Book ]^000000";
+				mes "ยินดีด้วย !!";
+				mes "เจ้าแข็งแกร่งขึ้นแล้วเด็กน้อย";
+				mes "หวังว่าเจ้าจะมีความสุข";
+				mes "กับพลังที่เพิ่มขึ้นของเจ้า !!";
+				delitem 22300,1;
+				set gympassmemory,.@add_carry;
+				skill "ALL_INCCARRY",.@add_carry,0;
+				close;
+			}
+			else {
+				mes "^0066FF[ Weight UP Book ]^000000";
+				mes "เห้ ! ช้าก่อนเจ้าเด็กน้อย";
+				mes "เจ้าคิดว่าข้าโง่ใช่ไหม หืม ?";
+				mes "ข้าว่าเจ้าทำหนังสือหล่นหายไปนะ!";
+				end;
+			}
+		} else {
+			mes "^0066FF[ Weight UP Book ]^000000";
+			mes "ท่านไม่สามารถเรียนได้แล้ว";
+			mes "ท่านเรียนไปถึงเลเวล 10 แล้ว";
+			close;
+		}
+case 2:
+	mes "^0066FF[ Weight UP Book ]^000000";
+	mes "โอเค..";
+	mes "ไว้เจ้าพร้อมเมื่อไหร่";
+	mes "เรียกใช้งานข้าได้ทุกเมื่อ...";
+	close;
+	}
+}
+
+//============================================================ 
+function	script	F_CashReStatus	{
+	mes "^0066FF[ Reset Status ]^000000";
+	mes "หากท่านต้องการที่จะรีสเตตัส";
+	mes "ท่านจะต้องทำการปลดอุปกรณ์";
+	mes "นก รถเข็น หรือ ปิโกะออกก่อน ";
+	mes "เข้าใจตรงกันนะ ? ";
+	next;
+	switch(select("^ff0000•^000000 โอเค !! ข้าพร้อมแล้ว !:^ff0000•^000000 ช้าก่อน..")) {
+	case 1:
+		if (Weight >= 1) {
+			if (checkriding() || checkfalcon() || checkcart()) {
+			mes "^0066FF[ Reset Status ]^000000";
+			mes "โปรดตรวจสอบให้แน่ใจว่า..";
+			mes "ท่านได้ปลดอุปกรณ์ที่ใช้งานอยู่";
+			mes "ออกหมเทุกอย่างแล้ว !!";
+			close;
+		}
+			if (countitem(22004) > 0) {
+				mes "^0066FF[ Reset Status ]^000000";
+				mes "ข้าได้ทำการรีสเตตัส !!";
+				mes "ให้กับท่านเรียบร้อยแล้ว ~";
+				mes "หวังว่าเจ้าจะมีความสุข";
+				mes "ก่อนอัพสกิลใหม่ก็เช็คดี ๆ ล่ะ !!";
+				delitem 22004,1;
+				resetstatus;
+				sc_end SC_ALL;
+				close;
+			}
+			else {
+				mes "^0066FF[ Reset Status ]^000000";
+				mes "เห้ ! ช้าก่อนเจ้าเด็กน้อย";
+				mes "เจ้าคิดว่าข้าโง่ใช่ไหม หืม ?";
+				mes "ข้าว่าเจ้าทำหนังสือหล่นหายไปนะ!";
+				end;
+			}
+		} else {
+			mes "^0066FF[ Reset Status ]^000000";
+			mes "โปรดตรวจสอบให้แน่ใจว่า..";
+			mes "น้ำหนักตัวท่านเป็น 0 แล้ว";
+			mes "ดูเหมือนว่าท่านยังไม่พร้อมนะ";
+			close;
+		}
+case 2:
+	mes "^0066FF[ Reset Status ]^000000";
+	mes "โอเค..";
+	mes "ไว้เจ้าพร้อมเมื่อไหร่";
+	mes "เรียกใช้งานข้าได้ทุกเมื่อ...";
+	close;
+	}
+}
+
+function	script	F_CashSeigeTele	{
+	switch(select("Neuschwanstein (aldeg_cas01):Hohenschwangau (aldeg_cas02):Nuernberg (aldeg_cas03):Wuerzburg (aldeg_cas04):Rothenburg (aldeg_cas05):Repherion (gefg_cas01):Eeyorbriggar (gefg_cas02):Yesnelph (gefg_cas03):Bergel (gefg_cas04):Mersetzdeitz (gefg_cas05):Bright Arbor (payg_cas01):Sacred Altar (payg_cas02):Holy Shadow (payg_cas03):Scarlet Palace (payg_cas04):Bamboo Grove Hill (payg_cas05):Kriemhild (prtg_cas01):Swanhild (prtg_cas02):Fadhgridh (prtg_cas03):Skoegul (prtg_cas04):Gondul (prtg_cas05)")) {
+	case 1: warp "alde_gld",48,91; end;
+	case 2: warp "alde_gld",103,245; end;
+	case 3: warp "alde_gld",142,87; end;
+	case 4: warp "alde_gld",236,243; end;
+	case 5: warp "alde_gld",269,90; end;
+	case 6: warp "gef_fild13",217,75; end;
+	case 7: warp "gef_fild13",307,237; end;
+	case 8: warp "gef_fild13",77,297; end;
+	case 9: warp "gef_fild13",190,276; end;
+	case 10: warp "gef_fild13",312,91; end;
+	case 11: warp "pay_gld",121,232; end;
+	case 12: warp "pay_gld",297,116; end;
+	case 13: warp "pay_gld",318,293; end;
+	case 14: warp "pay_gld",140,164; end;
+	case 15: warp "pay_gld",202,264; end;
+	case 16: warp "prt_gld",141,64; end;
+	case 17: warp "prt_gld",240,131; end;
+	case 18: warp "prt_gld",153,133; end;
+	case 19: warp "prt_gld",126,240; end;
+	case 20: warp "prt_gld",195,240; end;
+	}
+	return;
+}

@@ -1,0 +1,205 @@
+//===== rAthena Script ======================================= 
+//= Ep 10+ Novice Training Grounds
+//===== By: ================================================== 
+//= Dr.Evil & MasterOfMuppets
+//===== Current Version: ===================================== 
+//= 2.4
+//===== Compatible With: ===================================== 
+//= rAthena Project; SVN 3422+
+//===== Description: ========================================= 
+//= [Official Conversion]
+//= Novice Training Grounds
+//===== Additional Comments: ================================= 
+//= 1.7D Added confirm character name thing on receptionist. [Kisuka]
+//= 1.8 Rescripted to Aegis 10.3 standards. [L0ne_W0lf]
+//=     NPCs are not backwards compatable, and will remove
+//=     old variables used in the previous novice grounds.
+//= 1.9 Fixed problem with Hanson's dialog. (bugreport:1703) [L0ne_W0lf]
+//=     Fixed Entrance Guard clearing vars. (bugreport:1695)
+//=     Added duplicate NPCs to combat training maps.
+//= 2.0 Fixed savepoint not being changed sometimes. [L0ne_W0lf]
+//= 2.1 Corrected spacing issue in welcome message. [L0ne_W0lf]
+//= 2.2 Corrected Leo's endless dialog. [L0ne_W0lf]
+//= 2.3 Added fix to Hanson from GM-windsor- and Saithis. [L0ne_W0lf]
+//= 2.3a Correct a wrong variable name. (bugreport:2293) [Samuray22]
+//= 2.4 Corrected an error in Hanson. (bugreport:2374) [L0ne_W0lf]
+//============================================================ 
+
+
+// Bulletin Board
+new_1-1,157,88,4	script	Bulletin Board#nv	111,{
+	mes "^FF0000[ ประกาศข่าวสาร ]^000000";
+	mes "Welcome To Training";
+	mes "สถานที่ฝึกอบรม ของเหล่าโนวิช";
+	mes "ท่านพร้อมผจญภัยครั้งนี้หรือยัง";
+	close;
+}
+
+new_1-1,144,116,2	script	Guard#nv1	105,{
+	mes "[Training Grounds Guard]";
+	mes "ยินดีต้อนรับเข้าสู่ Training Grounds.";
+	mes "ขณะนี้คุณอยู่ในสนามนอกปราสาท. กรุณาเข้าไปในปราสาทเพิ่อเรื่มต้นการฝึกอบรมของคุณ.";
+	close;
+}
+
+new_1-1,144,107,2	script	Guard#nv2	105,{
+	mes "[Training Grounds Guard]";
+	if(rand(2)) {
+		mes "เข้ามา!";
+		mes "ฉันต้องการ";
+		mes "ที่จะต้อนรับคุณ";
+		mes "เข้าสู่ Training Grounds!";
+		next;
+		mes "[Training Grounds Guard]";
+		mes "ในที่นี้, คุณสามารถเตรียมความพร้อม";
+		mes "ด้วยตัวคุณเองสำหรับอนาคตของคุณ";
+		mes "การผจญภัยของโลก";
+		mes "Ragnarok World!";
+	}
+	else {
+		mes "ไป, Novice, ไป!";
+		mes "ต่อสู้ และ การเติบโตที่แข็งแกร่ง! มองไปในวันพรุ่งนี้ที่สดใส!";
+	}
+	close;
+}
+
+// Receptionist
+new_1-2,100,29,4	script	Receptionist#nv1	86,{
+	
+	if(getskilllv("NV_BASIC") > 1)
+	{
+		mes "^0066FF[ Training Grounds Receptionist ]^000000";
+		mes "ท่านไม่ได้รับอนุญาติ";
+		mes "ให้เข้าสู่ Training Grounds";
+		close;
+	}
+
+	mes "^0066FF[ Training Grounds Receptionist ]^000000";
+	mes "สวัสดี นายท่าน,";
+	mes "คงเป็นนักผจญภัยหน้าใหม่สิน่ะ";
+	mes "แล้วท่านมีชื่อว่าอะไรหรอ ?";
+	next;
+	mes "^0066FF[ Training Grounds Receptionist ]^000000";
+	mes "นี่หรอ ชื่อท่าน,^ff0000 "+strcharinfo(0)+" ^000000";
+	next;
+	switch(select("~ ใช่ นี่ล่ะชื่อของฉันเอง")) {
+		case 1:
+			mes "^0066FF[ Training Grounds Receptionist ]^000000";
+			mes "ยินดีต้อนรับท่านเข้าสู่";
+			mes "^0000ffTraining Grounds^000000";
+			next;
+			mes "^0066FF[ Training Grounds Receptionist ]^000000";
+			mes "ท่านกำลังเข้าสู่การผจญภัยครั้งใหม่";
+			mes "ในโลกแห่ง Ragnarok Online";
+			mes "โปรดฟังคำแนะนำสำหรับ ^0000ffTraining";
+			mes "Grounds^000000";
+			mes "เพื่อเป็นข้อมูลเพิ่มเติมของท่าน !";
+			next;
+			switch(select("~ เริ่มเข้าเล่น Ragnarok Online ทันที..")) {
+				case 1:
+					mes "^0066FF[ Training Grounds Receptionist ]^000000";
+					mes "ฉันเข้าใจท่านแล้ว !";
+					mes "ขอให้ท่านจะตั้งใจทำมันให้ดีที่สุด";
+					mes "โชคดีล่ะ บ๊ะบาย !!";
+					close2;
+					set nov_1st_cos,0;
+					set nov_2nd_cos,0;
+					set nov_3_swordman,0;
+					set nov_3_archer,0;
+					set nov_3_thief,0;
+					set nov_3_magician,0;
+					set nov_3_acolyte,0;
+					set nov_3_merchant,0;
+					getitem 569,500;
+					getitem 12323,150;
+					getitem 12324,30;
+					getitem 2305,1;
+					getitem 5055,1;
+					getitem 2414,1;
+					getitem 2510,1;
+					getitem 2112,1;
+					getitem 1243,1;
+					getitem 7059,20;
+					getitem 7060,20;
+					
+					getitem 21001,2;
+					getitem 21003,2;					
+					
+					equip 2305,getcharid(0);
+					equip 5055,getcharid(0);
+					equip 2414,getcharid(0);
+					equip 2510,getcharid(0);
+					equip 2112,getcharid(0);
+					equip 1243,getcharid(0);
+					
+					rentitem 22101,259200;
+					equip 22101,getcharid(0);
+					
+					savepoint "morocc",159,90;
+					warp "morocc",159,90;
+					break;
+			}	
+	}	
+	
+}
+
+new_1-3,91,37,5	script	Gate Keeper#nv1::NovKeyman	85,{
+	mes "^0066FF[ Gate Keeper ]^000000";
+	mes "ฉันจะไม่อนุญาติให้ Novice";
+	mes "ที่ยังไม่พร้อมเผชิญโลกกว้างผ่าน";
+	mes "ไปเด็ดขาดเพื่อความปลอดภัยของเจ้าเอง";
+	next;
+	mes "^0066FF[ Gate Keeper ]^000000";
+	mes "เจ้าจะต้องมี Job 10 ขึ้นไป";
+	mes "และทำการอัพ Basic Skill Lv 9";
+	mes "และมีพื้นฐานในการใช้ชีวิตเสียก่อน!";
+	next;
+	mes "^0066FF[ Gate Keeper ]^000000";
+	mes "เมื่อก่อนผู้คนมากมาย";
+	mes "ได้ตายลงเพราะเราไม่มีการคัดกรอง";
+	mes "ไหนตอบมาสิ! เจ้าพร้อมหรือไม่!";
+	next;
+	switch(select("^ff0000~^000000 ฉันพร้อมการผจญภัยแล้ว..!:^ff0000~^000000 ไม่ล่ะ, ขอบคุณ")) {
+	case 1:
+		
+		if(getskilllv("NV_BASIC")< 9)
+		{
+			mes "^0066FF[ Gate Keeper ]^000000";
+			mes "เจ้ายังไม่มีคุณสมบัติพอ!";
+			mes "Basic Skill เลเวล 9";
+			mes "นั่นคือสิ่งที่ฉันต้องการ";
+			mes "อัพสกิลแล้ว ลองใหม่อีกครั้ง..";
+			end;
+		}
+		else
+		{
+			mes "^0066FF[ Gate Keeper ]^000000";
+			mes "โชคดีล่ะ นายท่าน !";
+			mes "ขอให้ท่านเดินทางอย่างปลอดภัย";
+			close2;
+			savepoint "morocc",159,92;
+			warp "morocc",159,92;
+			end;
+		}
+	case 2:
+		mes "^0066FF[ Gate Keeper ]^000000";
+		mes "หากเจ้าคิดว่าพร้อมเดิน";
+		mes "ที่จะเดินผ่านประตูนี้ไปจงมาหาข้า!";
+		end;
+	}	
+}
+
+
+// Training Ground Mobs
+new_1-3,0,0,0,0	monster	Novice Poring	1002,40
+new_1-3,0,0,0,0	monster	Novice Drops	1113,40
+new_1-3,0,0,0,0	monster	Novice Lunatic	1063,40
+new_1-3,0,0,0,0	monster	Novice ChonChon	1011,35
+new_1-3,0,0,0,0	monster	Novice Condor	1009,30
+new_1-3,0,0,0,0	monster	Novice Picky	1050,35
+new_1-3,0,0,0,0	monster	Novice Willow	1010,35
+new_1-3,0,0,0,0	monster	Novice Roda Frog	1012,55
+new_1-3,0,0,0,0	monster	Novice Rocker	1052,15
+new_1-3,0,0,0,0	monster	Novice Thief Bug	1051,10
+new_1-3,0,0,0,0	monster	Novice Spore	1014,30
+new_1-3,0,0,0,0	monster	Novice Fabre	1184,10

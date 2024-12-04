@@ -1,0 +1,518 @@
+//===== eAthena Script ======================================= 
+//= PvP
+//===== By: ================================================== 
+//= kobra_k88
+//===== Current Version: ===================================== 
+//= 1.2a
+//===== Compatible With: ===================================== 
+//= eAthena 0.5.2 +
+//===== Description: ========================================= 
+//=
+//===== Additional Comments: ================================= 
+//= v1.1 Fixed arena names for Nightmare mode.  Added room limit
+//= check.[kobra_k88]
+//= v1.2 Fixed the bug that you aways savepoint in geffen.[shadowlady]
+//= v1.2a Added PvP Narrator function. Using args for Fight
+//= Square Helpers. [kobra_k88]
+//============================================================ 
+
+
+//==========================================================================
+//			PvP Narrators
+//==========================================================================
+
+// Alberta -----------------------------------------
+alberta_in,22,146,4	script	PvP Narrator#1	84,{
+	callfunc "F_PvPNarr", "alberta_in", 24, 143;
+	end;
+}
+// Payon -------------------------------------
+payon_in01,175,108,3	script	PvP Narrator#2	84,{
+	callfunc "F_PvPNarr", "payon_in01", 169, 108;
+	end;
+}
+// Prontera -------------------------------------
+prt_in,56,140,4	script	PvP Narrator#3	84,{
+	callfunc "F_PvPNarr", "prt_in", 54, 137;
+	end;
+}
+// Morocc --------------------------------------
+morocc_in,144,138,4	script	PvP Narrator#4	84,{
+	callfunc "F_PvPNarr", "morocc_in", 141, 140;
+	end;
+}
+// Geffen --------------------------------------
+geffen_in,67,63,4	script	PvP Narrator#5	84,{
+	callfunc "F_PvPNarr", "geffen_in", 64, 60;
+	end;
+}
+
+//******************************************************//
+//	Function: PvP Narrator
+//******************************************************//
+// arg(0): mapname
+// arg(1): savepoint x cord.
+// arg(2): savepoint y cord.
+//=============================
+function	script	F_PvPNarr	{
+	mes "[ผู้บรรยาย PVP]";
+	mes "สวัสดี!";
+	mes "ข้ามีหน้าที่ให้คำอธิบาย...";
+	mes "โหมด PVP...";
+	mes "ผู้บรรยาย PVP!";
+	next;
+	switch(select("โหมด PVP เหรอ?:อะไรคือโหมด PVP?:กติกาของโหมด PVP เป็นยังไง?:เซฟตำแหน่ง:สิ้นสุดการสนทนา")) {
+	case 1:
+		mes "[ผู้บรรยาย PVP]";
+		mes "โหมด PVP ก็คือ...";
+		mes "'โหมด Player VS Player'....";
+		mes "พูดง่ายๆ ก็คือ";
+		mes "ในโลกแห่งจินตนาการ...";
+		mes "เกมที่ไม่เหมือนใครสำหรับบรรดาผู้เล่นทั้งหลาย...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ได้ต่อสู้กับผู้เล่นครอื่นแบบออนไลน์...";
+		mes "เพียงแค่บอก...";
+		mes "^3355FFGate Keeper^000000";
+		mes "เจ้าอยากจะลอง...";
+		mes "เขาก็จะให้เจ้าเข้าไปยังจตุรัสการต่อสู้ของโหมด PVP";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ขอให้ระวังตัวให้ดี";
+		mes "และต่อสู้ให้สนุกนะ!";
+		mes "อีกอย่างหนึ่ง...";
+		mes "การเข้าสู่โหมด PVP...";
+		mes "ผู้เล่นจะต้องมีเลเวลอย่างน้อย 31";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "เมื่อเจ้ามีคุณสมบัติครบ...";
+		mes "ก็ให้เลือกโหมดต่อไปนี้...";
+		mes "โหมด Nightmare";
+		mes "และโหมด Monkey";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "เกมในโหมด Nightmare...";
+		mes "จะมีกติกาเหมือน...";
+		mes "ในโลกจริงๆ";
+		mes "เจ้าอาจจะเสียไอเท็ม...";
+		mes "และเจ้าอจจะเสียค่า EXP ด้วย...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "โปรดจำไว้ด้วยว่า...";
+		mes "เพื่อหลีกเลี่ยงการเข้าใจผิด";
+		mes "กรุณาคดิให้รอบคอบก่อนที่เจ้าจะเข้าสู่การต่อสู้";
+		close;
+	case 2:
+		mes "[ผู้บรรยาย PVP]";
+		mes "การผ่าน 'PVP Gate Keeper'...";
+		mes "จำไว้ว่า...";
+		mes "ต้องมีเงิน 500 Zeny...";
+		mes "เพื่อที่เจ้าจะสามารถผ่านเข้าไปสู่จตุรัสการต่อสู้ในโหมด PVP ได้";
+		mes "การก้าวสู่...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "จตุรัวการต่อสู้...";
+		mes "ในโหมด Monkey";
+		mes "หรือโหมด Nightmare";
+		mes "จตุรัสการต่อสู้...";
+		mes "ทั้ง 2 นั้น...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "จะมีผู้บรรยายอยู่...";
+		mes "ในโหมด PVP ให้เจ้าด้วย";
+		mes "ผู้บรรยายแต่ละคนจะแบ่ง...";
+		mes "ผู้เข้าร่วมที่มีเลเวลสูงกว่า 31...";
+		mes "เป็น 3 กลุ่ม...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ย่อยๆ";
+		mes "เจ้าจะมีห้อง PVP 5 ห้อง";
+		mes "เจ้าสาารถเลือกได้ว่าจะเข้าห้องไหน...";
+		mes "และเข้าไปได้!";
+		mes "จากหน้าต่างผู้บรรยาย...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "เจ้าจะพบข้อจำกัดของระดับต่างๆ...";
+		mes "และรายละเอียดของกติกาและจำนวนผู้เล่นที่จะต่อสู้กันใน map";
+		mes "ทำความเข้าใจกติกานั้นให้ดี";
+		mes "ชัยชนะของเจ้าขึ้นอยู่กับมัน";
+		mes "จำไว้ว่า...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ทุกๆ map จะมีขีดจำกัด...";
+		mes "ของจำนวนผู้เล่น";
+		mes "ดังนั้นเจ้าจะเห็น...";
+		mes "'ผู้เข้าร่วม/รวม'";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "และอีกอย่าง...";
+		mes "จำไว้ว่า...";
+		mes "ในจตุรัสการต่อสู้...";
+		mes "เจ้าไม่สามารถ...";
+		mes "เซฟตำแหน่งได้";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "จำไว้ให้ดี...";
+		close;
+	case 3:
+		mes "[ผู้บรรยาย PVP]";
+		mes "เมื่อเจ้าเข้าสู่โหมด PVP";
+		mes "เจ้าจะเห็นตัวเลขอันดับ...";
+		mes "อยู่ตรงกลางของหน้าจอ...";
+		mes "ของตัวเจ้าเอง/ผู้เล่นคนอื่น...";
+		mes "ใน map นั้น";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ซึ่งนั้นน่าจะมีประโยชน์ต่อเจ้า";
+		mes "ค่า EXP ในโหมด PVP เหรอ?";
+		mes "จะถูกใช้ในโหมด PVP นี้เท่านั้น";
+		mes "จำไว้ให้ดี";
+		mes "ค่า EXP";
+		mes "ของผู้เล่นทุกคนตอนเริ่มต้นน่ะเหรอ?";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ปรกติจะเป็น 5";
+		mes "ถ้าเจ้าชนะ...";
+		mes "ซึ่งจะช่วยให้...";
+		mes "เจ้าเพิ่มค่า EXP ได้ดีทีเดียว?";
+		mes "หากเจ้าแพ้...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "ค่า EXP ของเจ้าจะลดลง 5";
+		mes "ระวังให้ดีล่ะ";
+		mes "ถ้าเจ้าถูกลงโทษ...";
+		mes "และค่า EXP ของเจ้าลดลง...";
+		mes "เหลือน้อยกว่า 0...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "เจ้าจะหลุดออกจากโหมด PVP ทันที...";
+		mes "และเกมก็จะสิ้นสุดลง!";
+		mes "หากค่า EXP ของเจ้ามากกว่า 0...";
+		mes "แต่เจ้าดันตาย...";
+		mes "เจ้าสามารถขอความช่วยเหลือ...";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "จากผู้เล่นคนอื่น...";
+		mes "เพื่อกลับ...";
+		mes "สู่เกมได้";
+		mes "เข้าใจไหม?";
+		next;
+		mes "[ผู้บรรยาย PVP]";
+		mes "กติกาการต่อสู้...";
+		mes "เหมือนกับการต่อสู้ข้างนอก...";
+		mes "กติกาเบื้องต้น...";
+		mes "เหมือนกันทุกอย่าง";
+		close;
+	case 4:
+		mes "[ผู้บรรยาย PVP]";
+		mes "การเซฟตำแหน่ง...";
+		mes "เรียบร้อยแล้ว";
+		mes "ขอบคุณมาก...";
+		mes "ที่ใช้บริการ";
+		close2;
+		savepoint getarg(0),getarg(1),getarg(2);
+		end;
+	case 5:
+		mes "[ผู้บรรยาย PVP]";
+		mes "นี่คือสงครามระหว่างผู้เล่น";
+		mes "และเกมที่ทำให้...";
+		mes "บรรดาผู้เล่นสนุกกับ...";
+		mes "โหมด PVP อย่างมาก!";
+		mes "ขอต้อนรับเจ้า!";
+		mes "สู้ความท้าทาย!";
+		close;
+	}
+}
+
+
+//==========================================================================
+//			Gate Keepers
+//==========================================================================
+
+// Alberta -----------------------------------
+alberta_in,26,146,4	script	Gate Keeper#1::GateKeep	83,{
+	mes "[Gate Keeper]";
+	mes "[Gate Keeper]";
+	mes "ข้ายินดีที่ได้บริการเจ้า";
+	mes "ข้ากำลังจะเปิดจตุรัสการต่อสู้ PVP...";
+	mes "'PVP Gate Keeper'";
+	mes "เกี่ยวกับโหมด PVP....";
+	mes "หากมีข้อสงสัยใดๆ...";
+	mes "โปรดถามผู้บรรยาย";
+	next;
+	menu	"เข้าสู่จตุรัสการต่อสู้ ^FF5533' โหมด PvP Nightmare '^000000",M_0, 
+		"เข้าสู่จตุรัสการต่อสู้ ^3355FF' โหมด PvP Yoyo '^000000",M_1, 
+		"เข้าสู่จตุรัสการต่อสู้ ^3355FF' โหมด PvPFighting'^000000",M_2, "จบการสนทนา",M_End;
+	M_0:
+		set @mode$, "Yoyo";
+		set @players1, 128;
+		set @players2, 128;
+		set @room1$, "Prontera";
+		set @room2$, "Izlude";
+		set @room3$, "Payon";
+		set @room4$, "Alberta";
+		set @room5$, "Morroc";
+		callsub sF_Move;
+		warp "pvp_y_room", 51, 23;
+		end;
+	M_1:
+		set @mode$, "Nightmare";
+		set @players1, 64;
+		set @players2, 32;
+		set @room1$, "Sandwhich Arena";
+		set @room2$, "Rock Arena";
+		set @room3$, "Four Arena";
+		set @room4$, "UnderCross Arena";
+		set @room5$, "Copass Arena";
+		callsub sF_Move;
+		warp "pvp_n_room", 51, 23;
+		end;
+	M_2:
+
+		mes "[Gate Keeper]";
+		mes " เจ้าต้องการที่จะเข้าไปเพื่อดูการต่อสู้ใช่ไหม  แต่เจ้าต้องมีบัตรผ่านก่อน";
+		next;
+		menu " ข้ามี",-, " ไม่ล่ะ",sM_1;
+
+			if(countitem(7029) < 1) goto sM_1;
+			delitem 7029, 1;
+			set @mode$, "Fighting";
+			callsub sF_Move;
+			warp "pvp_y_room", 51, 23;
+			end;
+
+		sM_1:
+			mes "[Gate Keeper]";
+			mes "ท่านไม่มีบัตรเข้าชม";
+			close;
+	M_End:
+		mes "[Gate Keeper]";
+		mes "ขอให้โชคดี";
+		close;
+
+sF_Move:
+	mes "[Gate Keeper]";
+	mes " ค่าผ่านประตูคือ 500 Zeny ท่านต้องการเข้าสู่ "+@mode$+" ไหม?";
+	next;
+	menu " ใช่",-, " ไม่ล่ะ",M_End;
+
+		if(BaseLevel < 31) goto sL_LowLvl;
+		if(Zeny < 500) goto sL_NdZeny;
+		set Zeny, Zeny - 500;
+		mes "[Gate Keeper]";
+		mes " ขอให้โชคดี.....";
+		next;
+		return;
+
+		sL_LowLvl:
+			mes "[Gate Keeper]";
+			mes " ท่าต้องมีเลเวลอย่างน้อย ^FF4444'31'^000000 ขึ้นไป";
+			close;
+		sL_NdZeny:
+			mes "[Gate Keeper]";
+			mes " ท่านต้องมีค่าผ่านทาง ^FF4444'500'^000000 Zeny เป็นอย่างต่ำ";
+			close;
+}
+
+// Geffen --------------------------------------------
+geffen_in,63,63,4	duplicate(GateKeep)	Gate Keeper#2	83
+// Morroc----------------------------------------------
+morocc_in,144,142,4	duplicate(GateKeep)	Gate Keeper#3	83
+// Payon ----------------------------------------------
+payon_in01,175,106,3	duplicate(GateKeep)	Gate Keeper#4	83
+// Prontera -------------------------------------------
+prt_in,52,140,4	duplicate(GateKeep)	Gate Keeper#5	83
+
+
+
+//==========================================================================//
+// 		PvP Yoyo Mode Fight Square Helpers
+//==========================================================================//
+
+// LV31 ~ 40 ---------------------------------
+pvp_y_room,30,85,4	script	Fight Square Helper::YHelper1	105,{
+	callfunc "F_PvPRoom", "y_1", 31, 40;
+OnInit:
+	waitingroom "LV31 ~ LV40",0;
+	end;
+}
+
+// LV41 ~ 50 --------------------------------
+pvp_y_room,38,85,4	script	Fight Square Helper::YHelper2	105,{
+	callfunc "F_PvPRoom", "y_2", 41, 50;
+OnInit:
+	waitingroom "LV41 ~ LV50",0;
+	end;
+}
+
+// LV51 ~ 60 ---------------------------------
+pvp_y_room,46,85,4	script	Fight Square Helper::YHelper3	105,{
+	callfunc "F_PvPRoom", "y_3", 51, 60;
+OnInit:
+	waitingroom "LV51 ~ LV60", 0;
+	end;
+}
+
+// LV61 ~ 70 ------------------------------------
+pvp_y_room,54,85,4	script	Fight Square Helper::YHelper4	105,{
+	callfunc "F_PvPRoom", "y_4", 61, 70;
+OnInit:
+	waitingroom "LV61 ~ LV70", 0;
+	end;
+}
+
+// LV71 ~ 80 ------------------------------------
+pvp_y_room,62,85,4	script	Fight Square Helper::YHelper5	105,{
+	callfunc "F_PvPRoom", "y_5", 71, 80;
+OnInit:
+	waitingroom "LV71 ~ LV80", 0;
+	end;
+}
+
+// LV81 ~ 90 --------------------------------------
+pvp_y_room,70,85,4	script	Fight Square Helper::YHelper6	105,{
+	callfunc "F_PvPRoom", "y_6", 81, 90;
+OnInit:
+	waitingroom "LV81 ~ LV90", 0;
+	end;
+}
+
+// LV91 ~  --------------------------------------------
+pvp_y_room,78,85,4	script	Fight Square Helper::YHelper7	105,{
+	callfunc "F_PvPRoom", "y_7", 91, 255;
+OnInit:
+	waitingroom "LV91 ~ ", 0;
+	end;
+}
+
+// No Limit  -----------------------------------------
+pvp_y_room,86,85,4	script	Fight Square Helper::YHelper8	105,{
+	callfunc "F_PvPRoom", "y_8", 0, 255;
+OnInit:
+	waitingroom "No Limit", 0;
+	end;
+}
+
+
+//==========================================================================//
+// 		PvP Nightmare Mode Fight Square Helpers
+//==========================================================================//
+// LV31 ~ 40 -------------------------------------
+pvp_n_room,30,85,4	script	Fight Square Helper#N1	105,{
+	callfunc "F_PvPRoom", "n_1", 31, 40;
+OnInit:
+	waitingroom "LV31 ~ LV40",0;
+	end;
+}
+
+// LV41 ~ 50 --------------------------------------
+pvp_n_room,38,85,4	script	Fight Square Helper#N2	105,{
+	callfunc "F_PvPRoom", "n_2", 41, 50;
+OnInit:
+	waitingroom "LV41 ~ LV50",0;
+	end;
+}
+
+// LV51 ~ 60 -------------------------------------
+pvp_n_room,46,85,4	script	Fight Square Helper#N3	105,{
+	callfunc "F_PvPRoom", "n_3", 51, 60;
+OnInit:
+	waitingroom "LV51 ~ LV60", 0;
+	end;
+}
+
+// LV61 ~ 70 ------------------------------------
+pvp_n_room,54,85,4	script	Fight Square Helper#N4	105,{
+	callfunc "F_PvPRoom", "n_4", 61, 70;
+OnInit:
+	waitingroom "LV61 ~ LV70", 0;
+	end;
+}
+
+// LV71 ~ 80 -----------------------------------
+pvp_n_room,62,85,4	script	Fight Square Helper#N5	105,{
+	callfunc "F_PvPRoom", "n_5", 71, 80;
+OnInit:
+	waitingroom "LV71 ~ LV80", 0;
+	end;
+}
+
+// LV81 ~ 90 ------------------------------------
+pvp_n_room,70,85,4	script	Fight Square Helper#N6	105,{
+	callfunc "F_PvPRoom", "n_6", 81, 90;
+OnInit:
+	waitingroom "LV81 ~ LV90", 0;
+	end;
+}
+
+// LV91 ~  ---------------------------------------
+pvp_n_room,78,85,4	script	Fight Square Helper#N7	105,{
+	callfunc "F_PvPRoom", "n_7", 91, 255;
+OnInit:
+	waitingroom "LV91 ~ ", 0;
+	end;
+}
+
+// No Limit  ----------------------------------
+pvp_n_room,86,85,4	script	Fight Square Helper#N8	105,{
+	callfunc "F_PvPRoom", "n_8", 0, 255;
+OnInit:
+	waitingroom "No Limit", 0;
+	end;
+}
+
+
+//***************************************************************//
+//	Function: PvP Fight Square Helper
+//***************************************************************//
+// arg(0): pvp room name
+// arg(1): minimum base lvl to enter arena
+// arg(2): maximum base lvl allowed to enter arena
+//===============================================
+function	script	F_PvPRoom	{
+
+	mes "[Fight Square Helper]";
+	if(BaseLevel < getarg(1)) goto L_LowLvl;
+	if(BaseLevel > getarg(2)) goto L_HiLvl;
+	mes "กรุณาเลือกห้องที่ต้องการ";
+	M_Menu:
+	next;
+	menu 	@room1$ + " [" + getmapusers("pvp_" + getarg(0) + "-1") + "/" +@players1+ "]",M_Rm1, 
+		@room2$ + " [" + getmapusers("pvp_" + getarg(0) + "-2") + "/" +@players2+ "]",M_Rm2, 
+		@room3$ + " [" + getmapusers("pvp_" + getarg(0) + "-3") + "/" +@players2+ "]",M_Rm3, 
+		@room4$ + " [" + getmapusers("pvp_" + getarg(0) + "-4") + "/" +@players2+ "]",M_Rm4, 
+		@room5$ + " [" + getmapusers("pvp_" + getarg(0) + "-5") + "/" +@players2+ "]",M_Rm5, "Cancel",M_End;
+	M_Rm1:
+		if (getmapusers("pvp_" + getarg(0) + "-1") == @players1) goto L_Full;
+		warp "pvp_" + getarg(0) + "-1",0,0;
+		end;
+	M_Rm2:
+		if (getmapusers("pvp_" + getarg(0) + "-2") == @players2) goto L_Full;
+		warp "pvp_" + getarg(0) + "-2",0,0;
+		end;
+	M_Rm3:
+		if (getmapusers("pvp_" + getarg(0) + "-3") == @players2) goto L_Full;
+		warp "pvp_" + getarg(0) + "-3",0,0;
+		end;
+	M_Rm4:
+		if (getmapusers("pvp_" + getarg(0) + "-4") == @players2) goto L_Full;
+		warp "pvp_" + getarg(0) + "-4",0,0;
+		end;
+	M_Rm5:
+		if (getmapusers("pvp_" + getarg(0) + "-5") == @players2) goto L_Full;
+		warp "pvp_" + getarg(0) + "-5",0,0;
+		end;
+	M_End:
+		close;
+
+	L_LowLvl:
+		mes "เจ้ามีเลเวลต่ำเกินไป ไม่สามารถเข้าได้";
+		close;
+	L_HiLvl:
+		mes "เจ้ามีเลเวลสูงเกินไป ไม่สามารถเข้าได้";
+		close;
+	L_Full:
+		mes "[Fight Square Helper]";
+		mes "ขออภัย ขณะนี้ห้อง pvp นี้เต็มแล้ว";
+		goto M_Menu;
+}

@@ -1,0 +1,137 @@
+payon_in01,68,64,5	script	Inventor Jaax	89,{
+	if (checkweight(1201,1) == 0 || MaxWeight - Weight < 2000) {
+		mes "[Inventor Jaax]";
+		mes "- โปรดรอสักครู่ !! -";
+		mes "- สัมภาระในตัวละคร -";
+		mes "- ของท่านมีมากเกินไป -";
+		mes "- โปรดตรวจสอบสัมภาระภายใน -";
+		mes "- ตัวละครของท่านก่อนใช้บริการ -";
+		close;
+	}
+	set .@now_weight,MaxWeight-Weight;
+	if (.@now_weight < 2000) {
+		mes "[Inventor Jaax]";
+		mes "- โปรดรอสักครู่ !! -";
+		mes "- สัมภาระในตัวละคร -";
+		mes "- ของท่านมีมากเกินไป -";
+		mes "- โปรดตรวจสอบสัมภาระภายใน -";
+		mes "- ตัวละครของท่านก่อนใช้บริการ -";
+		close;
+	}
+	mes "[Inventor Jaax]";
+	mes "ข้าคือ Jaax ข้าคือนักประดิษฐ์";
+	mes "ที่จะช่วยให้ ^663300ช่องเก็บของของคุณใช้งานได้ประหยัดขึ้น^000000";
+	next;
+	mes "[Inventor Jaxx]";
+	mes "และข้าได้สร้างบางสิ่งบางอย่างได้สำเร้จ";
+	mes "ข้าจะขอเรียกมันว่า... ^663300Magic Quivers^000000 !! และนี่จะต้องถูกบันทึกลงในประวัติศาสตร์ของลูกธนู";
+	emotion ET_BEST;
+	next;
+	mes "[Inventor Jaax]";
+	mes "ข้าได้ศึกษาด้านเวทมนต์เกี่ยวกับ quivers คลอดทั้งปี, ทั้งกลางวันและกลางคืน จนในที่สุดข้าก็คิดค้นวิธีที่จะรวมลูกธนูนั่นด้วยเวทมนตร์ ที่จะทำให้คุณแบกลูกศรได้มากขึ้น แต่มีน้ำหนักที่ลดลง!";
+	next;
+	mes "[Inventor Jaax]";
+	mes "คุณต้องการจะลองใช้ลูกธนูนั่นบ้างไหม เลือกได้เลยตามใจชอบ ?!";
+	next;
+	switch(select("-> Quiver:-> Iron Arrow Quiver:-> Steel Arrow Quiver:-> Oridecon Arrow Quiver:-> Fire Arrow Quiver:-> Silver Arrow Quiver:-> Wind Arrow Quiver:-> Stone Arrow Quiver:-> Crystal Arrow Quiver:-> Shadow Arrow Quiver:-> Immaterial Arrow Quiver:-> Rusty Arrow Quiver")) {
+	case 1: callsub S_BuyQuiver,1750,500,500,12004;
+	case 2: callsub S_BuyQuiver,1770,500,500,12005;
+	case 3: callsub S_BuyQuiver,1753,500,500,12006;
+	case 4: callsub S_BuyQuiver,1765,500,500,12007;
+	case 5: callsub S_BuyQuiver,1752,500,500,12008;
+	case 6: callsub S_BuyQuiver,1751,500,500,12009;
+	case 7: callsub S_BuyQuiver,1755,500,500,12010;
+	case 8: callsub S_BuyQuiver,1756,500,500,12011;
+	case 9: callsub S_BuyQuiver,1754,500,500,12012;
+	case 10: callsub S_BuyQuiver,1767,500,500,12013;
+	case 11: callsub S_BuyQuiver,1757,500,500,12014;
+	case 12: callsub S_BuyQuiver,1762,500,500,12015;
+	}
+	//This doesn't seem to be accessable...
+	//mes "[Inventor Jaax]";
+	//mes "Is there";
+	//mes "anything you want?";
+	//close;
+
+S_BuyQuiver:
+	if (countitem(getarg(0)) > 499) {
+		mes "[Inventor Jaax]";
+		mes "ยอดเยี่ยม!";
+		mes "คุณจะแบกลูกธนูนั่นทั้งหมดเลยหรือไง? หรือจะให้ข้ารวมลูกธนูทั้งหมดนั้นไหมด้วย "+getarg(1)+"ของคุณ "+getitemname(getarg(0))+"และเงิน ^FF3131"+getarg(2)+"Zeny^000000.";
+		next;
+		switch(select("รวม Arrows เป็น quivers เท่าที่ทำได้:ซื้อ 1 quiver:ยกเลิก")) {
+		case 1:
+			set .@arrows,countitem(getarg(0));
+			set .@quiver,.@arrows / getarg(1);
+			set .@arrows_used,.@quiver * getarg(1);
+			set .@arrow_zeny01,.@quiver * getarg(2);
+			mes "จำนวนทั้งหมดคือ";
+			mes "Arrows: ^3131FF"+.@arrows+"^000000";
+			mes "จำนวนที่จะรวมเป็น";
+			mes "Quivers: ^3131FF"+.@quiver+"^000000";
+			mes "และ Zeny : ^3131FF"+.@arrow_zeny01+"Zeny^000000";
+			next;
+			mes "[Inventor Jaax]";
+			mes "คุณต้องการซื้อ Quivers ทั้งหมดด้วยลูกธนูที่คุณมีอยู่เลยไหม?";
+			next;
+			if (select("แน่นอน:ยกเลิก") == 1) {
+				if (.@arrow_zeny01 < Zeny) {
+					mes "[Inventor Jaax]";
+					mes "เรียบร้อย!";
+					mes "โปรดจำไว้ว่า, ^FF0000คุณจะไม่สามารถใช้ Quiver ได้เมื่อน้ำหนักคุณมากกว่า 90%^000000";
+					Zeny -= .@arrow_zeny01;
+					delitem getarg(0),.@arrows_used; //Arrow
+					getitem getarg(3),.@quiver; //Quiver
+					next;
+					mes "[Inventor Jaax]";
+					mes "เอาล่ะ...";
+					mes "ขอให้โชคดีกับการเดินทาง";
+					close;
+				}
+				else {
+					mes "[Inventor Jaax]";
+					mes "ข้าต้องขออภัยด้วย แต่คุณมีเงินไม่เพียงพอที่จะจ่าย";
+					mes "มันจำเป็นต้องใช้ในการพัฒนาเทคโนโลยีในอนาคต!";
+					close;
+				}
+			}
+			mes "[Inventor Jaax]";
+			mes "หากคุณเปลี่ยนใจเมื่อไหร่?";
+			mes "ที่นี่ยังรอคุณอยู่เสมอ?";
+			close;
+		case 2:
+			if (Zeny > getarg(2)) {
+				mes "[Inventor Jaax]";
+					mes "เรียบร้อย!";
+					mes "โปรดจำไว้ว่า, ^FF0000คุณจะไม่สามารถใช้ Quiver ได้เมื่อน้ำหนักคุณมากกว่า 90%^000000";
+				Zeny -= getarg(2);
+				delitem getarg(0),getarg(1); //Arrow
+				getitem getarg(3),1; //Quiver
+				next;
+				mes "[Inventor Jaax]";
+					mes "เอาล่ะ...";
+					mes "ขอให้โชคดีกับการเดินทาง";
+				close;
+			}
+			else {
+				mes "[Inventor Jaax]";
+				mes "ขออภัยแต่ท่านไม่มีเงินจำนวน "+getarg(2)+"Zeny?";
+				close;
+			}
+		case 3:
+			mes "[Inventor Jaax]";
+			mes "ว่ายังไงนะ...?";
+			mes "เจ้าไม่เห็นหรือว่านี่คือสิ่งประดิษฐ์ที่สามารถเปลี่ยนวิธีการใช้ธนูใหม่ในอนาคต!";
+			close;
+		}
+	}
+	else {
+		mes "[Inventor Jaax]";
+		mes "คุณสามารถพก Arrow ได้ในจำนวน 500 ea ต่อ 1 quiver มันถูกสร้างขึ้นด้วยวิธีที่เป็นความลับที่สุด";
+		mes "ดังนั้นการพก Arrows และ Quiver จะมีน้อยกว่าการที่คุณต้องพก Arrows อย่างเดียว";
+		next;
+		mes "[Inventor Jaax]";
+		mes "มันเป็นความอัศจรรย์ของวิทยาศาสตร์ ที่คุณจะได้สัมผัสประสบการณ์ด้วยตัวคุณเอง เพียงคุณนำลูกธนูมา 500 ea และเงิน จำนวน 500 Zeny เพื่อแลกเปลี่ยนเป็น 1 Quiver";
+		close;
+	}
+}

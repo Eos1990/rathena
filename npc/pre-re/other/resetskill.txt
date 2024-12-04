@@ -1,0 +1,101 @@
+prontera,146,232,4	script	Hypnotist#2	124,{
+	mes "[Hypnotist]";
+	mes"สวัสดี, นักผจญภัย.";
+	mes"ผมบริการ Reset สำหรับบางอาชีพ.";
+	next;
+	mes"[Hypnotist]";
+	mes"สองเงื่อนไขที่ต้อง";
+	mes"สำเร็จสิ่งแรกคุณจะต้องเป็น.";
+	mes"ต่ำกว่า ^FF0000Job Level 40^000000.";
+	next;
+	mes "[Hypnotist]";
+	mes"และมีอาชีพ";
+ 	mes"^FF0000Swordman ^ Acolyte, Mage,";
+ 	mes"Thief, Archer, Merchant,";
+ 	mes"Taekwon Boy, Girl Taekwon, Gunslinger และ Ninja ^000000";
+	mes"ตอนนี้คุณมีคำถามหรือไม่";
+
+	next;
+	switch(select("ขอทราบข้อมูล?:ฉันต้องการ Reret skill:ไม่มีอะไร")) {
+
+	case 1:
+		mes "[Hypnotist]";
+		mes "Skill Resets สำหรับการผจนภัย";
+		next;
+		mes "[Hypnotist]";
+		mes "ก่อนจะใช้บริการของฉัน";
+		mes "คุณต้องนำไอเทมออกจากตัว";
+		mes "ให้มากที่สุด";
+		next;
+		mes "[Hypnotist]";
+		mes "คุณจำเป็นต้อง";
+		mes "ถอด ^FF0000รถเข็น^000000";
+		close;
+
+	case 2:
+		mes "[Hypnotist]";
+		mes "คุณต้องการจะ ^FF0000Skill Reset^000000?";
+		next;
+		if (select("ใช่:ยกเลิก") == 1) {
+			if (BaseLevel > 40) {
+				mes "[Hypnotist]";
+				mes "ฉันเสียใจ";
+				mes "คุณมีทักษะที่สูงกว่า 40";
+				close;
+			}
+			if ((Class > 0 && Class < 7 && Upper == 0) || (Class == Job_Gunslinger) || (Class == Job_Ninja) || (Class == Job_Taekwon)) {
+				if (checkcart()) {
+					mes "[Hypnotist]";
+					mes "โปรดถอดรถเข็น";
+					mes "ก่อนที่จะดำเนินการ";
+					close;
+				}
+				if (Weight) {
+					mes "[Hypnotist]";
+					mes "โปรดเก็บไอเทม";
+					mes "ให้เบาที่สุด";
+					mes "หากรีเซตสกิลแล้ว";
+					mes "ทักษะจะเหลือ 0";
+					next;
+					mes "[Hypnotist]";
+					mes"ตอนนี้วิธีการที่คุณสามารถ?";
+					mes"ให้ทุกอย่างปลอดภัยของสินค้าของคุณ.";
+
+					close;
+				}
+				mes "[Hypnotist]";
+				mes "ขอบคุณ";
+				mes"ขอให้คุณโชคดี";
+
+				ResetSkill;
+				close;
+			}
+			mes "[Hypnotist]";
+			mes"ฉันขอโทษ แต่ของคุณ";
+ 			mes"ไม่ได้มีคุณสมบัติ";
+ 			mes"สำหรับบริการทักษะ Reset";
+ 			mes"แต่ผมทำให้แค่";
+ 			mes"อาชีพดังต่อไปนี้";
+			next;
+			mes "[Hypnotist]";
+			mes "^FF0000Swordman, Acolyte,";
+			mes "Mage, Thief, Archer,";
+			mes "Merchant, Taekwon";
+			mes "Boy, Taekwon Girl, Gunslinger and Ninja^000000.";
+			close;
+		}
+		mes "[Hypnotist]";
+		mes"ขอบคุณและดี";
+		mes"โชคดีในการผจญภัยของคุณ.";
+		mes"กรุณาเดินทางในความปลอดภัย ~";
+		close;
+
+	case 3:
+		mes "[Hypnotist]";
+		mes"ขอบคุณและดี";
+		mes"โชคดีในการผจญภัยของคุณ.";
+		mes"กรุณาเดินทางในความปลอดภัย ~";
+		close;
+	}
+
+}

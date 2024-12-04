@@ -1,0 +1,89 @@
+//===== eAthena Script =======================================
+//= Map flags that disable gaining EXP
+//===== By: ==================================================
+//= eAthena Dev Team
+//= 1.2 [Lupus] 1.3 [massdriller] 1.4 Lupus 1.5 Lorky
+//= 1.6 Added Lighthalzen (due to quests) [Lupus]
+//= 1.7 Commented out entries. (Quests are official) [L0ne_W0lf]
+//============================================================
+
+// Location for Job's Quests
+//job_thief1	mapflag	noexp
+//job_sword1	mapflag	noexp
+//in_moc_16	mapflag	noexp
+//job_hunte	mapflag	noexp
+//job_knt	mapflag	noexp
+//job_prist	mapflag	noexp
+//job_wiz	mapflag	noexp
+//job_cru	mapflag	noexp
+//monk_test	mapflag	noexp
+//in_rogue	mapflag	noexp
+//job_sage	mapflag	noexp
+//job_soul	mapflag	noexp
+//job_star	mapflag	noexp
+//que_ng	mapflag	noexp
+
+// Gvg Zone ======================
+aldeg_cas01	mapflag	noexp
+aldeg_cas02	mapflag	noexp
+aldeg_cas03	mapflag	noexp
+aldeg_cas04	mapflag	noexp
+aldeg_cas05	mapflag	noexp
+gefg_cas01	mapflag	noexp
+gefg_cas02	mapflag	noexp
+gefg_cas03	mapflag	noexp
+gefg_cas04	mapflag	noexp
+gefg_cas05	mapflag	noexp
+payg_cas01	mapflag	noexp
+payg_cas02	mapflag	noexp
+payg_cas03	mapflag	noexp
+payg_cas04	mapflag	noexp
+payg_cas05	mapflag	noexp
+prtg_cas01	mapflag	noexp
+prtg_cas02	mapflag	noexp
+prtg_cas03	mapflag	noexp
+prtg_cas04	mapflag	noexp
+prtg_cas05	mapflag	noexp
+// Pvp Zone ======================
+pvp_y_1-1	mapflag	noexp
+pvp_y_1-2	mapflag	noexp
+pvp_y_1-3	mapflag	noexp
+pvp_y_1-4	mapflag	noexp
+pvp_y_1-5	mapflag	noexp
+pvp_y_2-1	mapflag	noexp
+pvp_y_2-2	mapflag	noexp
+pvp_y_2-3	mapflag	noexp
+pvp_y_2-4	mapflag	noexp
+pvp_y_2-5	mapflag	noexp
+pvp_y_3-1	mapflag	noexp
+pvp_y_3-2	mapflag	noexp
+pvp_y_3-3	mapflag	noexp
+pvp_y_3-4	mapflag	noexp
+pvp_y_3-5	mapflag	noexp
+pvp_y_4-1	mapflag	noexp
+pvp_y_4-2	mapflag	noexp
+pvp_y_4-3	mapflag	noexp
+pvp_y_4-4	mapflag	noexp
+pvp_y_4-5	mapflag	noexp
+pvp_y_5-1	mapflag	noexp
+pvp_y_5-2	mapflag	noexp
+pvp_y_5-3	mapflag	noexp
+pvp_y_5-4	mapflag	noexp
+pvp_y_5-5	mapflag	noexp
+pvp_y_6-1	mapflag	noexp
+pvp_y_6-2	mapflag	noexp
+pvp_y_6-3	mapflag	noexp
+pvp_y_6-4	mapflag	noexp
+pvp_y_6-5	mapflag	noexp
+pvp_y_7-1	mapflag	noexp
+pvp_y_7-2	mapflag	noexp
+pvp_y_7-3	mapflag	noexp
+pvp_y_7-4	mapflag	noexp
+pvp_y_7-5	mapflag	noexp
+pvp_y_8-1	mapflag	noexp
+pvp_y_8-2	mapflag	noexp
+pvp_y_8-3	mapflag	noexp
+pvp_y_8-4	mapflag	noexp
+pvp_y_8-5	mapflag	noexp
+
+// Other Map ======================

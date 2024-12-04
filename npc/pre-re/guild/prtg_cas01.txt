@@ -1,0 +1,136 @@
+//===== rAthena Script =======================================
+//= War of Emperium (Prontera) - Kriemhild
+//===== โดย: ==================================================
+//= L0ne_W0lf
+//===== แปลไทยโดย: =====================================
+//= Athena Studio
+//===== เวอร์ชั่นปัจจุบัน: =====================================
+//= 1.2
+//===== ใช้ได้กับ: =====================================
+//= rAthena Project
+//===== คำอธิบาย: =========================================
+//= NPCs ที่เกี่ยวข้องกับ Prontera Guild Castle 1
+//===== ความเห็นเพิ่มเติม: =================================
+//= 1.0 เวอร์ชั่นแรก. ยกเลิกการใช้ฟังก์ชั่น. [L0ne_W0lf]
+//= 1.1 ลบการโต้ตอบจากธงภายในปราสาท. [L0ne_W0lf]
+//= 1.2 เขียนสคริปต์เพิ่มเติม. [Masao]
+//============================================================
+
+// ธงกิลด์ (นอกปราสาท)
+//============================================================
+-	script	Kriemhild#1::OutsideFlagsPR1	722,{
+
+	set .@GID, GetCastleData("prtg_cas01",1);
+
+	if (.@GID == 0) {
+		mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+		mes " ";
+		mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+		mes "เราขอประกาศว่า";
+		mes "ยังไม่มีผู้ครอบครองปราสาทอย่างเป็นทางการของปราสาทแห่งนี้.";
+		mes " ";
+		mes "2. สำหรับใครทีสามารถครอบครองได้ ";
+		mes "ชนะการทดสอบทั้งหมด";
+		mes "และ สามารถทำลาย Emperium,";
+		mes "กษัตริย์จะทรงยกปราสาทแห่งนี้ให้เป็นผู้ครอบครอง";
+		close;
+	}
+	if (getcharid(2) == .@GID) {
+		mes "[ เสียงตอบกลับ ]";
+		mes "ผู้กล้าหาญ...";
+		mes "คุณต้องการกลับไปยังสถานที่อันทรงเกียรติของคุณหรือไม่ ?";
+		next;
+		if(select("กลับไปเข้าไปในปราสาท.:ยกเลิก.") == 1) {
+			close2;
+			if (getcharid(2) == GetCastleData("prtg_cas01",1)) {
+				warp "prtg_cas01",96,173;
+				end;
+			}
+			end;
+		}
+		close;
+	}
+	mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+	mes " ";
+	mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+	mes "เราได้อนุมัติให้สถานที่แห่งนี้เป็นของ";
+	mes "กิลด์ ^ff0000"+GetGuildName(.@GID)+"^000000.";
+	mes " ";
+	mes "2. กิลด์ผู้ครอบครองปราสาท ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "และ หัวหน้ากิลด์ ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+	mes "ถ้าหากผู้ใดก็ตามที่คัดค้านเรื่องนี้,";
+	mes "จงพิสูจน์ความแข็งแกร่ง และ เกียรติของคุณ ด้วยมือของคุณ.";
+	close;
+
+OnRecvCastlePt01:
+	FlagEmblem GetCastleData("prtg_cas01",1);
+	end;
+}
+
+prt_gld,131,60,6	duplicate(OutsideFlagsPR1)	Kriemhild#1-2	722
+prt_gld,138,68,6	duplicate(OutsideFlagsPR1)	Kriemhild#2	722
+prt_gld,138,60,6	duplicate(OutsideFlagsPR1)	Kriemhild#3	722
+prt_gld,135,60,6	duplicate(OutsideFlagsPR1)	Kriemhild#4	722
+
+// ธงกิลด์ (ภายในปราสาท)
+//============================================================
+-	script	Kriemhild#5::InsideFlagsPR1	722,{
+	end;
+
+OnRecvCastlePt01:
+	FlagEmblem GetCastleData("prtg_cas01",1);
+	end;
+}
+
+prtg_cas01,58,56,4	duplicate(InsideFlagsPR1)	Kriemhild#5-2	722
+prtg_cas01,64,56,4	duplicate(InsideFlagsPR1)	Kriemhild#6	722
+prtg_cas01,76,32,4	duplicate(InsideFlagsPR1)	Kriemhild#7	722
+prtg_cas01,84,32,4	duplicate(InsideFlagsPR1)	Kriemhild#8	722
+prtg_cas01,94,39,4	duplicate(InsideFlagsPR1)	Kriemhild#9	722
+prtg_cas01,94,24,4	duplicate(InsideFlagsPR1)	Kriemhild#10	722
+prtg_cas01,73,14,4	duplicate(InsideFlagsPR1)	Kriemhild#11	722
+prtg_cas01,73,6,4	duplicate(InsideFlagsPR1)	Kriemhild#12	722
+prtg_cas01,55,46,4	duplicate(InsideFlagsPR1)	Kriemhild#13	722
+prtg_cas01,45,46,4	duplicate(InsideFlagsPR1)	Kriemhild#14	722
+
+// ธงกิลด์ (เมืองหลวง)
+//============================================================
+prontera,155,190,4	duplicate(InsideFlagsPR1)	Kriemhild#15	722
+
+// พนักงานคาฟรา
+//============================================================
+prtg_cas01,96,173,0	duplicate(guildkafra)	Kafra Staff#prtg_cas01	117
+
+// คนรับใช้
+//============================================================
+prtg_cas01,112,181,0	duplicate(cm)	Ahvray#prtg_cas01	55
+
+// ทางออกห้องสมบัติ
+//============================================================
+prtg_cas01,15,208,0	script	#Lever_PR01	111,{
+	mes " ";
+	mes "มีคันโยกเล็กๆ. คุณต้องการที่จะดึงมัน ?";
+	next;
+	if(select("ดึง.:อย่าดึง.") == 1) {
+		close2;
+		warp "prtg_cas01",112,183;
+		end;
+	}
+	close;
+}
+
+// ทางเข้ากิลด์ดันเจี้ยน
+//============================================================
+prtg_cas01,94,200,0	duplicate(gdlever)	#prtg_cas01	111
+
+// จุดเกิดสมบัติ
+//============================================================
+prtg_cas01,11,208,0	duplicate(Gld_Trea_Spawn)	Treasure#prtg_cas01	-1
+
+// จัดการปราสาท
+//============================================================
+prtg_cas01,197,197,0	duplicate(Gld_Agit_Manager)	Agit#prtg_cas01	-1
+
+// การ์เดี้ยน
+//============================================================
+prtg_cas01,112,181,0	duplicate(Gld_Guard_Template)	Guardian#prtg_cas01	-1

@@ -1,0 +1,133 @@
+//===== rAthena Script =======================================
+//= War of Emperium (Payon) - Bamboo Grove Hill
+//===== โดย: ==================================================
+//= L0ne_W0lf
+//===== แปลไทยโดย: =====================================
+//= Athena Studio
+//===== เวอร์ชั่นปัจจุบัน: =====================================
+//= 1.2
+//===== ใช้ได้กับ: =====================================
+//= rAthena Project
+//===== คำอธิบาย: =========================================
+///= NPCs ที่เกี่ยวข้องกับ Payon Guild Castle 5
+//===== ความเห็นเพิ่มเติม: =================================
+//= 1.0 เวอร์ชั่นแรก. ยกเลิกการใช้ฟังก์ชั่น. [L0ne_W0lf]
+//= 1.1 ลบการโต้ตอบจากธงภายในปราสาท. [L0ne_W0lf]
+//= 1.2 เขียนสคริปต์เพิ่มเติม. [Masao]
+//============================================================
+
+// ธงกิลด์ (ภายนอกปราสาท)
+//============================================================
+-	script	Bamboo Grove Hill#1::OutsideFlagsPA5	722,{
+
+	set .@GID, GetCastleData("payg_cas05",1);
+
+	if (.@GID == 0) {
+		mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+		mes " ";
+		mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+		mes "เราขอประกาศว่า";
+		mes "ยังไม่มีผู้ครอบครองปราสาทอย่างเป็นทางการของปราสาทแห่งนี้.";
+		mes " ";
+		mes "2. สำหรับใครทีสามารถครอบครองได้ ";
+		mes "ชนะการทดสอบทั้งหมด";
+		mes "และ สามารถทำลาย Emperium,";
+		mes "กษัตริย์จะทรงยกปราสาทแห่งนี้ให้เป็นผู้ครอบครอง";
+		close;
+	}
+	if (getcharid(2) == .@GID) {
+		mes "[ เสียงตอบกลับ ]";
+		mes "ผู้กล้าหาญ...";
+		mes "คุณต้องการกลับไปยังสถานที่อันทรงเกียรติของคุณหรือไม่ ?";
+		next;
+		if(select("กลับไปเข้าไปในปราสาท.:ยกเลิก.") == 1) {
+			close2;
+			if (getcharid(2) == GetCastleData("payg_cas05",1)) {
+					warp "payg_cas05",243,27;
+				end;
+			}
+			end;
+		}
+		close;
+	}
+	mes "[ พระราชกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด ]";
+	mes " ";
+	mes "1. กรุณาปฏิบัติตามคำสั่งของกฤษฏีกาแห่งราชอาณาจักรรูน-มิดการ์ด, ";
+	mes "เราได้อนุมัติให้สถานที่แห่งนี้เป็นของ";
+	mes "กิลด์ ^ff0000"+GetGuildName(.@GID)+"^000000.";
+	mes " ";
+	mes "2. กิลด์ผู้ครอบครองปราสาท ^ff0000"+GetGuildName(.@GID)+"^000000";
+	mes "และ หัวหน้ากิลด์ ^ff0000"+GetGuildMaster(.@GID)+"^000000";
+	mes "ถ้าหากผู้ใดก็ตามที่คัดค้านเรื่องนี้,";
+	mes "จงพิสูจน์ความแข็งแกร่ง และ เกียรติของคุณ ด้วยมือของคุณ.";
+	close;
+
+OnRecvCastlePy05:
+	FlagEmblem GetCastleData("payg_cas05",1);
+	end;
+}
+
+pay_gld,208,268,4	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#1-2	722
+pay_gld,199,268,4	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#2	722
+pay_gld,190,277,3	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#3	722
+pay_gld,187,294,2	duplicate(OutsideFlagsPA5)	Bamboo Grove Hill#4	722
+
+// ธงกิลด์ (ภายในปราสาท)
+//============================================================
+-	script	Bamboo Grove Hill#5::InsideFlagsPA5	722,{
+	end;
+
+OnRecvCastlePy05:
+	FlagEmblem GetCastleData("payg_cas05",1);
+	end;
+}
+
+payg_cas05,32,249,4	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#5-2	722
+payg_cas05,24,249,4	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#6	722
+payg_cas05,62,271,0	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#7	722
+payg_cas05,57,271,0	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#8	722
+payg_cas05,55,252,2	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#9	722
+payg_cas05,55,260,2	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#10	722
+
+// ธงกิลด์ (เมืองหลวง)
+//============================================================
+payon,80,151,4	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#11	722
+payon,99,151,4	duplicate(InsideFlagsPA5)	Bamboo Grove Hill#12	722
+
+// พนักงานคาฟรา
+//============================================================
+payg_cas05,276,227,1	duplicate(guildkafra)	Kafra Staff#payg_cas05	117
+
+// คนรับใช้
+//============================================================
+payg_cas05,277,249,3	duplicate(cm)	Nahzarf#payg_cas05	55
+
+// ทางออกห้องสมบัติ
+//============================================================
+payg_cas05,161,136,0	script	#lever_PA05	111,{
+	mes " ";
+	mes "มีคันโยกเล็กๆ. คุณต้องการที่จะดึงมัน ?";
+	next;
+	if(select("ดึง.:อย่าดึง.") == 1) {
+		close2;
+		warp "payg_cas05",277,250;
+		end;
+	}
+	close;
+}
+
+// ทางเข้ากิลด์ดันเจี้ยน
+//============================================================
+payg_cas05,249,15,0	duplicate(gdlever)	#payg_cas05	111
+
+// จุดเกิดสมบัติ
+//============================================================
+payg_cas05,157,132,0	duplicate(Gld_Trea_Spawn)	Treasure#payg_cas05	-1
+
+// จัดการปราสาท
+//============================================================
+payg_cas05,30,30,0	duplicate(Gld_Agit_Manager)	Agit#payg_cas05	-1
+
+// การ์เดี้ยน
+//============================================================
+payg_cas05,277,249,3	duplicate(Gld_Guard_Template)	Guardian#payg_cas05	-1

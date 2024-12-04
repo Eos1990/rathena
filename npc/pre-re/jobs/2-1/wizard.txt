@@ -1,0 +1,1355 @@
+//<=================== Some dog =========================>
+gef_tower,107,35,5	script	Some Dog	81,{
+
+	if(JobLevel == 50) {
+	if (Class!=2) goto Notache;
+	if(SkillPoint >0) goto L_notUseAll;
+
+	 mes "[ Jobchanger ]";
+	 mes "ท่านต้องการเปลื่ยนอาชีพเป็นwizard ใช่หรือไม่";
+	 next;
+	 menu "ใช่",-,"ไม่ใช่",L_close;
+	 mes "[ Jobchanger ]";
+	 mes "ถ้าเป็นอย่างนั้น ข้าก็จะเปลื่ยนให้เจ้าทันที";
+	 next;
+	 JobChange 9;
+	set zeny,zeny+50000;
+	 mes "เจ้าได้เป็น wizardเรียบร้อยแล้ว";
+	 close;
+
+	L_close:
+	 mes "[ Jobchanger ]";
+	 mes "เราคงมีโอกาศได้พบกันใหม่อีกแน่ บาย";
+	 close;
+
+	L_notUseAll:
+	 mes "[ Jobchanger ]";
+	 mes "ท่านยังใช้ Skill Point ไม่หมด";
+	 close;
+
+	Notache:
+	 mes "[ Jobchanger ]";
+	 mes "คุณไม่ได้ นักเวทย์นิ";
+	 close;
+	}
+	if(Class == Job_Mage) goto L_JobMage;
+	if(baseClass == Job_Mage) goto L_Magic;
+	if(baseClass == Job_Acolyte) goto L_Holy;
+L_Other:
+	mes "[Dog]";
+	mes " ชู่......ท่านเดินทางมาไกลถึงที่นี่ทำไม???";
+	emotion 27;
+	close;
+L_Holy:
+	mes "[Dog]";
+	mes " เอิ๊ก! อะไรกันผู้ศักสิทธิ์มาทำอะไรที่นี่?  ข้าว่าท่านคงไม่ชอบเวทย์มนต์หรอกนะ...";
+	mes " หรือ ท่านกำลังมาหา มนต์แห่งความมืด......... โอ้ ข้ากลัว!!!...... ~อ่าา!~หืมมม!~";
+	close;
+L_Magic:
+	mes "[Dog]";
+	mes " อ้า! ผู้ใช้เวทย์ระดับสูง  ยินดีต้อนรับเสมอหากคนอย่างท่านจะมานี่";
+	mes " แต่ที่้จริงแล้วข้าก็รู้สึกยินดี ที่ได้เห็นพวกเขาทุกๆ ทีนั่นแหละ! ~อุ๊ป!~";
+	close;
+
+L_JobMage:
+	mes "[Dog]";
+	mes " อ้า... ข้ารู้สิ่งที่ท่านกำลังจะบอก.... ท่านคงต้องการจะเป็น Wizard ถูกต้องมั้ย?";
+	next;
+	mes "[Dog]";
+	mes " พูดคุยกับ Catherine เธอจะช่วยเหลือท่าน";
+	next;
+	mes "[Dog]";
+	mes " ถ้าท่านต้องการทราบเกี่ยวกับขั้นตอนการเป็น Wizards ข้าสามารถช่วยท่านได้";
+	next;
+	menu "..................",M_0, "สุนัข คงอยากคุยกับข้า......",M_1;
+
+	M_0:
+		mes "[Dog]";
+		mes " ~อุ๊บ~ นี่มันอะไร? นี่ท่านกำลังมองข้าทำไม?? นี่คงเป็นครั้งแรกที่ข้าเห็นท่านเคยพูดคุยกับสุนัขสินะ?";
+		emotion 1;
+		mes "[Dog]";
+		mes "~อุ๊บ~ ข้าคิดว่านี่มันไม่ใช่เรื่องธรรมดาที่จะเห็นคนพูดคุยกับสุนัข..... ";
+		next;
+
+		L_Cont:
+		mes "[Dog]";
+		mes " ข้าคือ Maria Splodofska เรียกข้าว่า Maria ข้ามีหน้าที่ช่วยเหลือผู้ที่จะเป็น Wizard";
+		next;
+		mes "[Maria]";
+		mes " ~อุ๊บ~ ท่านคงจะเห็นเหตุผลที่ข้ากลายเป็นสุุนัข.... ข้าเพียงต้องการช่วยคนรักของข้ากับทดสอบสำหรับการทดสอบสุดท้ายของเขา";
+		mes " เข้าเป็นคนที่กำลังศึกษาอยู่ในระดับเวทย์ระดับกลาง แต่เกิดข้อผิดพลาดทำให้ข้ากลายเป็นสุนัข";
+		next;
+		mes "[Maria]";
+		mes "~เอ่อ~ ในเวลาไม่กี่เดือนที่ผ่านมาข้าได้พบสารบางอย่างที่่อาจจะทำให้ข้าเป็นปกติ";
+		next;
+		mes "[Maria]";
+		mes " อือ แต่ข้าไม่รู้ว่าอยู่ที่ไหน?";
+		emotion 20;
+		next;
+		mes "[Maria]";
+		mes " ข้าขอพูดก่อน หากท่านอยากจะเป็น Wizard ท่านต้องไปพูดคุยกับ Catherine.";
+		mes " เธอจะทำให้ท่านเป็น Wizard ด้วยความช่วยเหลือของเธอ";
+		next;
+		mes "[Maria]";
+		mes " ข้าสามารถบอกท่านเพิ่มเติม เกี่ยวกับการขั้นตอนการเปลี่ยนอาชีพได้ แต่ข้าไม่อยากทำให้ท่านเสียเวลาอีก..";
+		mes " นั่นคือถ้าท่านต้องการให้ข้าบอกเกี่ยวกับสิ่งที่จำเป็นสำหรับ Wizard ข้าก็จะบอกท่านได้?.........";
+		next;
+		menu " ใช่ข้าอยากรู้เพิ่ม",sM_0, " ไม่แค่นี้พอแล้ว",sM_1, " พูดคุยกับสุนัข......",sM_2;
+
+		sM_0:
+			mes "Maria]";
+			mes " โอเค ตกลง  ข้าจะอธิบายขั้นตอนเกี่ยวกับการเป็น Wizard ให้ท่าน....";
+			next;
+			mes "[Maria]";
+			mes " มีการทดสอบอยู่ 3 ขั้นตอนในการเปลี่ยนเป็น Wizard โดย ^5555FFขั้นที่ 1^000000 ท่านต้องเก็บรวบรวมราบการ ^FF5555ไอเท็มเวทย์มนต์^000000 มาให้ข้า";
+			next;
+			mes "[Maria]";
+			mes " Catherine จะมอบการทดสอบให้ท่าน  เธอจะขอให้ท่านรวบรวม ^5555FFGemstones^000000 และ ^5555FFElemental Ores^000000.";
+			next;
+			mes "[Maria]";
+			mes " การทดสอบ ^5555FFที่ 2^000000 Raul จะเป็นผู้ดูแลการทดสอบครั้งนี้";
+			mes " จะมีตัวเลือกหลากหลายคำถามให้ท่านหาลักษณะที่แตกต่างกันของเวทย์มนต์";
+			next;
+			mes "[Maria]";
+			mes " การทดสอบจะมี 10 คำถามหากท่านตอบผิดท่านจะล้มเหลวในการทดสอบ";
+			next;
+			mes "[Maria]";
+			mes " Raul จะคอยดูและบททดสอบ ^5555FFที่ 3^000000 นี่คือการทดสอบสุุดท้ายที่่ท่านจะต้องจัดการกับมอนสเตอร์ที่ออกมา";
+			mes " โดยจะมีห้องอยู่ 3 ห้องที่เต็มไปด้วยมอนสเตอร์แต่ละธาตุแตกต่างกัน ตามที่ระบุไว้";
+			next;
+			mes "[Maria]";
+			mes " มันขึ้นอยู่กับท่านว่าท่านจะใส้เวทย์มนต์ใด เพื่อจัดการกับมอนสเตอร์เหล่านั้น";
+			next;
+			mes "[Maria]";
+			mes " นี่คือสิ่งที่ข้าจำเป็นต้องบอกท่านทั้งหมด หวังว่าท่านจะนำมันไปใช้ประโยชน์";
+			close;
+		sM_1:
+			mes "[Maria]";
+			mes " โอ้ ตกลง สิ่งที่ข้าจำเป็นต้องบอกท่านทั้งหมด หวังว่าท่านจะนำมันไปใช้ประโยชน์";
+			close;
+		sM_2:
+			mes "[Maria]";
+			mes " ข้าไม่ใช่ สุนัข!!! ~ บรู้วววววววววว!!!! ~";
+			emotion 6;
+			next;
+			mes "[Maria]";
+			mes " ข้าจะทำให้ท่านหายไปเดี๋ยวนี้!";
+			emotion 27;
+			next;
+			warp "gef_dun00",54,23;
+			end;
+	M_1:
+		mes "[Dog]";
+		mes " นี่ท่านรู้ได้ไง ว่าข้าคือสุนัข";
+		emotion 32;
+		next;
+		goto L_Cont;
+
+}
+
+
+//<=========================================== Registrar and Examiner Catherine Medichi ==============================================>\\
+gef_tower,111,37,4	script	Wizard Guildsman	70,{
+	mes "[Catherine Medichi]";
+	if(Class == Job_Wizard) goto L_Wizard;
+	if(Class == Job_Novice) goto L_Novice;
+	if(Class == Job_Mage) goto L_Mage;
+L_Other:
+	mes " หืม? อะไรทำให้ท่านเดินทางมาถึงที่นี่? ที่นี่ไม่มีอะไรอย่างที่ท่านคิดหรอก ท่านควรไปจากนี่";
+	mes " สถานที่นี่เป็นที่สำหรับ wizards เท่านั้น";
+	close;
+L_Novice:
+	mes " อ้าวว เจ้า novice!  นี่เป็นที่สำหรับ Wizards เท่านั้น เจ้ามาทำอะไร";
+	emotion 14;
+	next;
+	mes "[Catherine Medichi]";
+	mes " หากเจ้าต้องการจะเป็น Magic ให้เจ้าไปพูดคุยกับ ^0000FFสมาคม Magician^000000 นั่นคือที่สำหรับเจ้า";
+	close;
+L_Wizard:
+	mes " ท่านต้องการอะไรอีกท่าน Wizard? ถ้าไม่มีอไรท่านควรรีบไปซะ";
+	emotion 3;
+	close;
+
+L_Mage:
+	if(WIZ_Q == 2) goto L_Test2;
+	if(WIZ_Q == 3) goto L_Test3;
+	if(WIZ_Q == 4) goto L_Done;
+	if(WIZ_Q2 > 0) goto L_Test1;
+
+	mes " ข้าคือ Catherine Medichi ข้าสามารถทำให้ท่านเป็น Wizard หรือท่านจะเรียกข้าว่า Catherine ก็ได้";
+	next;
+	mes "[Catherine Medichi]";
+	mes " แล้วท่านมาทำอะไรที่นี่ หรือว่าท่านต้องการจะเป็น Wizard ใช่มั้ย?";
+	next;
+	menu "ข้าต้องการเป็น Wizard",M_0a,"ไม่มีอะไร",M_0End;
+
+	M_0a:
+		mes "[Catherine Medichi]";
+		mes " ท่านต้องกรอกแบบฟอร์มนี้ก่อน";
+		next;
+		if(JobLevel < 40) goto sL_JobLvl;
+		if(JobLevel == 50) goto sL_Job50;
+
+		mes "[Catherine]";
+		mes " เอาล่ะ ^ff0000"+strcharinfo(0)+"^000000 ดูเหมือนว่าท่านจะมีคุณสมบัติครบนะ";
+		next;
+		mes "[Catherine Medichi]";
+		mes " ตอนนี้ข้าจะบอกท่านเกี่ยวกับการทดสอบทั้ง 3 ส่วน";
+		mes "- ส่วนที่ 1 ท่านต้องไปตามหาไอเท็มเวทมนตร์มาให้ข้า";
+		mes "- ส่วนที่ 2 ท่านต้องผ่านการสอบสัมภาษณ์";
+		mes "- ส่วนที่ 3 ท่านต้องผ่านการทดสอบแบบภาคสนามของเรา";
+		next;
+		mes "[Catherine Medichi]";
+		mes " ส่วนคนที่มีเลเวลจ๊อบมากกว่า 50 ขึ้นไปสามารถผ่านการทดสอบได้เลย เพราะพวกเขาทำงานหนักมามากพอแล้ว";
+		next;
+		mes "[Catherine Medichi]";
+		mes " เอาล่ะ.. นี่คือส่วนแรกของการทดสอบ ท่านต้องรวบรวมไอเท็มเวทมนตร์มาให้ข้า";
+		next;
+		set WIZ_Q2, rand(1,2);
+
+		mes "[Catherine Medichi]";
+		mes " รายการไอเท็มมีดังนี้";
+		if(WIZ_Q2 == 2) goto R_2;
+
+		R_1:
+			mes "- 10 ^ff0000Red gemstones^000000";
+			mes "- 10 ^0000ffBlue gemstones^000000";
+			mes "- และ 10 ^ddcc11Yellow gemstones^000000.";
+			goto L_Cont0;
+
+		R_2:
+			mes "5 ^0000ffCrystal Blues^000000,";
+			mes "5 ^009900Green Lives^000000,";
+			mes "5 ^ff0000Red Bloods^000000,";
+			mes "และ 5 ^ddcc11Wind of Verdures^000000.";
+
+		L_Cont0:
+		next;
+		mes "[Catherine Medichi]";
+		mes " การทดสอบนี้ ไม่ได้เกินไป เจ้ารีบไปซะ!";
+		next;
+		mes "[Catherine Medichi]";
+		mes " โชคดีข้าจะรอเจ้าอยู่ที่นี่!";
+		set WIZ_Q, 1;
+		close;
+
+		sL_JobLvl:
+			mes "[Catherine Medichi]";
+			mes " เฮ้ ข้าบอกท่านไปแล้วว่าท่านต้องมีเลเวลจ๊อบ 40";
+			mes " ท่านไม่ได้ฟังข้าเลยรึไง?";
+			close;
+
+		sL_Job50:
+			mes "[Catherine Medichi]";
+			mes " ว้าว! เลเวลจ๊อบของท่าน 50! ท่านคงจะทำงานมาหนัก ข้ารู้สึกประทับใจ!";
+			next;
+			mes "[Catherine Medichi]";
+			mes " เอาล่ะ ข้าจะให้ท่านผ่านการทดสอบแรน แต่ยังไงท่านก็ยังเหลือบททดสอบอีก 2 ส่วนอยู่ดี";
+			next;
+			mes "[Catherine Medichi]";
+			mes " ท่านควรไปพูดคุยกับผู้ชายที่อยู่ตรงมุมนั้น เขาจะบอกเกี่ยวกับการทดสอบถัดไป";
+			set WIZ_Q, 2;
+			close;
+
+	M_0b:
+		mes "[Catherine Medichi]";
+		mes " ถึงแม้คนจำนวนมาก จะอยากเป็น Wizards แต่จะมีเพียงผู้ที่เลเวลจ๊อบ 40 ขึ้นไปเท่านั้นที่สามารถมีสิทธิจะเป็นได้";
+		next;
+		mes "[Catherine Medichi]";
+		mes " หลังจากนั้นจะมีการทดสอบของ Wizard จำนวน 3 ส่วน";
+		mes " โดยการทดสอบแต่ละส่วนจะแตกต่างกันไป";
+		next;
+		mes "[Catherine Medichi]";
+		mes " เมื่อท่านผ่านการทดสอบทั้งหมดของ Wizard ท่านก็จะได้เป็นอย่างที่ต้องการ!";
+		mes " แต่น่าเสียดายที่มีคนจำนวนมากที่มีปัญหากับการทดสอบและล้มเหลวในที่สุด";
+		next;
+		mes "[Catherine Medichi]";
+		mes " บางที ท่านอาจจะโชคดี";
+		close;
+
+	M_0End:
+		mes "[Catherine Medichi]";
+		mes " แล้ว? จะมาทำอะไรที่นี่!?";
+		emotion 1;
+		close;
+
+
+	L_Test1:
+		mes " นี่คงเป็นรายการไอเท็มทั้งหมด.. ข้าขอดูก่อน";
+		next;
+		mes "[Catherine Medichi]";
+		if(WIZ_Q2 == 1) goto sL_Gems;
+		if(WIZ_Q2 == 2) goto sL_Ores;
+
+		sL_Gems:
+			if (countitem(716)<10 || countitem(717)<10 || countitem(715)<10) goto ssL_NotDone;
+			mes " ยอดเยี่ยม! ท่านนำมาครบแล้ว! ที่สมาคมเราคงจะรู้สึกยินดี";
+			next;
+			delitem 716, 10;
+			delitem 717, 10;
+			delitem 715, 10;
+			goto ssL_Done;
+
+		sL_Ores:
+			if (countitem(991)<4 || countitem(993)<4 || countitem(990)<4 || countitem(992)<4) goto ssL_NotDone;
+			mes " ยอดเยี่ยม! ท่านนำมาครบแล้ว! ที่สมาคมเราคงจะรู้สึกยินดี";
+			next;
+			delitem 991, 5;
+			delitem 993, 5;
+			delitem 990, 5;
+			delitem 992, 5;
+
+			ssL_Done:
+				mes "[Catherine Medichi]";
+				mes " ยินดีด้วย ท่านผ่านการทดสอบส่วนที่ 1 แล้ว";
+				mes " แต่ท่านอย่าเพิ่มรีบดีใจ ท่านยังเหลือการทดสอบอีก 2 ส่วน";
+				emotion 21;
+				next;
+				mes "[Catherine Medichi]";
+				mes " ตอนนี้ท่านควรไปพูดคุยกับผู้ชายที่อยู่ตรงมุมนั้น";
+				set WIZ_Q, 2;
+				set WIZ_Q2, 0;
+				close;
+
+			ssL_NotDone:
+				mes " ดูเหมือนว่าท่านยังไม่ได้นำสิ่งที่ข้าต้องการมานะ";
+				next;
+				mes "[Catherine Medichi]";
+				mes " มันคงไม่ยากเกินไปหรอกนะที่จะไอเท็มที่ข้าต้องการมาทั้งหมด หรือว่าท่านลืมไปแล้ว ข้าจะบอกท่านอีกครั้ง?";
+				next;
+				mes "[Catherine Medichi]";
+				mes " ข้าต้องการ :";
+				if(WIZ_Q2 == 1) goto R_1;
+				if(WIZ_Q2 == 2) goto R_2;
+				close;
+
+	L_Test2:
+		if(WIZ_Q2 == 1)goto sL_Failed2;
+		mes " เฮ้ นี่ท่านยังไม่ได้พูดคุยชายคนนั้นอีกเหรอ?";
+		mes " ยังเหลือบททดสอบอีก 2 ส่วน ที่เหลือที่ท่านควรจะต้องทำ หากท่านอยากทำสำเร็จควรรีบไปหาเขา";
+		close;
+
+		sL_Failed2:
+			mes " หือ?? ท่านล้มเหลวในการสอบสัมภาษณ์!?";
+			emotion 1;
+			next;
+			mes "[Catherine Medichi]";
+			mes " ท่านต้องการที่จะเป็น wizard แต่ท่านไม่สามารถตอบคำถามพวกนี้ได้เลยยังงั้นเหรอ??";
+			emotion 4;
+			next;
+			mes "[Catherine Medichi]";
+			mes " ดี ข้าจะมอบคำใบ้ให้? หากท่านไปซื้อ ^009900apple juice^000000 มาให้ข้า 1 ขวด ข้ารู้สึกกระหายน้ำ";
+			next;
+			menu " ข้าอยากรู้คำใบ้?",M_1a, " ข้าสามารถผ่านเองได้!",M_1b;
+
+			M_1a:
+				if (countitem(531) < 1) goto sL_NoJuice;
+				delitem 531, 1;
+
+				mes "[Catherine Medichi]";
+				mes " อืม apple juice ~กุ๊บ~กุ๊บ~";
+				next;
+				mes "[Catherine Medichi]";
+				mes " ขอบคุณ ข้าจะมอบคำใบ้ให้ท่าน";
+				next;
+				mes "[Catherine Medichi]";
+				mes " ชายคนนั้นจะมีคำถามอยู่ 3 ประเภทได้แก่:";
+				mes "- ^ff0000spells^000000,";
+				mes "- ^ff0000monsters^000000,";
+				mes "- และ ^ff0000the caster^000000.";
+				next;
+				mes "[Catherine Medichi]";
+				mes " มันขึ้นอยู่ว่าเขาจะเลือกคำถามใด";
+				close;
+
+				sL_NoJuice:
+					mes "[Catherine Medichi]";
+					mes " ดี.. หากท่านต้องการคำแนะนำ ข้าต้องการน้ำแอปเปิ้ล ไม่เช่นนั้นข้าจะไม่บอกท่าน";
+					close;
+
+			M_1b:
+				mes "[Catherine Medichi]";
+				mes " ถูกต้อง! การทดสอบนี้เหมาะสมกับการที่จะทำด้วยตัวคนเดียว";
+				mes " ท่านต้องใช้ความคิด เพื่อการเป็น Wizard";
+				close;
+
+	L_Test3:
+		if(WIZ_Q2 == 1) goto sL_Failed3;
+		mes " ฮี่ ฮี่ ข้าได้ยินว่าท่านทำงานอย่างหนักเกี่ยวกับคำถามเหล่านั้น";
+		next;
+		mes "[Catherine Medichi]";
+		mes " แต่ท่านก็ทำมันได้สำเร็จ แต่ก็ยังเหลืออีกส่วนสุดท้าย ที่ท่านจะเป็น wizard!";
+		close;
+
+		sL_Failed3:
+			mes " ทำไมท่านถึงออกมาที่นี่ในระหว่างการทดสอบ? ข้าไม่เคยคิดว่าท่านจะอ่อนแอ...";
+			next;
+			if(sex==1) goto ssL_M3;
+			if(sex==0) goto ssL_F3;
+
+			ssL_M3:
+				mes "[Catherine Medichi]";
+				mes " การที่ mage จะพลังอย่างเต็มประสิทธิภาพท่านต้องใช้ความพยายามอย่างหนัก... !!";
+				close;
+
+			ssL_F3:
+				mes "[Catherine Medichi]";
+				mes " การที่ mage จะพลังอย่างเต็มประสิทธิภาพท่านต้องใช้ความพยายามอย่างหนัก... !!";
+				close;
+
+
+	L_Done:
+		if(SkillPoint > 0) mes " ท่านควรกลับไปใช้สกิลพ้อยท์ทั้งหมดเสียก่อนแล้วค่อยกลับมาหาข้า";
+		if(SkillPoint > 0) close;
+
+		mes " เยี่ยม! ท่านผ่านการทดสอบทั้งหมดแล้ว! ยินดีด้วย  ยินดีด้วย  ยินดีด้วย!!";
+		emotion 21;
+		next;
+		mes "[Catherine Medichi]";
+		mes " อ้า เพื่อไม่ให้เสียเวลาข้าจะทำให้เจ้าเป็น Wizard เลย!";
+		next;
+		callfunc "F_ClearJobVar";		// clears all job variables for the current player
+		JobChange Job_Wizard;
+
+		mes "[Catherine Medichi]";
+		mes " ท่านดูดีทีเดียว Wizard น้อย!";
+		mes " พวกเราเหล่า Wizard มีเวทมนตร์ที่มีพลังแข็งแกร่งมาก ดังนั้น .. โปรดระวังเมื่อใช้เวทมนตร์!";
+		next;
+		mes "[Catherine Medichi]";
+		mes " จงอย่าทำสิ่งที่โง่ ด้วยการร่ายเวทย์กลางเมือง!";
+		mes " มันจำทำให้เกิดอาการ Lag ทักษะของท่านควรนำไปใช้กับมอนสเตอร์เท่านั้น!";
+		next;
+		mes "[Catherine Medichi]";
+		mes " และท่านยังมีบทบาทสำคัญสำหรับปาตี้ร์อีกด้วย..!";
+		next;
+		getitem 505, 6;
+		mes "[Catherine Medichi]";
+		mes " จงใช้มันอย่างฉลาด!";
+		mes " ดี Wizard อย่างท่านคงมีคนดูและและมีชีวิตที่ดีต่อไป!";
+		close;
+}
+
+
+//<================================================ Examiner: Raul Expagarus ==================================================>\\
+gef_tower,102,24,3	script	Raul Expagarus	735,{
+	mes "[Raul Expagarus]";
+	if(Class == Job_Mage) goto L_Mage;
+	if(Class == Job_Wizard) goto L_Wizard;
+	if(baseClass == Job_Acolyte) goto L_Holy;
+	if(Class == 0) goto L_Novice;
+L_Other:
+	mes " อ่า ข้ารู้สึกไม่ดีเลย....ข้ารู้สึกเหมือนติดอยู่ในน้ำแข็ง........";
+	next;
+	mes "[Raul Expagarus]";
+	mes " ใครกัน?! ที่จะพาข้าออก!";
+	emotion 0;
+	close;
+L_Novice:
+	mes " เด็กๆ อย่างเจ้ามาทำอะไรที่ ออกไป!!";
+	emotion 0;
+	next;
+	warp "geffen",120,110;
+	close;
+L_Holy:
+	mes " ออกไปผู้ศักสิทธ์!";
+	mes " Magic จะไม่ใช้ความสามารถของพระเจ้า.......";
+	close;
+L_Wizard:
+	mes " คิก คิก ข้าสามารถทำอะไรเพื่อท่านได้บ้าง หรือว่าท่านใช้เวทมนตร์มากเกินไป";
+	next;
+	mes "[Raul Expagarus]";
+	if(sex==1) goto L_M;
+	if(sex==0) goto L_F;
+
+	L_M:
+		mes " ถ้าท่านไม่ศึกษาสิ่งที่ท่านกำลังทำ ท่านอาจจะได้เรียนรู้สกิลที่ไร้ประโยชน์";
+		close;
+
+	L_F:
+		mes " ถ้าท่านไม่ศึกษาสิ่งที่ท่านกำลังทำ ท่านอาจจะได้เรียนรู้สกิลที่ไร้ประโยชน์";
+		close;
+
+L_Mage:
+	if(WIZ_Q == 1) goto L_NotRdy;
+	if(WIZ_Q == 2) goto L_Test2;
+	if(WIZ_Q == 3) goto L_Test3;
+	if(WIZ_Q == 4) goto L_Done;
+
+		mes " อึก นี่ยังไม่ถึงเวลาที่ท่านจะมาคุยกับข้า";
+		next;
+		mes "[Raul Expagarus]";
+		mes " ข้าเสียใจ แต่ควรไปซะ";
+		close;
+
+	L_NotRdy:
+		mes " หือ ท่านต้องการฝึกฝนเพื่อจะเป็น wizard?!";
+		mes " ท่านสามารถเป็นนักเวทย์ที่มีชีวิตที่ดีได้.....";
+		next;
+		mes "[Raul Expagarus]";
+		mes " กลับหาข้าใหม่ หลังจากท่านเป็น wizards ระดับสูง.....";
+		close;
+
+	L_Done:
+		mes " ยินดีด้วยท่านผ่านการทดสอบขั้นสุดท้ายแล้ว! ท่านพร้อมที่จะเปลี่ยนเป็น Wizards!";
+		emotion 21;
+		next;
+		mes "[Raul Expagarus]";
+		mes "พูดคุยกับ Catherine เขาจะเปลี่ยนท่านเป็น Wizard แต่ต้องระวังเวทมนตร์มันสามารถทำลายท่านได้!!";
+		close;
+
+	L_Test2:
+		if(WIZ_Q2 == 1) goto sL_ReTest2;
+
+		mes " ข้าเห็นท่านผ่านการทดสอบส่วนที่ 1 มาแล้ว  ข้าชื่อว่า Raul Expagarus ข้ามีหน้าที่ตรวจการทดสอบของท่าน";
+		next;
+		mes "[Raul Expagarus]";
+		mes " มันยังไม่สายเกินไปที่ท่านยังสามารถกลับไปใช้ชีวิตที่ความสุขในเมืองหากท่านต้องการ";
+		next;
+		mes "[Raul Expagarus]";
+		mes " ท่านอาจจะรู้ถึงอันตรายของเวทมนตร์";
+		next;
+		menu "ใช่ข้ารู้ ข้าไปดีกว่า",M_0a, "ข้าต้องการทดสอบ!",M_0b;
+
+		sL_ReTest2:
+			mes " หืม ท่านต้องการจะลองใหม่อีกครั้ง?";
+			next;
+			mes "[Raul Expagarus]";
+			mes " หากท่านตอบพลาดเพียงหนึ่งคำถามท่านจะไม่ผ่านการทดสอบ ท่านต้องการทำอะไร!?";
+			emotion 32;
+			next;
+			menu "ข้าต้องการอยู่เฉยๆ",M_0a, "ข้าอยากลองอีกครั้ง",M_0b;
+
+		M_0a:
+			mes "[Raul Expagarus]";
+			mes " นี่เป็นตัวเลือกที่ดี การเป็น Wizard เป็นงานที่ยากและการใช้เวทมนตร์ไม่ควรอยู่กลางผู้คน";
+			next;
+			mes "[Raul Expagarus]";
+			mes " กลับไปที่เมือง เพื่อตามหาชีวิตที่สงบสุขต่อ..";
+			close;
+
+		M_0b:
+			mes "[Raul Expagarus]";
+			mes " หิม นี่คงจะเป็นสิ่งที่ดีที่สุดสำหรับท่าน";
+			next;
+			mes "[Raul Expagarus]";
+			mes " เริ่มการทดสอบ หากท่านตอบผิดเพียงคำถามเดียวท่านจะล้มเหลวในการทดสอบทันที!";
+			emotion 29;
+			next;
+			mes "[Raul Expagarus]";
+			mes " โดยจะมีคำถามเพียง 10 คำถามเท่านั้น ท่านต้องตอบให้ถูกทั้งหมด";
+			next;
+			set @SCORE,0;
+			set @temp,rand(0,2);
+			if(@temp == 1) goto R_1;
+			if(@temp == 2) goto R_2;
+
+			//Spell Quiz
+			R_0:
+				mes "[Raul Expagarus]";
+				mes "Cough, here are the questions!";
+				next;
+				mes "[Raul Expagarus]";
+				mes " 1. ทักษะใดไม่จำเป็นต้องเรียนรู้เพื่อมี fire wall?";
+				next;
+				menu "Fire Bolt Lv 4",sM0_0b, "Fire Ball Lv 5",sM0_0b, "Sight Lv 1",sM0_0b, "Napalm Beat Lv 4",sM0_0a;
+
+				sM0_0a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_0b:
+
+				mes "[Raul Expagarus]";
+				mes "2. อะไรที่เกิดขึ้นกับมอนสเตอร์หลังจากถูกแช่แข็งโดย Frost Diver?";
+				next;
+				menu "เปลี่ยนเป็นธาตุ Water",sM0_1a, "เปลี่ยนเป็นธาตุ Earth",sM0_1b, "เปลี่ยนเป็นธาตุ Fire",sM0_1b, "เปลี่ยนเป็นธาตุ Wind",sM0_1b;
+
+				sM0_1a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_1b:
+
+				mes "[Raul Expagarus]";
+				mes "3. เมื่อท่านใช้สกิล Napalm Beat ในเลเวลสูงสุด จะมีค่า MATK เท่าไหร่ ที่จะทำ Dmg?";
+				next;
+				menu "1.6x",sM0_2b, "1.7x",sM0_2a, "2x",sM0_2b, "20x",sM0_2b;
+
+				sM0_2a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_2b:
+
+				mes "[Raul Expagarus]";
+				mes "4. ไอเท็มใดที่จำเป็นต่อการใช้สกิล stone curse?";
+				next;
+				menu "Red Blood",sM0_3b, "Blue Gem",sM0_3b, "Yellow Gem",sM0_3b, "Red Gem",sM0_3a;
+
+				sM0_3a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_3b:
+
+				mes "[Raul Expagarus]";
+				mes "5. ทักษะใดไม่จำเป็นต้องเรียนรู้เพื่อมี Safety Wall?";
+				next;
+				menu "Napalm Beat Lv 4",sM0_4b, "Soul Strike Lv 5",sM0_4b, "SP Recovery Lv. 6",sM0_4b, "Ice Wall Lv 7",sM0_4a;
+
+				sM0_4a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_4b:
+
+				mes "[Raul Expagarus]";
+				mes "6. ท่านจะฟื้นค่า Sp ทุกๆ 10 วินาที เท่าใด หากท่านมีสกิล SP Recovery Lv. 7?";
+				next;
+				menu "14",sM0_5b, "21",sM0_5a, "28",sM0_5b, "35",sM0_5b;
+
+				sM0_5a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_5b:
+
+				mes "[Raul Expagarus]";
+				mes "7. หากท่านมี Sp 50% ท่านจะโดนโจมตีลดลงและใช้ Sp เท่าใด เมื่อใช้ Energy Coat?";
+				next;
+				menu "dmg 18%, SP1.5%",sM0_6b, "dmg18%, SP2%",sM0_6a, "dmg 24%, SP1.5%",sM0_6b, "dmg 24%, SP2%",sM0_6b;
+
+				sM0_6a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_6b:
+
+				mes "[Raul Expagarus]";
+				mes "8. Lvl 6 Safety Wall จะใช้ Sp เท่าใด และป้องกันการโจมตีได้กี่ครั้ง?";
+				next;
+				menu "SP 40, 6hits",sM0_7b, "SP 35, 6hits",sM0_7b, "SP 40, 7hits",sM0_7a, "SP 35, 7hits",sM0_7b;
+
+				sM0_7a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_7b:
+
+				mes "[Raul Expagarus]";
+				mes "9. Lv. 10 Thunder Storm's จะต้อง Sp เท่าใดในการใช้สกิล";
+				next;
+				menu "84",sM0_8b, "74",sM0_8a, "64",sM0_8b, "54",sM0_8b;
+
+				sM0_8a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_8b:
+
+				mes "[Raul Expagarus]";
+				mes "10. สกิลชนิดใดที่สามารถใช้งานได้ดีที่สุดเมื่ออยู่ใน Byalan Dungeon?";
+				next;
+				menu "Lightning Bolt",sM0_9a, "Fire Bolt",sM0_9b, "Ice Bolt",sM0_9b, "Sight",sM0_9b;
+
+				sM0_9a:
+					set @SCORE, @SCORE + 10;
+
+				sM0_9b:
+				goto L_Cont0;
+
+			//Monster Quiz
+			R_1:
+				mes "[Raul Expagarus]";
+				mes "1. อะไรที่ดรอป guard slot?";
+				next;
+				menu "Thief Bug",sM1_0b, "Peco Peco",sM1_0b, "Pupa",sM1_0a, "Mace Kobold",sM1_0b;
+
+				sM1_0a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_0b:
+
+				mes "[Raul Expagarus]";
+				mes "2. มอนสเตอร์ชนิดใดที่กำจัดง่ายที่สุดสำหรับ Magicians?";
+				next;
+				menu "Flora",sM1_1a, "Gierth",sM1_1b, "Golem",sM1_1b, "Myst",sM1_1b;
+
+				sM1_1a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_1b:
+
+				mes "[Raul Expagarus]";
+				mes "3. มอนสเตอร์ชนิดใดที่ไม่โดนสกิล Stone Curse?";
+				next;
+				menu "Elder Willow",sM1_2b, "Evil Druid",sM1_2a, "Baek-Ryuhn-Oak",sM1_2b, "Marc",sM1_2b;
+
+				sM1_2a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_2b:
+
+				mes "[Raul Expagarus]";
+				mes "4. ท่านจะทำ Dmg เท่าไหร่เมื่อใช้ธาตุ Wind โจมตีมอนสเตอร์ธาตุ Water Lv 3?";
+				next;
+				menu "125%",sM1_3b, "150%",sM1_3b, "175%",sM1_3b, "200%",sM1_3a;
+
+				sM1_3a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_3b:
+
+				mes "[Raul Expagarus]";
+				mes "5. Baby Desert Wolves ต่อสู้กับ Familiar ฝ่ายใดจะเป็นฝ่ายชนะ?";
+				next;
+				menu "Baby Desert Wolf",sM1_4a, "Farmiliar",sM1_4b, "Tie",sM1_4b, "Don't Know",sM1_4b;
+
+				sM1_4a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_4b:
+
+				mes "[Raul Expagarus]";
+				mes "6. มอนสเตอร์ชนิดใด ที่ไม่สามารถนำมาเป็นสัตว์เลี้ยง?";
+				next;
+				menu "Poporing",sM1_5b, "Roda Frog",sM1_5a, "Smokie",sM1_5b, "Poison Spore",sM1_5b;
+
+				sM1_5a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_5b:
+
+				mes "[Raul Expagarus]";
+				mes "7. มอนสเตอร์ชนิดใดที่แพ้ Fire?";
+				next;
+				menu "Knife Goblin",sM1_6b, "Mace Goblin",sM1_6b, "Flail Goblin",sM1_6b, "Hammer Goblin",sM1_6a;
+
+				sM1_6a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_6b:
+
+				mes "[Raul Expagarus]";
+				mes "8. มอนสเตอร์ชนิดใดที่มีค่าป้องกันเวทมนตร์เยอะที่สุด?";
+				next;
+				menu "Horong",sM1_7b, "ChonChon",sM1_7b, "Andre",sM1_7b, "Caramel",sM1_7a;
+
+				sM1_7a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_7b:
+
+				mes "[Raul Expagarus]";
+				mes "9. เลือกมอนสเตอร์ที่ไม่ได้อยู่ในแผนที่เดียวกัน";
+				next;
+				menu "Poring",sM1_8b, "Mastering",sM1_8b, "Ghostring",sM1_8b, "Spore",sM1_8a;
+
+				sM1_8a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_8b:
+
+				mes "[Raul Expagarus]";
+				mes "10. มอนสเตอร์ชนิดใดไม่ได้เป็น Undead?";
+				next;
+				menu "Drake",sM1_9b, "Megalodon",sM1_9b, "Deviace",sM1_9a, "Khalitzburg",sM1_9b;
+
+				sM1_9a:
+					set @SCORE, @SCORE + 10;
+
+				sM1_9b:
+				goto L_Cont0;
+
+			//Wizard Quiz
+			R_2:
+				mes "[Raul Expagarus]";
+				mes "1. Stat ที่สำคัญที่สุดสำหรับ Wizard คืออะไร?";
+				next;
+				menu "INT",sM2_0a, "AGI",sM2_0b, "DEX",sM2_0b, "VIT",sM2_0b;
+
+				sM2_0a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_0b:
+
+				mes "[Raul Expagarus]";
+				mes "2. ธาตุใดที่ไม่ได้ประกอบไปได้สกิล bolt?";
+				next;
+				menu "water",sM2_1b, "earth",sM2_1a, "fire",sM2_1b, "wind",sM2_1b;
+
+				sM2_1a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_1b:
+
+				mes "[Raul Expagarus]";
+				mes "3. อะไรไม่ใช่ลักษณะสำคัญของ Wizard?";
+				next;
+				menu "การโจมตีกายภาพที่อ่อนแอ",sM2_2b, "การโจมตีระยะไกล",sM2_2b, "หาเงินได้ง่าย",sM2_2a, "การป้องกันทางเวทย์สูง",sM2_2b;
+
+				sM2_2a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_2b:
+
+				mes "[Raul Expagarus]";
+				mes "4. เมืองใดคือบ้านเกิดของ Wizards?";
+				next;
+				menu "Prontera",sM2_3b, "Morroc",sM2_3b, "Alberta",sM2_3b, "Geffen",sM2_3a;
+
+				sM2_3a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_3b:
+
+				mes "[Raul Expagarus]";
+				mes "5. การ์ดชนิดที่ไม่ได้เพิ่ม INT?";
+				next;
+				menu "Andre Card",sM2_4b, "Soldier Andre Card",sM2_4a, "Baby Desert Wolf Card",sM2_4b, "Elder Willow Card",sM2_4b;
+
+				sM2_4a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_4b:
+
+				mes "[Raul Expagarus]";
+				mes "6. อะไรคือสิ่งที่ดีที่สุดเมื่อเทียบกับอาชีพอื่น ๆ?";
+				next;
+				menu "การต่อสู้ระยะประชิด",sM2_5b, "การหลบหลีกสูง",sM2_5b, "มีทักษะการเต้นรำ",sM2_5b, "พลังการโจมตีเวทย์สูง",sM2_5a;
+
+				sM2_5a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_5b:
+
+				mes "[Raul Expagarus]";
+				mes "7. จะเพิ่ม INT เท่าใด เมื่อจ๊อบเลเวลเท่ากับ 40?";
+				next;
+				menu "8",sM2_6b, "7",sM2_6b, "6",sM2_6b, "5",sM2_6a;
+
+				sM2_6a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_6b:
+
+				mes "[Raul Expagarus]";
+				mes "8. ไอเท็มใดที่ mages ไม่สามารถสวมใส่ได้?";
+				next;
+				menu "Knife",sM2_7b, "Cap",sM2_7a, "Sandel",sM2_7b, "Eye of Dullahan",sM2_7b;
+
+				sM2_7a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_7b:
+
+				mes "[Raul Expagarus]";
+				mes "9. ในการทดสอบของ mage หินชนิดใดที่ไม่ได้เป็นส่วนหนึ่งของตัวเร่งปฏิกิริยา?";
+				next;
+				menu "Yellow Gemstone",sM2_8b, "Red Gemstone",sM2_8b, "Blue Gemstone",sM2_8b, "Red Blood",sM2_8a;
+
+				sM2_8a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_8b:
+
+				mes "[Raul Expagarus]";
+				mes "10. การ์ดชนิดใดไม่ได้เพิ่มพลังด้านเวทมนตร์?";
+				next;
+				menu "Marduk Card",sM2_9b, "Baek-Rhyun-Oak Card",sM2_9a, "Willow Card",sM2_9b, "Maya Card",sM2_9b;
+
+				sM2_9a:
+					set @SCORE, @SCORE + 10;
+
+				sM2_9b:
+
+
+			L_Cont0:
+			mes "[Raul Expagarus]";
+			mes " ดีล่ะ นี่ก็เป็นการสิ้นสุดการทดสอบแล้ว..";;
+			mes " นี่ก็คือคะแนนของท่าน : ^ff0000"+@SCORE+"^000000 คะแนน";
+			next;
+			mes "[Raul Expagarus]";
+			if(@SCORE == 100) goto sL_Pass100;
+			if(@SCORE == 90) goto sL_Pass90;
+
+			sL_Failed:
+				set WIZ_Q2, 1;
+				mes " หืมม์ ท่านล้มเหลวในการทดสอบ ข้าว่าท่าวควรฝึกฝนมาใหม่";
+				close;
+
+			sL_Pass90:
+				set WIZ_Q, 3;
+				set WIZ_Q2, 0;
+				mes " หืมม์ ท่านตอบพลาดไปหนึ่งคำถาม แต่เอาล่ะ ข้าจะให้ท่านผ่าน";
+				next;
+				mes "[Raul Expagarus]";
+				mes " อย่าเพิ่งรีบดีใจ ท่านยังเหลือการทดสอบที่ 3 ซึ่งเป็นการสอบสุดท้ายที่ยังเหลืออยู่";
+				close;
+
+			sL_Pass100:
+				set WIZ_Q, 3;
+				set WIZ_Q2, 0;
+				mes " สวยงาม ท่านผ่านการทดสอบทั้ง 2 ส่วนแล้ว";
+				next;
+				mes "[Raul Expagarus]";
+				mes " อย่าเพิ่งรีบดีใจ ท่านยังเหลือการทดสอบที่ 3 ซึ่งเป็นการสอบสุดท้ายที่ยังเหลืออยู่";
+				close;
+
+
+	L_Test3:
+		if(WIZ_Q2 == 1) goto sL_ReTest3;
+		mes " ดี  ตอนนี้ข้าจะขอเริ่มการทดสอบสุดท้าย";
+		next;
+		mes "[Raul Expagarus]";
+		mes " ข้าจะอธิบายเกี่ยวกับการทดสอบอย่างรวดเร็วท่านต้องการจะฟังหรือไม่?";
+		next;
+		menu "ไม่ ข้าไม่ต้องการ",M_1a, "ช่วยบอกข้าด้วย",M_1b;
+
+		M_1a:
+			mes "[Raul Expagarus]";
+			mes " ท่านโง่มาก!  หากท่านต้องตายข้าจะนำศพท่านทิ้งให้เป็นอาหารสำหรับมอนสเตอร์";
+			emotion 23;
+			next;
+			mes "[Raul Expagarus]";
+			mes " ข้าจะส่งท่านไปเดี๋ยวนี้ ขอให้สนุกกับการถูกฆ่า!";
+			next;
+			savepoint "gef_tower",106,29;
+			warp "job_wiz",57,154;
+			end;
+
+		M_1b:
+			mes "[Raul Expagarus]";
+			mes " ท่านเลือกได้ดี เอาล่ะฟังข้า";
+			next;
+			mes "[Raul Expagarus]";
+			mes " นี่คือการทดสอบความสามารถของท่านที่จะต่อสู่กับมอนสเตอร์ที่ต่างกันของแต่ละธาตุ";
+			mes " จะมีเพียง 3 ห้อง เท่านั้น จะมอนสเตอร์ที่มีคุณสมบัติของธาตุแตกต่างกัน";
+			next;
+			mes "[Raul Expagarus]";
+			mes " จะมีห้องของธาตุ Water ซึ่งจะมี มอนสเตอร์เฉพาะธาตุน้ำ ตามด้วย";
+			mes " ห้องของธาตุ Earth ซึ่งจะมี มอนสเตอร์เฉพาะธาตุ earth และสุดท้ายห้องของธาตุ Fire ซึ่งจะมี มอนสเตอร์เฉพาะ fire";
+			next;
+			mes "[Raul Expagarus]";
+			mes " ท่านจะมีเวลาเพียง 3 นาทีสำหรับแต่ละห้อง  ท่านจะต้องจัดการกับมอนสเตอร์ทั้งหมดเพื่อทำให้ผ่านไปยังห้องถัดไป";
+			next;
+			mes "[Raul Expagarus]";
+			mes " หากท่านใช้สกิลได้ถูกต้อง ท่านจะสามารถผ่านการทดสอบไปด้วยความง่ายดาย";
+			next;
+			mes "[Raul Expagarus]";
+			mes " หากท่านคงรู้สึกกลัว ข้าสามารถพาท่านกลับสู่เมืองได้";
+			next;
+			menu " ข้าไม่กลัว ข้าอยากเริ่มการทดสอบ!",sM_a, "ข้า กลัวววว ข้าอยากกลับบ้าน",sM_b;
+
+			sM_a:
+				mes "[Raul Expagarus]";
+				mes " ท่านมีความกล้าหาญมาก ข้าจะเริ่มในทันที!";
+				next;
+				set WIZ_Q2, 1;
+				savepoint "gef_tower",106,29;
+				warp "job_wiz",57,154;
+				end;
+
+			sM_b:
+				mes "[Raul Expagarus]";
+				mes " นี่เป็นทางเลือกที่ดี หากท่านต้องการชีวิตที่สงบสุข!";
+				warp "geffen",120,110;
+				end;
+
+		sL_ReTest3:
+			mes " ท่านต้องการจะทดสอบอีกครั้ง!? ท่านคงจะรักเวทมนตร์มาก!?";
+			emotion 1;
+			next;
+			mes "[Raul Expagarus]";
+			mes " ท่านล้มเหลวในครั้งที่แล้ว นี่คงเป็นเวลาที่จะได้ถามคำถามท่านอีกครั้ง หวังว่าท่านคงเตรียมตัวมาดี อย่าให้พลาดล่ะ!.";
+			next;
+			mes "[Raul Expagarus]";
+			mes " เริ่มได้";
+			next;
+			set @SCORE, 0;
+
+			mes "[Raul Expagarus]";
+			mes "1. มอนสเตอร์ใดที่ไม่มีอยู่จริง?";
+			next;
+			menu "Mantis",sM_0b, "Cunner Tooth",sM_0a, "Giearth",sM_0b, "Caramel",sM_0b;
+
+			sM_0a:
+				set @SCORE, @SCORE + 20;
+
+			sM_0b:
+
+			mes "[Raul Expagarus]";
+			mes "2. มอนสเตอร์ชนิดใดไม่ใช่ประเภทสัตว์?";
+			next;
+			menu "Yoyo",sM_1b, "Bigfoot",sM_1b, "Metaller",sM_1b, "Zerom",sM_1a;
+
+			sM_1a:
+				set @SCORE, @SCORE + 20;
+
+			sM_1b:
+
+			mes "[Raul Expagarus]";
+			mes "3. มอนสเตอร์ชนิดใดมีความรู้สึกของการร่ายเวทย์?";
+			next;
+			menu "Marina",sM_2a, "Vitata",sM_2b, "Scorpion",sM_2b, "Giearth",sM_2b;
+
+			sM_2a:
+				set @SCORE, @SCORE + 20;
+
+			sM_2b:
+
+			mes "[Raul Expagarus]";
+			mes "4. สกิลใดใช้ได้ดีที่สุดสำหรับ Marin Spheres?";
+			next;
+			menu "Cold Bolt",sM_3b, "Fire Bolt",sM_3b, "Lightning Bolt",sM_3a, "Stone Curse",sM_3b;
+
+			sM_3a:
+			set @SCORE, @SCORE + 20;
+
+			sM_3b:
+
+			mes "[Raul Expagarus]";
+			mes "5. มอนสเตอร์ชนิดใดสามารถเคลื่อนย้ายได้?";
+			next;
+			menu "Hydra",sM_4b, "Mandragora",sM_4b, "Greatest General",sM_4b, "Frilldora",sM_4a;
+
+			sM_4a:
+				set @SCORE, @SCORE + 20;
+
+			sM_4b:
+
+			mes "[Raul Expagarus]";
+			mes " คะแนนของท่าน ^ff0000" +@SCORE+ "^000000 คะแนน";
+			next;
+			mes "[Raul Expagarus]";
+			if (@SCORE >= 80) goto sL_Passed3;
+
+			sL_Failed3:
+				mes "ท่านล้มเหลวในการทดสอบ!";
+				next;
+				mes "[Raul Expagarus]";
+				mes " ท่านยังทำไม่ดีพอสำหรับการเป็น wizard กลับไปคิดว่าทำไมท่านถึงได้ล้มเหลว!?";
+				close;
+
+			sL_Passed3:
+				if (@SCORE == 100) mes " ถ้าคุณฉลาดเช่นนี้ ทำไมท่านถึงไม่ผ่านในการทดสอบครั้งแรก?";
+				if (@SCORE == 80) mes " ฮั้ ฮั้ เกือบจะดีแล้ว ข้าอยากให้ท่านลองใหม่อีกกครั้ง";
+			next;
+			menu " เริ่มได้!",M_2a, " ช่วยอธิบายการทดสอบอีกครั้ง",M_1b;
+
+			M_2a:
+				mes "[Raul Expagarus]";
+				mes " ข้าจะไม่ช่วยท่านหากท่านตายอีกแล้วไม่ต้องมาร้องขอข้าหากท่านล้มเหลวในการทดสอบ";
+				next;
+				percentheal 100,100;
+				mes "[Raul Expagarus]";
+				mes " ข้าจะส่งท่านไปยัง arena เดี๋ยวนี้ ขอให้สนุกละกัน!";
+				next;
+				savepoint "gef_tower",106,29;
+				warp "job_wiz",55,156;
+				end;
+}
+
+
+//<====================================================== Test Arena ========================================================>\\
+// Test Guide  ---------------------------------------------------------------------------------
+job_wiz,50,165,4	script	Wizard Test Guide::WzTG	123,{
+	mes "[Test Guide]";
+	if (Class != 2) {
+		mes "สายอาชีพที่คุณกำลังเล่นอยู่ ไม่สามารถเปลี่ยนอาชีพ Wizard ได้.";
+		close;
+	}
+	if (checkfalcon() || checkcart() || checkriding()) {
+		mes "กรุณาปลด "+((checkfalcon())?"falcon":"")+((checkcart())?"cart":"")+((checkriding())?"Peco":"")+" แล้วกลับมาใช้บริการใหม่อีกครั้ง.";
+		close;
+	}
+	if (.SkillPointCheck && SkillPoint) {
+		mes "เสียใจด้วย, กรุณาอัพสกิลของท่านให้หมด แล้วกลับมาใช้บริการใหม่อีกครั้ง.";
+		close;
+	}
+	if (JobLevel < 40) {
+		mes "Job Level จะต้อง 40 ขึ้นไป ถึงจะเปลี่ยนเป็น Wizard.";
+		close;
+	}
+
+	mes "ขณะนี้คุณเปลี่ยนเป็น Wizard แล้ว!";
+	jobchange 9;
+	close;
+
+OnInit:
+	waitingroom "Waiting Room",8,"WzTG::OnStart",1;
+	end;
+
+OnStart:
+	set $@WzUsers, getareausers("job_wiz", 98, 154, 129, 185);			// get user count for first lvl
+	set $@WzUsers, $@WzUsers + getareausers("job_wiz", 100, 82, 131, 113);		// get user count for second lvl + first lvl
+	set $@WzUsers, $@WzUsers + getareausers("job_wiz", 30, 82, 61, 113);		// get user count for third lvl + second lvl + first lvl
+	if ($@WzUsers > 0) end;
+
+	if ((getwaitingroomstate(33)) == 0) end;		// finds out if there is anyone in the waiting room
+	disablenpc "waterwrp";		//disables the warps
+	disablenpc "waterwarpW";
+	disablenpc "waterwarpN";
+	disablenpc "waterwarpS";
+	disablenpc "earthwrp";
+	disablenpc "earthwarpW";
+	disablenpc "earthwarpN";
+	disablenpc "earthwarpS";
+	disablenpc "firewrp";
+	disablenpc "firewarpN";
+	disablenpc "firewarpW";
+	disablenpc "firewarpS";
+	killmonsterall "job_wiz";		//makes sure there are no left over mobs from other testers
+	warpwaitingpc "job_wiz",114,169;
+	donpcevent "WaterRm::OnStart";
+	end;
+}
+
+// Room of Water  -----------------------------------------------------------------------------
+job_wiz,1,1,1	script	WaterRm	-1,{
+OnStart:
+	set $@WzRm, 1;		// used to determine which map area(room) to make time announcements in
+	set $@WzMOB, 8;		//used as a counter for the monsters that are summoned
+	monster "job_wiz",109,174,"Phen",1158,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",118,174,"Kukre",1070,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",98,170,"Kukre",1070,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",109,165,"Vadon",1066,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",118,165,"Cornutus",1067,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",101,157,"Marina",1141,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",126,157,"Marin",1242,1,"WaterRm::OnMyMobDead1";
+	monster "job_wiz",129,170,"Obeaune",1044,1,"WaterRm::OnMyMobDead1";
+	initnpctimer "TimerWz";
+	end;
+
+OnMyMobDead1:		//when a monster dies this portion of script is run
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	set $@WzMOB, 0;
+	addtimer 2000, "WaterRm::OnTimer2000";
+	end;
+
+OnTimer2000:
+	set $@WzMOB, 5;
+	areaannounce "job_wiz", 98, 154, 129, 185, "[Test Guide]: ท่านต้องจัดการกับผู้เฝ้าประตู! โดยเร็ว!",8;
+	monster "job_wiz",114,169,"Marine Sphere",1142,1,"WaterRm::OnMyMobDead2";
+	monster "job_wiz",112,169,"Hydra",1068,1,"WaterRm::OnMyMobDead2";
+	monster "job_wiz",116,169,"Hydra",1068,1,"WaterRm::OnMyMobDead2";
+	monster "job_wiz",114,171,"Hydra",1068,1,"WaterRm::OnMyMobDead2";
+	monster "job_wiz",114,167,"Hydra",1068,1,"WaterRm::OnMyMobDead2";
+	setnpctimer 120000, "TimerWz";
+	startnpctimer "TimerWz";
+	end;
+
+OnMyMobDead2:
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	set $@WzMOB, 0;
+	areaannounce "job_wiz", 98, 154, 129, 185, "[Test Guide]: ดีมาก ท่านผ่านการทดสอบในห้องแห่ง Water เตรียมพร้อมสำหรับห้องแห่ง Earth",8;
+	percentheal 100,100;
+	enablenpc "waterwrp";
+	enablenpc "waterwarpW";
+	enablenpc "waterwarpN";
+	enablenpc "waterwarpS";
+	initnpctimer "waterwrp";		// warps the player after 30 secs even if they don't enter the warps
+	end;
+}
+
+// Room of Earth -----------------------------------------------------------------------------------------------
+job_wiz,1,1,1	script	EarthRm	-1,{
+OnStart:
+	set $@WzRm, 2;
+	set $@WzMOB, 10;
+	monster "job_wiz",111,102,"Yoyo",1057,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",120,102, "Deniro",1105,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",111,102, "Caramel",1103,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",120,102,"Hode",1127,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",111,93,"Savage",1166,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",120,93,"Giearth",1121,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",107,98,"Bigfoot",1160,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",124,98,"Orc Warrior",1023,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",104,86,"Vitata",1176,1,"EarthRm::OnMyMobDead1";
+	monster "job_wiz",127,86,"Mantis",1139,1,"EarthRm::OnMyMobDead1";
+	initnpctimer "TimerWz";
+	end;
+
+OnMyMobDead1:
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	addtimer 2000, "EarthRm::OnTimer2000";
+	set $@WzMOB, 0;
+	end;
+
+OnTimer2000:
+	set $@WzMOB, 7;
+	areaannounce "job_wiz", 100, 82, 131, 113, "[Test Guide]: ท่านต้องจัดการกับผู้เฝ้าประตู! โดยเร็ว!",8;
+	monster "job_wiz",116,97,"Flora",1118,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",114,95,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",118,95,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",114,99,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",118,99,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",116,94,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	monster "job_wiz",116,100,"Mandragora",1020,1,"EarthRm::OnMyMobDead2";
+	setnpctimer 120000, "TimerWz";
+	startnpctimer "TimerWz";
+	end;
+
+OnMyMobDead2:
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	set $@WzMOB, 0;
+	areaannounce "job_wiz", 100, 82, 131, 113, "[Test Guide]: ดีมาก ท่านผ่านการทดสอบในห้องแห่ง Earth เตรียมพร้อมสำหรับห้องแห่ง Fire",8;
+	percentheal 100,100;
+	enablenpc "earthwrp";
+	enablenpc "earthwarpN";
+	enablenpc "earthwarpW";
+	enablenpc "earthwarpS";
+	initnpctimer "earthwrp";
+	end;
+}
+
+// Room of Fire ------------------------------------------------------------------------------------------------------------
+job_wiz,1,1,1	script	FireRm	-1,{
+OnStart:
+	set $@WzRm, 3;
+	set $@WzMOB, 7;
+	monster "job_wiz",58,110,"Zerom",1178,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",33,110,"Flail Goblin",1123,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",40,103,"Scorpion",1001,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",51,103,"Frilldora",1119,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",40,92,"Peco Peco",1019,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",51,92,"Elder Willow",1033,1,"FireRm::OnMyMobDead1";
+	monster "job_wiz",37,89,"Metaller",1058,1,"FireRm::OnMyMobDead1";
+	initnpctimer "TimerWz";
+	end;
+
+OnMyMobDead1:
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	addtimer 2000, "FireRm::OnTimer2000";
+	set $@WzMOB, 0;
+	end;
+
+OnTimer2000:
+	set $@WzMOB, 3;
+	areaannounce "job_wiz", 30, 82, 61, 113, "[Test Guide]: ท่านต้องจัดการกับผู้เฝ้าประตู! โดยเร็ว!",8;
+	monster "job_wiz",44,99,"Greatest General",1277,1,"FireRm::OnMyMobDead2";
+	monster "job_wiz",43,99,"Hode",1127,1,"FireRm::OnMyMobDead2";
+	monster "job_wiz",45,99,"Hode",1127,1,"FireRm::OnMyMobDead2";
+	setnpctimer 120000, "TimerWz";
+	startnpctimer "TimerWz";
+	end;
+
+OnMyMobDead2:
+	set $@WzMOB, $@WzMOB - 1;
+	if ($@WzMOB > 0) end;
+
+	stopnpctimer "TimerWz";
+	set $@WzMOB, 0;
+	set WIZ_Q, 4;
+	set WIZ_Q2, 0;
+	areaannounce "job_wiz", 30, 82, 61, 113, "[Test Guide]: ท่านทำได้ดีมากผ่านการทดสอบในห้องของ Fire และการทดสอบทั้งหมด",0;
+	enablenpc "firewrp";
+	enablenpc "firewarpN";
+	enablenpc "firewarpW";
+	enablenpc "firewarpS";
+	initnpctimer "firewrp";
+	end;
+}
+
+
+// Timer -----------------------------------------------------------------------------------------------
+job_wiz,1,1,1	script	TimerWz	-1,{
+
+OnTimer1000:
+	if($@WzRm==1) areaannounce "job_wiz", 98, 154, 129, 185, "[Test Guide]: ห้องของ Water การทดสอบได้เริ่มขึ้นแล้ว",8;
+	if($@WzRm==2) areaannounce "job_wiz", 100, 82, 131, 113, "[Test Guide]: ห้องของ Earth การทดสอบได้เริ่มขึ้นแล้ว",8;
+	if($@WzRm==3) areaannounce "job_wiz", 30, 82, 61, 113, "[Test Guide]: ห้องของ Fire การทดสอบได้เริ่มขึ้นแล้ว",8;
+	end;
+OnTimer4000:
+	set $@WzTime$, "ท่านมีเวลา 3 นาทีในการจัดการกับมอนสเตอร์ในห้องนี้ทั้งหมด!";
+	donpcevent "WzTG::OnStart";		//checks to see if anyone is still in the room, in case of logout or KO
+	callsub AnnounceWz;
+OnTimer34000:
+	donpcevent "WzTG::OnStart";
+	end;
+OnTimer64000:
+	set $@WzTime$, "มีเวลาอีก 2 นาทีเท่านั้น!";
+	donpcevent "WzTG::OnStart";
+	callsub AnnounceWz;
+OnTimer94000:
+	donpcevent "WzTG::OnStart";
+	end;
+OnTimer124000:
+	set $@WzTime$, "มีเวลาอีก 1 นาทีเท่านั้น!";
+	donpcevent "WzTG::OnStart";
+	callsub AnnounceWz;
+OnTimer154000:
+	set $@WzTime$, "มีเวลาอีก 30 วินาทีเท่านั้น!";
+	donpcevent "WzTG::OnStart";
+	callsub AnnounceWz;
+OnTimer174000:
+	set $@WzTime$, "มีเวลาอีก 10 วินาทีเท่านั้น!";
+	callsub AnnounceWz;
+OnTimer184000:
+	set $@WzTime$, "หมดเวลาการทดสอบ การทดสอบล้มเหลว";
+	callsub AnnounceWz;
+OnTimer188000:
+	stopnpctimer;
+	if($@WzRm==1) areawarp "job_wiz", 98, 154, 129, 185, "gef_tower",106, 35;
+	if($@WzRm==2) areawarp "job_wiz", 100, 82, 131, 113, "gef_tower",106, 35;
+	if($@WzRm==3) areawarp "job_wiz", 30, 82, 61, 113, "gef_tower",106, 35;
+	killmonsterall "job_wiz";
+	donpcevent "WzTG::OnStart";
+	end;
+
+AnnounceWz:
+	if($@WzRm==1) areaannounce "job_wiz", 98, 154, 129, 185, "[Test Guide]: "+$@WzTime$+".",8;
+	if($@WzRm==2) areaannounce "job_wiz", 100, 82, 131, 113, "[Test Guide]: "+$@WzTime$+".",8;
+	if($@WzRm==3) areaannounce "job_wiz", 30, 82, 61, 113, "[Test Guide]: "+$@WzTime$+".",8;
+	end;
+}
+
+
+// Warps ------------------------------------------------------------------------------------------
+
+// Water
+job_wiz,129,169,1	script	waterwarpE::waterwrp	45,1,1,{
+
+OnTimer30000:
+	stopnpctimer "waterwrp";
+	areawarp "job_wiz", 98, 154, 129, 185, "job_wiz",116,98;
+	donpcevent "EarthRm::OnStart";
+	end;
+}
+job_wiz,98,169,1	duplicate(waterwrp)	waterwarpW	45,1,1
+job_wiz,114,185,1	duplicate(waterwrp)	waterwarpN	45,1,1
+job_wiz,114,154,1	duplicate(waterwrp)	waterwarpS	45,1,1
+
+
+// Earth
+job_wiz,131,98,1	script	earthwarpE::earthwrp	45,1,1,{
+
+OnTimer30000:
+	stopnpctimer "earthwrp";
+	areawarp "job_wiz", 100, 82, 131, 113, "job_wiz",47,98;
+	donpcevent "FireRm::OnStart";
+	end;
+}
+job_wiz,100,98,1	duplicate(earthwrp)	earthwarpW	45,1,1
+job_wiz,116,82,1	duplicate(earthwrp)	earthwarpN	45,1,1
+job_wiz,116,113,1	duplicate(earthwrp)	earthwarpS	45,1,1
+
+
+// Fire
+job_wiz,61,97,1	script	firewarpE::firewrp	45,1,1,{
+
+OnTimer30000:
+	stopnpctimer "firewrp";
+	areawarp "job_wiz", 30, 82, 61, 113, "gef_tower",106,35;
+	donpcevent "WzTG::OnStart";
+	end;
+}
+job_wiz,30,97,1	duplicate(firewrp)	firewarpW	45,1,1
+job_wiz,46,113,1	duplicate(firewrp)	firewarpN	45,1,1
+job_wiz,46,82,1	duplicate(firewrp)	firewarpS	45,1,1

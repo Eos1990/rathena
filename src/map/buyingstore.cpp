@@ -92,7 +92,7 @@ int8 buyingstore_setup(map_session_data* sd, unsigned char slots){
 
 	if( slots > MAX_BUYINGSTORE_SLOTS )
 	{
-		ShowWarning("buyingstore_setup: Requested %d slots, but server supports only %d slots.\n", (int)slots, MAX_BUYINGSTORE_SLOTS);
+		ShowWarning("buyingstore_setup: Requested %d slots, but server supports only %d slots.\n", (int32)slots, MAX_BUYINGSTORE_SLOTS);
 		slots = MAX_BUYINGSTORE_SLOTS;
 	}
 
@@ -215,7 +215,7 @@ int8 buyingstore_create( map_session_data* sd, int32 zenylimit, unsigned char re
 		return 5;
 	}
 
-	if( (sd->max_weight*90)/100 < weight )
+	if( pc_getpercentweight(*sd, weight) >= battle_config.major_overweight_rate )
 	{// not able to carry all wanted items without getting overweight (90%)
 		sd->buyingstore.slots = 0;
 		clif_buyingstore_open_failed(sd, BUYINGSTORE_CREATE_OVERWEIGHT, weight);

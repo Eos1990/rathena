@@ -53,6 +53,8 @@ Body:
       can_trade: true
       can_party: true
       attendance: true
+      
+      all_commands: true
   - Id: 1
     Name: Super Player
     # Can do everything Players can and more

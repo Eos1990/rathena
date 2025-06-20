@@ -354,7 +354,7 @@ int32 npc_chat_sub(struct block_list* bl, va_list ap)
 		return 0;
 	
 	msg = va_arg(ap,char*);
-	len = va_arg(ap,int);
+	len = va_arg(ap,int32);
 	sd = va_arg(ap,map_session_data *);
 	
 	// iterate across all active sets
@@ -387,7 +387,7 @@ int32 npc_chat_sub(struct block_list* bl, va_list ap)
 				}
 				
 				// run the npc script
-				run_script(nd->u.scr.script,lst[i].pos,sd->bl.id,nd->bl.id);
+				run_script(nd->u.scr.script,lst[i].pos,sd->id,nd->id);
 				return 0;
 			}
 		}

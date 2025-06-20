@@ -95,7 +95,7 @@ map_session_data *inter_search_sd(uint32 account_id, uint32 char_id)
  * @param pet_name
  * @return 
  */
-int32 intif_create_pet(uint32 account_id,uint32 char_id,short pet_class,short pet_lv, t_itemid pet_egg_id, t_itemid pet_equip,short intimate,short hungry,char rename_flag,char incubate,const char *pet_name)
+int32 intif_create_pet(uint32 account_id,uint32 char_id,int16 pet_class,int16 pet_lv, t_itemid pet_egg_id, t_itemid pet_equip,int16 intimate,int16 hungry,char rename_flag,char incubate,const char *pet_name)
 {
 	if (CheckForCharServer())
 		return 0;
@@ -248,7 +248,7 @@ int32 intif_broadcast( const char* mes, size_t len, int32 type ){
  * @param fontY :
  * @return 0=not send to char-serv, 1=send to char-serv
  */
-int32 intif_broadcast2( const char* mes, size_t len, unsigned long fontColor, short fontType, short fontSize, short fontAlign, short fontY ){
+int32 intif_broadcast2( const char* mes, size_t len, unsigned long fontColor, int16 fontType, int16 fontSize, int16 fontAlign, int16 fontY ){
 	nullpo_ret(mes);
 	if (len < 2)
 		return 0;
@@ -294,7 +294,7 @@ int32 intif_main_message(map_session_data* sd, const char* message)
 	intif_broadcast2( output, strlen(output) + 1, 0xFE000000, 0, 0, 0, 0 );
 
 	// log the chat message
-	log_chat( LOG_CHAT_MAINCHAT, 0, sd->status.char_id, sd->status.account_id, mapindex_id2name(sd->mapindex), sd->bl.x, sd->bl.y, nullptr, message );
+	log_chat( LOG_CHAT_MAINCHAT, 0, sd->status.char_id, sd->status.account_id, mapindex_id2name(sd->mapindex), sd->x, sd->y, nullptr, message );
 
 	return 1;
 }
@@ -570,7 +570,7 @@ bool intif_send_guild_storage(uint32 account_id, struct s_storage *gstor)
 		return false;
 	WFIFOHEAD(inter_fd,sizeof(struct s_storage)+12);
 	WFIFOW(inter_fd,0) = 0x3019;
-	WFIFOW(inter_fd,2) = (unsigned short)sizeof(struct s_storage)+12;
+	WFIFOW(inter_fd,2) = (uint16)sizeof(struct s_storage)+12;
 	WFIFOL(inter_fd,4) = account_id;
 	WFIFOL(inter_fd,8) = gstor->id;
 	memcpy( WFIFOP(inter_fd,12),gstor, sizeof(struct s_storage) );
@@ -1352,7 +1352,7 @@ static int32 mapif_parse_WisToGM_sub(map_session_data* sd,va_list va)
 		return 0;
 	wisp_name = va_arg(va, char*);
 	message = va_arg(va, char*);
-	len = va_arg(va, int);
+	len = va_arg(va, int32);
 	clif_wis_message(sd, wisp_name, message, len,0);
 	return 1;
 }
@@ -2366,7 +2366,7 @@ int32 intif_parse_Mail_inboxreceived(int32 fd)
 	{
 		char output[128];
 		sprintf(output, msg_txt(sd,510), sd->mail.inbox.unchecked, sd->mail.inbox.unread + sd->mail.inbox.unchecked);
-		clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
+		clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 	}
 
 	return 1;
@@ -2539,7 +2539,7 @@ int32 intif_parse_Mail_return(int32 fd)
 {
 	map_session_data *sd = map_charid2sd(RFIFOL(fd,2));
 	int32 mail_id = RFIFOL(fd,6);
-	short fail = RFIFOB(fd,10);
+	int16 fail = RFIFOB(fd,10);
 
 	if( sd == nullptr )
 	{
@@ -2700,7 +2700,7 @@ bool intif_mail_checkreceiver( map_session_data* sd, char* name ){
  * @param page : in case of huge result list display 5 entry per page, (kinda suck that we redo the request atm)
  * @return 0=error, 1=msg sent
  */
-int32 intif_Auction_requestlist(uint32 char_id, short type, int32 price, const char* searchtext, short page)
+int32 intif_Auction_requestlist(uint32 char_id, int16 type, int32 price, const char* searchtext, int16 page)
 {
 	int32 len = NAME_LENGTH + 16;
 
@@ -2727,8 +2727,8 @@ int32 intif_Auction_requestlist(uint32 char_id, short type, int32 price, const c
 static void intif_parse_Auction_results(int32 fd)
 {
 	map_session_data *sd = map_charid2sd(RFIFOL(fd,4));
-	short count = RFIFOW(fd,8);
-	short pages = RFIFOW(fd,10);
+	int16 count = RFIFOW(fd,8);
+	int16 pages = RFIFOW(fd,10);
 	uint8* data = RFIFOP(fd,12);
 
 	if( sd == nullptr )
@@ -3203,21 +3203,20 @@ int32 intif_parse_elemental_saved(int32 fd)
  * @param type : 1 - Only return account id & userid, 0 - Full info
  * @return : 0=error, 1=msg sent
  */
-int32 intif_request_accinfo(int32 u_fd, int32 aid, int32 group_lv, char* query, char type) {
+int32 intif_request_accinfo( int32 u_fd, int32 aid, int32 group_lv, char* query ){
 
 	if( CheckForCharServer() )
 		return 0;
 	
-	WFIFOHEAD(inter_fd,2 + 4 + 4 + 4 + 1 + NAME_LENGTH);
+	WFIFOHEAD(inter_fd,2 + 4 + 4 + 4 + NAME_LENGTH);
 
 	WFIFOW(inter_fd,0) = 0x3007;
 	WFIFOL(inter_fd,2) = u_fd;
 	WFIFOL(inter_fd,6) = aid;
 	WFIFOL(inter_fd,10) = group_lv;
-	WFIFOB(inter_fd,14) = type;
-	safestrncpy(WFIFOCP(inter_fd,15), query, NAME_LENGTH);
+	safestrncpy(WFIFOCP(inter_fd,14), query, NAME_LENGTH);
 
-	WFIFOSET(inter_fd,2 + 4 + 4 + 4 + 1 + NAME_LENGTH);
+	WFIFOSET(inter_fd,2 + 4 + 4 + 4 + NAME_LENGTH);
 	return 1;
 }
 
@@ -3244,7 +3243,7 @@ void intif_parse_MessageToFD(int32 fd) {
 		int32 aid = RFIFOL(fd,8);
 		map_session_data * sd = (map_session_data *)session[u_fd]->session_data;
 		/* matching e.g. previous fd owner didn't dc during request or is still the same */
-		if( sd->bl.id == aid ) {
+		if( sd->id == aid ) {
 			char msg[512];
 			safestrncpy(msg, RFIFOCP(fd,12), RFIFOW(fd,2) - 12);
 			clif_displaymessage(u_fd,msg);
@@ -3395,8 +3394,8 @@ void intif_parse_itembound_ack(int32 fd) {
  * @author [Cydh]
  */
 void intif_parse_itembound_store2gstorage(int32 fd) {
-	unsigned short i, failed = 0;
-	short count = RFIFOW(fd, 4), guild_id = RFIFOW(fd, 6);
+	uint16 i, failed = 0;
+	int16 count = RFIFOW(fd, 4), guild_id = RFIFOW(fd, 6);
 	struct s_storage *gstor = guild2storage(guild_id);
 
 	if (!gstor) {
@@ -3483,7 +3482,7 @@ static bool intif_parse_StorageReceived(int32 fd)
 #ifdef BOUND_ITEMS
 			int32 j, idxlist[MAX_INVENTORY];
 #endif
-			pc_setinventorydata(sd);
+			pc_setinventorydata( *sd );
 			pc_setequipindex(sd);
 			pc_check_expiration(sd);
 			pc_check_available_item(sd, ITMCHK_INVENTORY);
@@ -3497,7 +3496,7 @@ static bool intif_parse_StorageReceived(int32 fd)
 			}
 #endif
 			//Set here because we need the inventory data for weapon sprite parsing.
-			status_set_viewdata(&sd->bl, sd->status.class_);
+			status_set_viewdata(sd, sd->status.class_);
 			// Set headgear data here, otherwise this is done in loadEndAck
 			if( sd->state.autotrade ){
 				pc_set_costume_view(sd);
@@ -3513,7 +3512,7 @@ static bool intif_parse_StorageReceived(int32 fd)
 			pc_check_available_item(sd, ITMCHK_CART);
 			if (sd->state.autotrade) {
 				clif_parse_LoadEndAck(sd->fd, sd);
-				sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->bl.id, 0);
+				sd->autotrade_tid = add_timer(gettick() + battle_config.feature_autotrade_open_delay, pc_autotrade_timer, sd->id, 0);
 			}else if( sd->state.prevend ){
 				clif_clearcart(sd->fd);
 				clif_cartlist(sd);
@@ -3778,7 +3777,7 @@ int32 intif_parse(int32 fd)
 			return 2;
 		packet_len = RFIFOW(fd,2);
 	}
-	if((int)RFIFOREST(fd)<packet_len){
+	if((int32)RFIFOREST(fd)<packet_len){
 		return 2;
 	}
 	// Processing branch

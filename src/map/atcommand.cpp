@@ -163,6 +163,13 @@ uint64 AtcommandAliasDatabase::parseBodyNode( const ryml::NodeRef& node ){
 			std::string alias;
 			subNode >> alias;
 
+			AtCommandInfo* parent_cmd = get_atcommandinfo_byname( alias.c_str() );
+
+			if( parent_cmd != nullptr ){
+				this->invalidWarning( subNode, "\"%s\" cannot be used as alias for \"%s\", since a command with this name exists.\n", alias.c_str(), command.c_str() );
+				return 0;
+			}
+
 			info->aliases.insert( alias );
 			this->aliases[alias] = command;
 		}
@@ -357,7 +364,7 @@ ACMD_FUNC(send)
 				// parse string
 				++message;
 				CHECK_EOS(message);
-				end=(num<=0? 0: min(off+((int)num),len));
+				end=(num<=0? 0: min(off+((int32)num),len));
 				for(; *message != '"' && (off < end || end == 0); ++off){
 					if(*message == '\\'){
 						++message;
@@ -472,7 +479,7 @@ ACMD_FUNC(send)
 /**
  * Retrieves map name suggestions for a given string.
  * This will first check if any map names contain the given string, and will
- *   print32 out MAX_SUGGESTIONS results if any maps are found.
+ *   print out MAX_SUGGESTIONS results if any maps are found.
  * Otherwise, suggestions will be calculated through Levenshtein distance,
  *   and up to 5 of the closest matches will be printed.
  *
@@ -511,7 +518,7 @@ static void warp_get_suggestions(map_session_data* sd, const char *name) {
 		// Levenshtein > 4 is bad
 		const int32 LEVENSHTEIN_MAX = 4;
 
-		std::unordered_map<int, std::vector<const char*>> maps;
+		std::unordered_map<int32, std::vector<const char*>> maps;
 
 		for (int32 i = 0; i < map_num; i++) {
 			struct map_data *mapdata = map_getmapdata(i);
@@ -581,8 +588,8 @@ static void warp_get_suggestions(map_session_data* sd, const char *name) {
 ACMD_FUNC(mapmove)
 {
 	char map_name[MAP_NAME_LENGTH_EXT];
-	unsigned short mapindex;
-	short x = 0, y = 0;
+	uint16 mapindex;
+	int16 x = 0, y = 0;
 	int16 m = -1;
 
 	nullpo_retr(-1, sd);
@@ -619,7 +626,7 @@ ACMD_FUNC(mapmove)
 		clif_displaymessage(fd, msg_txt(sd,247)); // You are not authorized to warp to this map.
 		return -1;
 	}
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,248)); // You are not authorized to warp from your current map.
 		return -1;
 	}
@@ -656,7 +663,7 @@ ACMD_FUNC(where)
 		return -1;
 	}
 
-	snprintf(atcmd_output, sizeof atcmd_output, "%s %s %d %d", pl_sd->status.name, mapindex_id2name(pl_sd->mapindex), pl_sd->bl.x, pl_sd->bl.y);
+	snprintf(atcmd_output, sizeof atcmd_output, "%s %s %d %d", pl_sd->status.name, mapindex_id2name(pl_sd->mapindex), pl_sd->x, pl_sd->y);
 	clif_displaymessage(fd, atcmd_output);
 
 	return 0;
@@ -684,13 +691,13 @@ ACMD_FUNC(jumpto)
 		return -1;
 	}
 
-	if (pl_sd->bl.m >= 0 && map_getmapflag(pl_sd->bl.m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
+	if (pl_sd->m >= 0 && map_getmapflag(pl_sd->m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
 	{
 		clif_displaymessage(fd, msg_txt(sd,247));	// You are not authorized to warp to this map.
 		return -1;
 	}
 
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
 	{
 		clif_displaymessage(fd, msg_txt(sd,248));	// You are not authorized to warp from your current map.
 		return -1;
@@ -702,7 +709,7 @@ ACMD_FUNC(jumpto)
 		return -1;
 	}
 
-	pc_setpos(sd, pl_sd->mapindex, pl_sd->bl.x, pl_sd->bl.y, CLR_TELEPORT);
+	pc_setpos(sd, pl_sd->mapindex, pl_sd->x, pl_sd->y, CLR_TELEPORT);
 	sprintf(atcmd_output, msg_txt(sd,4), pl_sd->status.name); // Jumped to %s
  	clif_displaymessage(fd, atcmd_output);
 
@@ -714,7 +721,7 @@ ACMD_FUNC(jumpto)
  *------------------------------------------*/
 ACMD_FUNC(jump)
 {
-	short x = 0, y = 0;
+	int16 x = 0, y = 0;
 
 	nullpo_retr(-1, sd);
 
@@ -722,7 +729,7 @@ ACMD_FUNC(jump)
 
 	sscanf(message, "%6hd %6hd", &x, &y);
 
-	if (map_getmapflag(sd->bl.m, MF_NOTELEPORT) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (map_getmapflag(sd->m, MF_NOTELEPORT) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,248));	// You are not authorized to warp from your current map.
 		return -1;
 	}
@@ -733,15 +740,15 @@ ACMD_FUNC(jump)
 		return -1;
 	}
 
-	if ((x || y) && map_getcell(sd->bl.m, x, y, CELL_CHKNOPASS))
+	if ((x || y) && map_getcell(sd->m, x, y, CELL_CHKNOPASS))
 	{	//This is to prevent the pc_setpos call from printing an error.
 		clif_displaymessage(fd, msg_txt(sd,2)); // Invalid coordinates, using random target cell.
-		if (!map_search_freecell(nullptr, sd->bl.m, &x, &y, 10, 10, 1))
+		if (!map_search_freecell(nullptr, sd->m, &x, &y, 10, 10, 1))
 			x = y = 0; //Invalid cell, use random spot.
 	}
 
 	pc_setpos(sd, sd->mapindex, x, y, CLR_TELEPORT);
-	sprintf(atcmd_output, msg_txt(sd,5), sd->bl.x, sd->bl.y); // Jumped to %d %d
+	sprintf(atcmd_output, msg_txt(sd,5), sd->x, sd->y); // Jumped to %d %d
 	clif_displaymessage(fd, atcmd_output);
 	return 0;
 }
@@ -770,7 +777,7 @@ ACMD_FUNC(who) {
 	if (strstr(command, "map") != nullptr) {
 		char map_name[MAP_NAME_LENGTH_EXT] = "";
 		if (sscanf(message, "%15s %23s", map_name, player_name) < 1 || (map_id = map_mapname2mapid(map_name)) < 0)
-			map_id = sd->bl.m;
+			map_id = sd->m;
 	} else {
 		sscanf(message, "%23s", player_name);
 	}
@@ -787,7 +794,7 @@ ACMD_FUNC(who) {
 	for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter))	{
 		if (!((pc_has_permission(pl_sd, PC_PERM_HIDE_SESSION) || pc_isinvisible(pl_sd)) && pc_get_group_level(pl_sd) > level)) { // you can look only lower or same level
 			if (stristr(pl_sd->status.name, player_name) == nullptr // search with no case sensitive
-				|| (map_id >= 0 && pl_sd->bl.m != map_id))
+				|| (map_id >= 0 && pl_sd->m != map_id))
 				continue;
 			switch (display_type) {
 				case 2: {
@@ -804,7 +811,7 @@ ACMD_FUNC(who) {
 					StringBuf_Printf(&buf, msg_txt(sd,343), pl_sd->status.name); // "Name: %s "
 					if (pc_get_group_id(pl_sd) > 0) // Player title, if exists
 						StringBuf_Printf(&buf, msg_txt(sd,344), pl_sd->group->name.c_str()); // "(%s) "
-					StringBuf_Printf(&buf, msg_txt(sd,348), mapindex_id2name(pl_sd->mapindex), pl_sd->bl.x, pl_sd->bl.y); // "| Location: %s %d %d"
+					StringBuf_Printf(&buf, msg_txt(sd,348), mapindex_id2name(pl_sd->mapindex), pl_sd->x, pl_sd->y); // "| Location: %s %d %d"
 					break;
 				}
 				default: {
@@ -904,7 +911,7 @@ ACMD_FUNC(whogm)
 
 		sprintf(atcmd_output, msg_txt(sd,914), // Name: %s (GM:%d) | Location: %s %d %d
 			pl_sd->status.name, pl_level,
-			mapindex_id2name(pl_sd->mapindex), pl_sd->bl.x, pl_sd->bl.y);
+			mapindex_id2name(pl_sd->mapindex), pl_sd->x, pl_sd->y);
 		clif_displaymessage(fd, atcmd_output);
 
 		sprintf(atcmd_output, msg_txt(sd,915), // BLvl: %d | Job: %s (Lvl: %d)
@@ -942,12 +949,12 @@ ACMD_FUNC(save)
 {
 	nullpo_retr(-1, sd);
 
-	if( map_getmapdata(sd->bl.m)->instance_id ) {
+	if( map_getmapdata(sd->m)->instance_id ) {
 		clif_displaymessage(fd, msg_txt(sd,383)); // You cannot create a savepoint in an instance.
 		return 1;
 	}
 
-	pc_setsavepoint(sd, sd->mapindex, sd->bl.x, sd->bl.y);
+	pc_setsavepoint(sd, sd->mapindex, sd->x, sd->y);
 	if (sd->status.pet_id > 0 && sd->pd)
 		intif_save_petdata(sd->status.account_id, &sd->pd->pet);
 
@@ -972,7 +979,7 @@ ACMD_FUNC(load){
 		clif_displaymessage(fd, msg_txt(sd,249));	// You are not authorized to warp to your save map.
 		return -1;
 	}
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,248));	// You are not authorized to warp from your current map.
 		return -1;
 	}
@@ -988,7 +995,7 @@ ACMD_FUNC(load){
  *------------------------------------------*/
 ACMD_FUNC(speed)
 {
-	short speed;
+	int16 speed;
 
 	nullpo_retr(-1, sd);
 
@@ -1013,7 +1020,7 @@ ACMD_FUNC(speed)
 	} else
 		clif_displaymessage(fd, msg_txt(sd,389)); // Speed returned to normal.
 
-	status_calc_bl(&sd->bl, { SCB_SPEED });
+	status_calc_bl(sd, { SCB_SPEED });
 
 	return 0;
 }
@@ -1117,35 +1124,35 @@ ACMD_FUNC(hide)
 	if (pc_isinvisible(sd)) {
 		sd->sc.option &= ~OPTION_INVISIBLE;
 		if (sd->disguise)
-			status_set_viewdata(&sd->bl, sd->disguise);
+			status_set_viewdata(sd, sd->disguise);
 		else
-			status_set_viewdata(&sd->bl, sd->status.class_);
+			status_set_viewdata(sd, sd->status.class_);
 		clif_displaymessage(fd, msg_txt(sd,10)); // Invisible: Off
 
 		// increment the number of pvp players on the map
-		map_getmapdata(sd->bl.m)->users_pvp++;
+		map_getmapdata(sd->m)->users_pvp++;
 
-		if( !battle_config.pk_mode && map_getmapflag(sd->bl.m, MF_PVP) && !map_getmapflag(sd->bl.m, MF_PVP_NOCALCRANK) )
+		if( !battle_config.pk_mode && map_getmapflag(sd->m, MF_PVP) && !map_getmapflag(sd->m, MF_PVP_NOCALCRANK) )
 		{// register the player for ranking calculations
-			sd->pvp_timer = add_timer( gettick() + 200, pc_calc_pvprank_timer, sd->bl.id, 0 );
+			sd->pvp_timer = add_timer( gettick() + 200, pc_calc_pvprank_timer, sd->id, 0 );
 		}
 		//bugreport:2266
-		map_foreachinmovearea(clif_insight, &sd->bl, AREA_SIZE, sd->bl.x, sd->bl.y, BL_ALL, &sd->bl);
+		map_foreachinmovearea(clif_insight, sd, AREA_SIZE, sd->x, sd->y, BL_ALL, sd);
 	} else {
 		sd->sc.option |= OPTION_INVISIBLE;
-		sd->vd.class_ = JT_INVISIBLE;
+		sd->vd.look[LOOK_BASE] = JT_INVISIBLE;
 		clif_displaymessage(fd, msg_txt(sd,11)); // Invisible: On
 
 		// decrement the number of pvp players on the map
-		map_getmapdata(sd->bl.m)->users_pvp--;
+		map_getmapdata(sd->m)->users_pvp--;
 
-		if( map_getmapflag(sd->bl.m, MF_PVP) && !map_getmapflag(sd->bl.m, MF_PVP_NOCALCRANK) && sd->pvp_timer != INVALID_TIMER )
+		if( map_getmapflag(sd->m, MF_PVP) && !map_getmapflag(sd->m, MF_PVP_NOCALCRANK) && sd->pvp_timer != INVALID_TIMER )
 		{// unregister the player for ranking
 			delete_timer( sd->pvp_timer, pc_calc_pvprank_timer );
 			sd->pvp_timer = INVALID_TIMER;
 		}
 	}
-	clif_changeoption(&sd->bl);
+	clif_changeoption(sd);
 
 	return 0;
 }
@@ -1154,42 +1161,31 @@ ACMD_FUNC(resetcooltime)
 {
 	nullpo_retr(-1, sd);
 
-	for( size_t i = 0; i < ARRAYLENGTH( sd->scd ); i++ ){
-		if( sd->scd[i] != nullptr ) {
-			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( sd->scd[i]->skill_id )->name ); // Found skill '%s', unblocking...
+	if (!sd->scd.empty()) {
+		for (const auto &entry : sd->scd) {
+			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( entry.first )->name ); // Found skill '%s', unblocking...
 			clif_displaymessage( sd->fd, atcmd_output );
-
-			if (battle_config.display_status_timers)
-				clif_skill_cooldown( *sd, sd->scd[i]->skill_id, 0 );
-
-			delete_timer(sd->scd[i]->timer, skill_blockpc_end);
-			aFree(sd->scd[i]);
-			sd->scd[i] = nullptr;
 		}
+
+		skill_blockpc_clear(*sd);
 	}
 
 	if( sd->hd != nullptr && hom_is_active( sd->hd ) ){
-		for( const uint16& skill_id : sd->hd->blockskill ){
-			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( skill_id )->name ); // Found skill '%s', unblocking...
+		for (const auto &entry : sd->hd->scd) {
+			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( entry.first )->name ); // Found skill '%s', unblocking...
 			clif_displaymessage( sd->fd, atcmd_output );
-
-			if (battle_config.display_status_timers)
-				clif_skill_cooldown( *sd, skill_id, 0 );
 		}
 
-		sd->hd->blockskill.clear();
+		skill_blockhomun_clear(*sd->hd);
 	}
 
 	if( sd->md != nullptr ){
-		for( const uint16& skill_id : sd->md->blockskill ){
-			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( skill_id )->name ); // Found skill '%s', unblocking...
+		for( const auto &entry : sd->md->scd ){
+			sprintf( atcmd_output, msg_txt( sd, 1537 ), skill_db.find( entry.first )->name ); // Found skill '%s', unblocking...
 			clif_displaymessage( sd->fd, atcmd_output );
-
-			if (battle_config.display_status_timers)
-				clif_skill_cooldown( *sd, skill_id, 0 );
 		}
 
-		sd->md->blockskill.clear();
+		skill_blockmerc_clear(*sd->md);
 	}
 
 	return 0;
@@ -1268,7 +1264,7 @@ ACMD_FUNC(jobchange)
 ACMD_FUNC(kill)
 {
 	nullpo_retr(-1, sd);
-	status_kill(&sd->bl);
+	status_kill(sd);
 	clif_displaymessage(sd->fd, msg_txt(sd,13)); // A pity! You've died.
 	if (fd != sd->fd)
 		clif_displaymessage(fd, msg_txt(sd,14)); // Character killed.
@@ -1281,49 +1277,85 @@ ACMD_FUNC(kill)
 ACMD_FUNC(alive)
 {
 	nullpo_retr(-1, sd);
-	if (!status_revive(&sd->bl, 100, 100))
+	if (!status_revive(sd, 100, 100))
 	{
 		clif_displaymessage(fd, msg_txt(sd,667)); // You're not dead.
 		return -1;
 	}
-	clif_skill_nodamage(&sd->bl,sd->bl,ALL_RESURRECTION,4);
+	clif_skill_nodamage(sd,*sd,ALL_RESURRECTION,4);
 	clif_displaymessage(fd, msg_txt(sd,16)); // You've been revived! It's a miracle!
 	return 0;
 }
 
-/*==========================================
- * +kamic [LuzZza]
- *------------------------------------------*/
-ACMD_FUNC(kami)
-{
+ACMD_FUNC(kami){
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message) {
+		clif_displaymessage(fd, msg_txt(sd,980)); // Please enter a message (usage: @kami <message>).
+		return -1;
+	}
+
+	sscanf(message, "%255[^\n]", atcmd_output);
+
+	intif_broadcast(atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT);
+
+	return 0;
+}
+
+ACMD_FUNC(lkami){
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message) {
+		clif_displaymessage(fd, msg_txt(sd,980)); // Please enter a message (usage: @kami <message>).
+		return -1;
+	}
+
+	sscanf(message, "%255[^\n]", atcmd_output);
+
+	clif_broadcast(sd, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
+
+	return 0;
+}
+
+ACMD_FUNC(kamib){
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message) {
+		clif_displaymessage(fd, msg_txt(sd,980)); // Please enter a message (usage: @kami <message>).
+		return -1;
+	}
+
+	sscanf(message, "%255[^\n]", atcmd_output);
+
+	intif_broadcast(atcmd_output, strlen(atcmd_output) + 1, BC_BLUE);
+
+	return 0;
+}
+
+ACMD_FUNC(kamic){
 	unsigned long color=0;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
-	if(*(command + 5) != 'c' && *(command + 5) != 'C') {
-		if (!message || !*message) {
-			clif_displaymessage(fd, msg_txt(sd,980)); // Please enter a message (usage: @kami <message>).
-			return -1;
-		}
-
-		sscanf(message, "%255[^\n]", atcmd_output);
-		if (strstr(command, "l") != nullptr)
-			clif_broadcast(&sd->bl, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
-		else
-			intif_broadcast(atcmd_output, strlen(atcmd_output) + 1, (*(command + 5) == 'b' || *(command + 5) == 'B') ? BC_BLUE : BC_DEFAULT);
-	} else {
-		if(!message || !*message || (sscanf(message, "%20lx %199[^\n]", &color, atcmd_output) < 2)) {
-			clif_displaymessage(fd, msg_txt(sd,981)); // Please enter color and message (usage: @kamic <color> <message>).
-			return -1;
-		}
-
-		if(color > 0xFFFFFF) {
-			clif_displaymessage(fd, msg_txt(sd,982)); // Invalid color.
-			return -1;
-		}
-		intif_broadcast2(atcmd_output, strlen(atcmd_output) + 1, color, 0x190, 12, 0, 0);
+	if(!message || !*message || (sscanf(message, "%20lx %199[^\n]", &color, atcmd_output) < 2)) {
+		clif_displaymessage(fd, msg_txt(sd,981)); // Please enter color and message (usage: @kamic <color> <message>).
+		return -1;
 	}
+
+	if(color > 0xFFFFFF) {
+		clif_displaymessage(fd, msg_txt(sd,982)); // Invalid color.
+		return -1;
+	}
+
+	intif_broadcast2(atcmd_output, strlen(atcmd_output) + 1, color, 0x190, 12, 0, 0);
+
 	return 0;
 }
 
@@ -1342,7 +1374,7 @@ ACMD_FUNC(heal)
 	if( sp == INT_MIN ) sp++;
 
 	if ( hp == 0 && sp == 0 ) {
-		if (!status_percent_heal(&sd->bl, 100, 100))
+		if (!status_percent_heal(sd, 100, 100))
 			clif_displaymessage(fd, msg_txt(sd,157)); // HP and SP have already been recovered.
 		else
 			clif_displaymessage(fd, msg_txt(sd,17)); // HP, SP recovered.
@@ -1350,7 +1382,7 @@ ACMD_FUNC(heal)
 	}
 
 	if ( hp > 0 && sp >= 0 ) {
-		if(!status_heal(&sd->bl, hp, sp, 0))
+		if(!status_heal(sd, hp, sp, 0))
 			clif_displaymessage(fd, msg_txt(sd,157)); // HP and SP are already with the good value.
 		else
 			clif_displaymessage(fd, msg_txt(sd,17)); // HP, SP recovered.
@@ -1358,8 +1390,8 @@ ACMD_FUNC(heal)
 	}
 
 	if ( hp < 0 && sp <= 0 ) {
-		status_damage(nullptr, &sd->bl, -hp, -sp, 0, 0, 0);
-		clif_damage(sd->bl,sd->bl, gettick(), 0, 0, -hp, 0, DMG_ENDURE, 0, false);
+		status_damage(nullptr, sd, -hp, -sp, 0, 0, 0);
+		clif_damage(*sd, *sd, gettick(), 0, 0, -hp, 0, DMG_ENDURE, 0, false);
 		clif_displaymessage(fd, msg_txt(sd,156)); // HP or/and SP modified.
 		return 0;
 	}
@@ -1367,18 +1399,18 @@ ACMD_FUNC(heal)
 	//Opposing signs.
 	if ( hp ) {
 		if (hp > 0)
-			status_heal(&sd->bl, hp, 0, 0);
+			status_heal(sd, hp, 0, 0);
 		else {
-			status_damage(nullptr, &sd->bl, -hp, 0, 0, 0, 0);
-			clif_damage(sd->bl,sd->bl, gettick(), 0, 0, -hp, 0, DMG_ENDURE, 0, false);
+			status_damage(nullptr, sd, -hp, 0, 0, 0, 0);
+			clif_damage(*sd, *sd, gettick(), 0, 0, -hp, 0, DMG_ENDURE, 0, false);
 		}
 	}
 
 	if ( sp ) {
 		if (sp > 0)
-			status_heal(&sd->bl, 0, sp, 0);
+			status_heal(sd, 0, sp, 0);
 		else
-			status_damage(nullptr, &sd->bl, 0, -sp, 0, 0, 0);
+			status_damage(nullptr, sd, 0, -sp, 0, 0, 0);
 	}
 
 	clif_displaymessage(fd, msg_txt(sd,156)); // HP or/and SP modified.
@@ -1399,19 +1431,19 @@ ACMD_FUNC(healap)
 	if (ap == INT_MIN) ap++;
 
 	if (ap == 0) {
-		if (!status_percent_heal(&sd->bl, 0, 0, 100))
+		if (!status_percent_heal(sd, 0, 0, 100))
 			clif_displaymessage(fd, msg_txt(sd, 823));// AP have already been recovered.
 		else
 			clif_displaymessage(fd, msg_txt(sd, 821));// AP recovered.
 		return 0;
 	}else if (ap > 0) {
-		if (!status_heal(&sd->bl, 0, 0, ap, 0))
+		if (!status_heal(sd, 0, 0, ap, 0))
 			clif_displaymessage(fd, msg_txt(sd, 823));// AP have already been recovered.
 		else
 			clif_displaymessage(fd, msg_txt(sd, 821));// AP recovered.
 		return 0;
 	}else{
-		status_damage(nullptr, &sd->bl, 0, 0, -ap, 0, 0, 0);
+		status_damage(nullptr, sd, 0, 0, -ap, 0, 0, 0);
 		clif_displaymessage(fd, msg_txt(sd, 822));// AP modified.
 		return 0;
 	}
@@ -1650,8 +1682,8 @@ ACMD_FUNC(baselevelup)
 		sd->status.trait_point += trait_point;
 		sd->status.base_level += (uint32)level;
 		status_calc_pc(sd, SCO_FORCE);
-		status_percent_heal(&sd->bl, 100, 100);
-		clif_misceffect( sd->bl, NOTIFYEFFECT_BASE_LEVEL_UP );
+		status_percent_heal(sd, 100, 100);
+		clif_misceffect(*sd, NOTIFYEFFECT_BASE_LEVEL_UP);
 		for (uint32 j = sd->status.base_level - level; j <= sd->status.base_level; j++) {
 			achievement_update_objective(sd, AG_GOAL_LEVEL, 1, j);
 			achievement_update_objective(sd, AG_GOAL_STATUS, 2, j, sd->status.class_);
@@ -1724,7 +1756,7 @@ ACMD_FUNC(joblevelup)
 			level = pc_maxjoblv(sd) - sd->status.job_level;
 		sd->status.job_level += (uint32)level;
 		sd->status.skill_point += level;
-		clif_misceffect( sd->bl, NOTIFYEFFECT_JOB_LEVEL_UP );
+		clif_misceffect(*sd, NOTIFYEFFECT_JOB_LEVEL_UP);
 		for (uint32 i = sd->status.job_level - level; i <= sd->status.job_level; i++)
 			achievement_update_objective(sd, AG_GOAL_LEVEL, 1, i);
 		clif_displaymessage(fd, msg_txt(sd,24)); // Job level raised.
@@ -1826,12 +1858,12 @@ ACMD_FUNC(pvpoff)
 {
 	nullpo_retr(-1, sd);
 
-	if (!map_getmapflag(sd->bl.m, MF_PVP)) {
+	if (!map_getmapflag(sd->m, MF_PVP)) {
 		clif_displaymessage(fd, msg_txt(sd,160)); // PvP is already Off.
 		return -1;
 	}
 
-	map_setmapflag(sd->bl.m, MF_PVP, false);
+	map_setmapflag(sd->m, MF_PVP, false);
 
 	clif_displaymessage(fd, msg_txt(sd,31)); // PvP: Off.
 	return 0;
@@ -1844,12 +1876,12 @@ ACMD_FUNC(pvpon)
 {
 	nullpo_retr(-1, sd);
 
-	if (map_getmapflag(sd->bl.m, MF_PVP)) {
+	if (map_getmapflag(sd->m, MF_PVP)) {
 		clif_displaymessage(fd, msg_txt(sd,161)); // PvP is already On.
 		return -1;
 	}
 
-	map_setmapflag(sd->bl.m, MF_PVP, true);
+	map_setmapflag(sd->m, MF_PVP, true);
 
 	clif_displaymessage(fd, msg_txt(sd,32)); // PvP: On.
 
@@ -1863,12 +1895,12 @@ ACMD_FUNC(gvgoff)
 {
 	nullpo_retr(-1, sd);
 
-	if (!map_getmapflag(sd->bl.m, MF_GVG)) {
+	if (!map_getmapflag(sd->m, MF_GVG)) {
 		clif_displaymessage(fd, msg_txt(sd,162)); // GvG is already Off.
 		return -1;
 	}
 
-	map_setmapflag(sd->bl.m, MF_GVG, false);
+	map_setmapflag(sd->m, MF_GVG, false);
 	clif_displaymessage(fd, msg_txt(sd,33)); // GvG: Off.
 
 	return 0;
@@ -1881,12 +1913,12 @@ ACMD_FUNC(gvgon)
 {
 	nullpo_retr(-1, sd);
 
-	if (map_getmapflag(sd->bl.m, MF_GVG)) {
+	if (map_getmapflag(sd->m, MF_GVG)) {
 		clif_displaymessage(fd, msg_txt(sd,163)); // GvG is already On.
 		return -1;
 	}
 
-	map_setmapflag(sd->bl.m, MF_GVG, true);
+	map_setmapflag(sd->m, MF_GVG, true);
 	clif_displaymessage(fd, msg_txt(sd,34)); // GvG: On.
 
 	return 0;
@@ -2099,7 +2131,7 @@ ACMD_FUNC(go)
 
 	nullpo_retr(-1, sd);
 
-	if( map_getmapflag(sd->bl.m, MF_NOGO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE) ) {
+	if( map_getmapflag(sd->m, MF_NOGO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE) ) {
 		clif_displaymessage(sd->fd,msg_txt(sd,995)); // You cannot use @go on this map.
 		return 0;
 	}
@@ -2225,7 +2257,7 @@ ACMD_FUNC(go)
 			clif_displaymessage(fd, msg_txt(sd,247)); // You are not authorized to warp to this map.
 			return -1;
 		}
-		if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+		if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 			clif_displaymessage(fd, msg_txt(sd,248)); // You are not authorized to warp from your current map.
 			return -1;
 		}
@@ -2255,7 +2287,7 @@ ACMD_FUNC(monster)
 	int32 number = 0;
 	int32 count;
 	int32 i, range;
-	short mx, my;
+	int16 mx, my;
 	uint32 size;
 	nullpo_retr(-1, sd);
 
@@ -2284,8 +2316,17 @@ ACMD_FUNC(monster)
 		return -1;
 	}
 
-	if ((mob_id = mobdb_searchname(monster)) == 0) // check name first (to avoid possible name begining by a number)
-		mob_id = mobdb_checkid(atoi(monster));
+	// If AegisName matches exactly, summon that monster
+	std::shared_ptr<s_mob_db> mob = mobdb_search_aegisname(monster);
+	if (mob != nullptr)
+		mob_id = mob->id;
+	else {
+		// Otherwise, search for monster with that ID or name
+		// Check for ID first as this is faster; if search string is not a number it will return 0
+		mob_id = util::strtoint32def(monster);
+		if (mob_id == 0 || mobdb_checkid(mob_id) == 0)
+			mob_id = mobdb_searchname(monster);
+	}
 
 	if (mob_id == 0) {
 		clif_displaymessage(fd, msg_txt(sd,40)); // Invalid monster ID or name.
@@ -2317,14 +2358,14 @@ ACMD_FUNC(monster)
 		size = SZ_SMALL;
 
 	if (battle_config.etc_log)
-		ShowInfo("%s monster='%s' name='%s' id=%d count=%d (%d,%d)\n", command, monster, name, mob_id, number, sd->bl.x, sd->bl.y);
+		ShowInfo("%s monster='%s' name='%s' id=%d count=%d (%d,%d)\n", command, monster, name, mob_id, number, sd->x, sd->y);
 
 	count = 0;
-	range = (int)sqrt((float)number) +2; // calculation of an odd number (+ 4 area around)
+	range = (int32)sqrt((float)number) +2; // calculation of an odd number (+ 4 area around)
 	for (i = 0; i < number; i++) {
 		int32 k;
-		map_search_freecell(&sd->bl, 0, &mx,  &my, range, range, 0);
-		k = mob_once_spawn(sd, sd->bl.m, mx, my, name, mob_id, 1, eventname, size, AI_NONE);
+		map_search_freecell(sd, 0, &mx,  &my, range, range, 0);
+		k = mob_once_spawn(sd, sd->m, mx, my, name, mob_id, 1, eventname, size, AI_NONE);
 		if(k) {
 			//mapreg_setreg(reference_uid(add_str("$@mobid"), i),k); //retain created mobid in array uncomment if needed
 			count ++;
@@ -2355,7 +2396,7 @@ static int32 atkillmonster_sub(struct block_list *bl, va_list ap)
 	int32 flag;
 
 	nullpo_ret(md=(struct mob_data *)bl);
-	flag = va_arg(ap, int);
+	flag = va_arg(ap, int32);
 
 	if (md->guardian_data)
 		return 0; //Do not touch WoE mobs!
@@ -2376,10 +2417,10 @@ ACMD_FUNC(killmonster)
 	memset(map_name, '\0', sizeof(map_name));
 
 	if (!message || !*message || sscanf(message, "%15s", map_name) < 1)
-		map_id = sd->bl.m;
+		map_id = sd->m;
 	else {
 		if ((map_id = map_mapname2mapid(map_name)) < 0)
-			map_id = sd->bl.m;
+			map_id = sd->m;
 	}
 
 	parent_cmd = atcommand_alias_db.checkAlias(command+1);
@@ -2465,7 +2506,7 @@ ACMD_FUNC(refine)
 			clif_delitem( *sd, i, 1, 3 );
 			clif_additem(sd, i, 1, 0);
 			pc_equipitem(sd, i, current_position);
-			clif_misceffect( sd->bl, NOTIFYEFFECT_REFINE_SUCCESS );
+			clif_misceffect(*sd, NOTIFYEFFECT_REFINE_SUCCESS);
 			if( sd->inventory_data[i]->type == IT_WEAPON ){
 				achievement_update_objective(sd, AG_ENCHANT_SUCCESS, 2, sd->inventory_data[i]->weapon_level, sd->inventory.u.items_inventory[i].refine);
 			}
@@ -2544,7 +2585,7 @@ ACMD_FUNC(grade)
 			clif_delitem( *sd, i, 1, 3 );
 			clif_additem(sd, i, 1, 0);
 			pc_equipitem(sd, i, current_position);
-			clif_misceffect( sd->bl, NOTIFYEFFECT_REFINE_SUCCESS );
+			clif_misceffect(*sd, NOTIFYEFFECT_REFINE_SUCCESS);
 			count++;
 		}
 	}
@@ -2607,7 +2648,7 @@ ACMD_FUNC(produce)
 		tmp_item.card[2] = GetWord(sd->status.char_id, 0);
 		tmp_item.card[3] = GetWord(sd->status.char_id, 1);
 		clif_produceeffect(sd, 0, item_id);
-		clif_misceffect( sd->bl, NOTIFYEFFECT_REFINE_SUCCESS );
+		clif_misceffect(*sd, NOTIFYEFFECT_REFINE_SUCCESS);
 
 		if ((flag = pc_additem(sd, &tmp_item, 1, LOG_TYPE_COMMAND)))
 			clif_additem(sd, 0, 0, flag);
@@ -2667,12 +2708,12 @@ ACMD_FUNC(gat)
 
 	for (y = 2; y >= -2; y--) {
 		sprintf(atcmd_output, "%s (x= %d, y= %d) %02X %02X %02X %02X %02X",
-			map_getmapdata(sd->bl.m)->name,   sd->bl.x - 2, sd->bl.y + y,
- 			map_getcell(sd->bl.m, sd->bl.x - 2, sd->bl.y + y, CELL_GETTYPE),
- 			map_getcell(sd->bl.m, sd->bl.x - 1, sd->bl.y + y, CELL_GETTYPE),
- 			map_getcell(sd->bl.m, sd->bl.x,     sd->bl.y + y, CELL_GETTYPE),
- 			map_getcell(sd->bl.m, sd->bl.x + 1, sd->bl.y + y, CELL_GETTYPE),
- 			map_getcell(sd->bl.m, sd->bl.x + 2, sd->bl.y + y, CELL_GETTYPE));
+			map_getmapdata(sd->m)->name,   sd->x - 2, sd->y + y,
+ 			map_getcell(sd->m, sd->x - 2, sd->y + y, CELL_GETTYPE),
+ 			map_getcell(sd->m, sd->x - 1, sd->y + y, CELL_GETTYPE),
+ 			map_getcell(sd->m, sd->x,     sd->y + y, CELL_GETTYPE),
+ 			map_getcell(sd->m, sd->x + 1, sd->y + y, CELL_GETTYPE),
+ 			map_getcell(sd->m, sd->x + 2, sd->y + y, CELL_GETTYPE));
 
 		clif_displaymessage(fd, atcmd_output);
 	}
@@ -2695,7 +2736,7 @@ ACMD_FUNC(displaystatus)
 	if (i < 2) flag = 1;
 	if (i < 3) tick = 0;
 
-	clif_status_change(&sd->bl, type, flag, tick, val1, val2, val3);
+	clif_status_change(sd, type, flag, tick, val1, val2, val3);
 
 	return 0;
 }
@@ -2981,7 +3022,7 @@ ACMD_FUNC(stat_all)
 	
 	count = 0;
 	for (i = PARAM_STR; i < PARAM_POW; i++) {
-		short new_value;
+		int16 new_value;
 
 		if (value > 0 && status[i] + value >= max_status[i])
 			new_value = max_status[i];
@@ -3055,7 +3096,7 @@ ACMD_FUNC(trait_all) {
 	uint8 count = 0;
 
 	for (i = PARAM_POW; i < PARAM_MAX; i++) {
-		short new_value;
+		int16 new_value;
 
 		if (value > 0 && status[i] + value >= max_status[i])
 			new_value = max_status[i];
@@ -3093,7 +3134,7 @@ ACMD_FUNC(trait_all) {
  *------------------------------------------*/
 ACMD_FUNC(guildlevelup) {
 	int32 level = 0;
-	short added_level;
+	int16 added_level;
 	nullpo_retr(-1, sd);
 
 	if (!message || !*message || sscanf(message, "%11d", &level) < 1 || level == 0) {
@@ -3112,9 +3153,9 @@ ACMD_FUNC(guildlevelup) {
 	//	return -1;
 	//}
 
-	added_level = (short)level;
-	if (level > 0 && (level > MAX_GUILDLEVEL || added_level > ((short)MAX_GUILDLEVEL - guild_info->guild.guild_lv))) // fix positive overflow
-		added_level = (short)MAX_GUILDLEVEL - guild_info->guild.guild_lv;
+	added_level = (int16)level;
+	if (level > 0 && (level > MAX_GUILDLEVEL || added_level > ((int16)MAX_GUILDLEVEL - guild_info->guild.guild_lv))) // fix positive overflow
+		added_level = (int16)MAX_GUILDLEVEL - guild_info->guild.guild_lv;
 	else if (level < 0 && (level < -MAX_GUILDLEVEL || added_level < (1 - guild_info->guild.guild_lv))) // fix negative overflow
 		added_level = 1 - guild_info->guild.guild_lv;
 
@@ -3170,7 +3211,6 @@ ACMD_FUNC(makeegg) {
 	if (pet != nullptr) {
 		std::shared_ptr<s_mob_db> mdb = mob_db.find(pet->class_);
 		if(mdb){
-			sd->catch_target_class = pet->class_;
 			if(intif_create_pet(sd->status.account_id, sd->status.char_id, pet->class_, mdb->lv, pet->EggID, 0, pet->intimate, 100, 0, 1, mdb->jname.c_str())){
 				res = 0;
 			} else {
@@ -3237,7 +3277,7 @@ ACMD_FUNC(petfriendly) {
 	}
 
 	pet_set_intimate(pd, friendly);
-	clif_send_petstatus(sd);
+	clif_send_petstatus( *sd, *pd );
 	clif_displaymessage(fd, msg_txt(sd,182)); // Pet intimacy changed.
 	return 0;
 }
@@ -3271,7 +3311,7 @@ ACMD_FUNC(pethungry)
 	}
 
 	pd->pet.hungry = hungry;
-	clif_send_petstatus(sd);
+	clif_send_petstatus( *sd, *pd );
 	clif_displaymessage(fd, msg_txt(sd,185)); // Pet hunger changed.
 
 	return 0;
@@ -3296,7 +3336,7 @@ ACMD_FUNC(petrename)
 
 	pd->pet.rename_flag = 0;
 	intif_save_petdata(sd->status.account_id, &pd->pet);
-	clif_send_petstatus(sd);
+	clif_send_petstatus( *sd, *pd );
 	clif_displaymessage(fd, msg_txt(sd,187)); // You can now rename your pet.
 
 	return 0;
@@ -3329,18 +3369,18 @@ ACMD_FUNC(recall) {
 		return -1;
 	}
 
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,1019)); // You are not authorized to warp someone to this map.
 		return -1;
 	}
-	if (pl_sd->bl.m >= 0 && map_getmapflag(pl_sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (pl_sd->m >= 0 && map_getmapflag(pl_sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,1020)); // You are not authorized to warp this player from their map.
 		return -1;
 	}
-	if (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y) {
+	if (pl_sd->m == sd->m && pl_sd->x == sd->x && pl_sd->y == sd->y) {
 		return -1;
 	}
-	if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
+	if( pc_setpos(pl_sd, sd->mapindex, sd->x, sd->y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 		clif_displaymessage(fd, msg_txt(sd,1025)); // The player is currently autotrading and cannot be recalled.
 		return -1;
 	}
@@ -3376,28 +3416,17 @@ ACMD_FUNC(char_block)
 
 /*==========================================
  * accountban command (usage: ban <%time> <player_name>)
- * charban command (usage: charban <%time> <player_name>)
  * %time see common/timer.cpp::solve_time()
  *------------------------------------------*/
-ACMD_FUNC(char_ban)
+ACMD_FUNC(ban)
 {
 	char *modif_p, output[CHAT_SIZE_MAX];
 	int32 timediff = 0; //don't set this as uint32 as we may want to decrease banned time
-	enum chrif_req_op bantype;
 
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
-
-	parent_cmd = atcommand_alias_db.checkAlias(command+1);
-
-	if (strcmpi(parent_cmd,"charban") == 0)
-		bantype = CHRIF_OP_BAN;
-	else if (strcmpi(parent_cmd,"ban") == 0)
-		bantype = CHRIF_OP_LOGIN_BAN;
-	else
-		return -1;
 
 	if (!message || !*message || sscanf(message, "%255s %23[^\n]", atcmd_output, atcmd_player_name) < 2) {
 		sprintf(output, msg_txt(sd,1022), command); // Please enter ban time and a player name (usage: %s <time> <char name>).
@@ -3417,21 +3446,59 @@ ACMD_FUNC(char_ban)
 		return -1;
 	}
 	
-	if( timediff < 0 && (
-		   (bantype == CHRIF_OP_LOGIN_BAN && !pc_can_use_command(sd, "unban", COMMAND_ATCOMMAND))
-		|| (bantype == CHRIF_OP_BAN && !pc_can_use_command(sd, "charunban", COMMAND_ATCOMMAND))
-		))
-	{
+	if( timediff < 0 ){
 		clif_displaymessage(fd,msg_txt(sd,1023)); // You are not allowed to alter the time of a ban.
 		return -1;
 	}
 
-	if (bantype == CHRIF_OP_BAN)
-		chrif_req_charban(sd->status.account_id, atcmd_player_name,timediff);
-	else
-		chrif_req_login_operation(sd->status.account_id, atcmd_player_name, bantype, timediff, 0, 0);
+	chrif_req_login_operation(sd->status.account_id, atcmd_player_name, CHRIF_OP_LOGIN_BAN, timediff, 0, 0);
 
-	safesnprintf(output, sizeof(output), msg_txt(sd,88), bantype == CHRIF_OP_BAN ? "char" : "login"); // Sending request to %s server...
+	safesnprintf(output, sizeof(output), msg_txt(sd,88), "login"); // Sending request to %s server...
+	clif_displaymessage(fd, output);
+
+	return 0;
+}
+
+/*==========================================
+ * charban command (usage: charban <%time> <player_name>)
+ * %time see common/timer.cpp::solve_time()
+ *------------------------------------------*/
+ACMD_FUNC(char_ban)
+{
+	char *modif_p, output[CHAT_SIZE_MAX];
+	int32 timediff = 0; //don't set this as uint32 as we may want to decrease banned time
+
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
+
+	if (!message || !*message || sscanf(message, "%255s %23[^\n]", atcmd_output, atcmd_player_name) < 2) {
+		sprintf(output, msg_txt(sd,1022), command); // Please enter ban time and a player name (usage: %s <time> <char name>).
+		clif_displaymessage(fd, output);
+		return -1;
+	}
+
+	atcmd_output[sizeof(atcmd_output)-1] = '\0';
+
+	modif_p = atcmd_output;
+	timediff = (int32)solve_time(modif_p); //discard seconds
+
+	if (timediff == 0) { //allow negative ?
+		safesnprintf(output, sizeof(output), msg_txt(sd,85), command, timediff); // Invalid time for %s command (time=%d)
+		clif_displaymessage(fd, output);
+		clif_displaymessage(fd, msg_txt(sd,702)); // Time parameter format is +/-<value> to alter. y/a = Year, m = Month, d/j = Day, h = Hour, n/mn = Minute, s = Second.
+		return -1;
+	}
+	
+	if( timediff < 0 ){
+		clif_displaymessage(fd,msg_txt(sd,1023)); // You are not allowed to alter the time of a ban.
+		return -1;
+	}
+
+	chrif_req_charban( sd->status.account_id, atcmd_player_name, timediff );
+
+	safesnprintf(output, sizeof(output), msg_txt(sd,88), "char"); // Sending request to %s server...
 	clif_displaymessage(fd, output);
 
 	return 0;
@@ -3462,23 +3529,12 @@ ACMD_FUNC(char_unblock)
 
 /*==========================================
  * acc unban command (usage: unban <player_name>)
- * char unban command (usage: charunban <player_name>)
  *------------------------------------------*/
-ACMD_FUNC(char_unban){
-	enum chrif_req_op unbantype;
+ACMD_FUNC(unban){
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
-
-	parent_cmd = atcommand_alias_db.checkAlias(command+1);
-
-	if (strcmpi(parent_cmd,"charunban") == 0)
-		unbantype = CHRIF_OP_UNBAN;
-	else if (strcmpi(parent_cmd,"unban") == 0)
-		unbantype = CHRIF_OP_LOGIN_UNBAN;
-	else
-		return -1;
 
 	if (!message || !*message || sscanf(message, "%23[^\n]", atcmd_player_name) < 1) {
 		sprintf(atcmd_output, msg_txt(sd,435), command); // Please enter a player name (usage: %s <char name>).
@@ -3486,12 +3542,32 @@ ACMD_FUNC(char_unban){
 		return -1;
 	}
 
-	if (unbantype == CHRIF_OP_UNBAN)
-		chrif_req_charunban(sd->status.account_id,atcmd_player_name);
-	else
-		chrif_req_login_operation(sd->status.account_id, atcmd_player_name, unbantype, 0, 0, 0);
+	chrif_req_login_operation(sd->status.account_id, atcmd_player_name, CHRIF_OP_LOGIN_UNBAN, 0, 0, 0);
 
-	sprintf(atcmd_output, msg_txt(sd,88), unbantype == CHRIF_OP_UNBAN ? "char":"login"); // Sending request to %s server...
+	sprintf(atcmd_output, msg_txt(sd,88), "login"); // Sending request to %s server...
+	clif_displaymessage(fd, atcmd_output);
+
+	return 0;
+}
+
+/*==========================================
+ * char unban command (usage: charunban <player_name>)
+ *------------------------------------------*/
+ACMD_FUNC(char_unban){
+	nullpo_retr(-1, sd);
+
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+	memset(atcmd_player_name, '\0', sizeof(atcmd_player_name));
+
+	if (!message || !*message || sscanf(message, "%23[^\n]", atcmd_player_name) < 1) {
+		sprintf(atcmd_output, msg_txt(sd,435), command); // Please enter a player name (usage: %s <char name>).
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+
+	chrif_req_charunban(sd->status.account_id,atcmd_player_name);
+
+	sprintf(atcmd_output, msg_txt(sd,88), "char"); // Sending request to %s server...
 	clif_displaymessage(fd, atcmd_output);
 
 	return 0;
@@ -3546,8 +3622,8 @@ ACMD_FUNC(doom)
 	{
 		if (pl_sd->fd != fd && pc_get_group_level(sd) >= pc_get_group_level(pl_sd))
 		{
-			status_kill(&pl_sd->bl);
-			clif_specialeffect(&pl_sd->bl,EF_GRANDCROSS2,AREA);
+			status_kill(pl_sd);
+			clif_specialeffect(pl_sd,EF_GRANDCROSS2,AREA);
 			clif_displaymessage(pl_sd->fd, msg_txt(sd,61)); // The holy messenger has given judgement.
 		}
 	}
@@ -3571,10 +3647,10 @@ ACMD_FUNC(doommap)
 	iter = mapit_getallusers();
 	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
 	{
-		if (pl_sd->fd != fd && sd->bl.m == pl_sd->bl.m && pc_get_group_level(sd) >= pc_get_group_level(pl_sd))
+		if (pl_sd->fd != fd && sd->m == pl_sd->m && pc_get_group_level(sd) >= pc_get_group_level(pl_sd))
 		{
-			status_kill(&pl_sd->bl);
-			clif_specialeffect(&pl_sd->bl,EF_GRANDCROSS2,AREA);
+			status_kill(pl_sd);
+			clif_specialeffect(pl_sd,EF_GRANDCROSS2,AREA);
 			clif_displaymessage(pl_sd->fd, msg_txt(sd,61)); // The holy messenger has given judgement.
 		}
 	}
@@ -3590,9 +3666,9 @@ ACMD_FUNC(doommap)
  *------------------------------------------*/
 static void atcommand_raise_sub(map_session_data* sd) {
 
-	status_revive(&sd->bl, 100, 100);
+	status_revive(sd, 100, 100);
 
-	clif_skill_nodamage(&sd->bl,sd->bl,ALL_RESURRECTION,4);
+	clif_skill_nodamage(sd, *sd, ALL_RESURRECTION, 4);
 	clif_displaymessage(sd->fd, msg_txt(sd,63)); // Mercy has been shown.
 }
 
@@ -3629,7 +3705,7 @@ ACMD_FUNC(raisemap)
 
 	iter = mapit_getallusers();
 	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
-		if (sd->bl.m == pl_sd->bl.m && pc_isdead(pl_sd) )
+		if (sd->m == pl_sd->m && pc_isdead(pl_sd) )
 			atcommand_raise_sub(pl_sd);
 	mapit_free(iter);
 
@@ -3816,7 +3892,7 @@ ACMD_FUNC(spiritball)
 	if( sd->spiritball > 0 )
 		pc_delspiritball(sd, sd->spiritball, 1);
 	sd->spiritball = number;
-	clif_spiritball(&sd->bl);
+	clif_spiritball(sd);
 	// no message, player can look the difference
 
 	return 0;
@@ -4081,7 +4157,7 @@ ACMD_FUNC(recallall)
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,1032)); // You are not authorized to warp someone to your current map.
 		return -1;
 	}
@@ -4092,12 +4168,12 @@ ACMD_FUNC(recallall)
 	{
 		if (sd->status.account_id != pl_sd->status.account_id && pc_get_group_level(sd) >= pc_get_group_level(pl_sd))
 		{
-			if (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y)
+			if (pl_sd->m == sd->m && pl_sd->x == sd->x && pl_sd->y == sd->y)
 				continue; // Don't waste time warping the character to the same place.
-			if (pl_sd->bl.m >= 0 && map_getmapflag(pl_sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
+			if (pl_sd->m >= 0 && map_getmapflag(pl_sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
 				count++;
 			else {
-				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
+				if( pc_setpos(pl_sd, sd->mapindex, sd->x, sd->y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
 				}
 			}
@@ -4133,7 +4209,7 @@ ACMD_FUNC(guildrecall)
 		return -1;
 	}
 
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,1032)); // You are not authorized to warp someone to your current map.
 		return -1;
 	}
@@ -4151,12 +4227,12 @@ ACMD_FUNC(guildrecall)
 	{
 		if (sd->status.account_id != pl_sd->status.account_id && pl_sd->status.guild_id == g->guild.guild_id)
 		{
-			if (pc_get_group_level(pl_sd) > pc_get_group_level(sd) || (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y))
+			if (pc_get_group_level(pl_sd) > pc_get_group_level(sd) || (pl_sd->m == sd->m && pl_sd->x == sd->x && pl_sd->y == sd->y))
 				continue; // Skip GMs greater than you...             or chars already on the cell
-			if (pl_sd->bl.m >= 0 && map_getmapflag(pl_sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
+			if (pl_sd->m >= 0 && map_getmapflag(pl_sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
 				count++;
 			else{
-				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
+				if( pc_setpos(pl_sd, sd->mapindex, sd->x, sd->y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
 				}
 			}
@@ -4194,7 +4270,7 @@ ACMD_FUNC(partyrecall)
 		return -1;
 	}
 
-	if (sd->bl.m >= 0 && map_getmapflag(sd->bl.m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
+	if (sd->m >= 0 && map_getmapflag(sd->m, MF_NOWARPTO) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE)) {
 		clif_displaymessage(fd, msg_txt(sd,1032)); // You are not authorized to warp someone to your current map.
 		return -1;
 	}
@@ -4213,12 +4289,12 @@ ACMD_FUNC(partyrecall)
 	{
 		if (sd->status.account_id != pl_sd->status.account_id && pl_sd->status.party_id == p->party.party_id)
 		{
-			if (pc_get_group_level(pl_sd) > pc_get_group_level(sd) || (pl_sd->bl.m == sd->bl.m && pl_sd->bl.x == sd->bl.x && pl_sd->bl.y == sd->bl.y))
+			if (pc_get_group_level(pl_sd) > pc_get_group_level(sd) || (pl_sd->m == sd->m && pl_sd->x == sd->x && pl_sd->y == sd->y))
 				continue; // Skip GMs greater than you...             or chars already on the cell
-			if (pl_sd->bl.m >= 0 && map_getmapflag(pl_sd->bl.m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
+			if (pl_sd->m >= 0 && map_getmapflag(pl_sd->m, MF_NOWARP) && !pc_has_permission(sd, PC_PERM_WARP_ANYWHERE))
 				count++;
 			else{
-				if( pc_setpos(pl_sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
+				if( pc_setpos(pl_sd, sd->mapindex, sd->x, sd->y, CLR_RESPAWN) == SETPOS_AUTOTRADE ){
 					count++;
 				}
 			}
@@ -4240,148 +4316,234 @@ ACMD_FUNC(partyrecall)
  *
  *------------------------------------------*/
 void atcommand_doload();
-ACMD_FUNC(reload) {
+ACMD_FUNC(reloadcashdb){
 	nullpo_retr(-1, sd);
 
-	if ((strlen(command) < 8 ) && (!message || !*message)) {
-		const char* text;
-
-		text = atcommand_help_string( command );
-		if(text)
-			clif_displaymessage( fd, text );
-		return -1;
-	}
-
-	if (strstr(command, "itemdb") || strncmp(message, "itemdb", 4) == 0) {
-		itemdb_reload();
-		clif_displaymessage(fd, msg_txt(sd,97)); // Item database has been reloaded.
-	} else if (strstr(command, "cashdb") || strncmp(message, "cashdb", 4) == 0) {
-		cashshop_reloaddb();
-		clif_displaymessage( fd, msg_txt( sd, 832 ) ); // Cash shop database has been reloaded.
-	} else if (strstr(command, "mobdb") || strncmp(message, "mobdb", 3) == 0) {
-		mob_reload();
-		pet_db.reload();
-		hom_reload();
-		mercenary_db.reload();
-		elemental_db.reload();
-		clif_displaymessage(fd, msg_txt(sd,98)); // Monster database has been reloaded.
-	} else if (strstr(command, "skilldb") || strncmp(message, "skilldb", 4) == 0) {
-		skill_reload();
-		homunculus_db.reload();
-		clif_displaymessage(fd, msg_txt(sd,99)); // Skill database has been reloaded.
-	} else if (strstr(command, "atcommand") || strncmp(message, "atcommand", 4) == 0) {
-		atcommand_doload();
-		pc_groups_reload();
-		clif_displaymessage(fd, msg_txt(sd,254)); // GM command configuration has been reloaded.
-	} else if (strstr(command, "battleconf") || strncmp(message, "battleconf", 3) == 0) {
-		struct Battle_Config prev_config;
-		memcpy(&prev_config, &battle_config, sizeof(prev_config));
-
-		battle_config_read(BATTLE_CONF_FILENAME);
-
-		if( prev_config.item_rate_mvp          != battle_config.item_rate_mvp
-		||  prev_config.item_rate_common       != battle_config.item_rate_common
-		||  prev_config.item_rate_common_boss  != battle_config.item_rate_common_boss
-		||  prev_config.item_rate_common_mvp   != battle_config.item_rate_common_mvp
-		||  prev_config.item_rate_card         != battle_config.item_rate_card
-		||  prev_config.item_rate_card_boss    != battle_config.item_rate_card_boss
-		||  prev_config.item_rate_card_mvp     != battle_config.item_rate_card_mvp
-		||  prev_config.item_rate_equip        != battle_config.item_rate_equip
-		||  prev_config.item_rate_equip_boss   != battle_config.item_rate_equip_boss
-		||  prev_config.item_rate_equip_mvp    != battle_config.item_rate_equip_mvp
-		||  prev_config.item_rate_heal         != battle_config.item_rate_heal
-		||  prev_config.item_rate_heal_boss    != battle_config.item_rate_heal_boss
-		||  prev_config.item_rate_heal_mvp     != battle_config.item_rate_heal_mvp
-		||  prev_config.item_rate_use          != battle_config.item_rate_use
-		||  prev_config.item_rate_use_boss     != battle_config.item_rate_use_boss
-		||  prev_config.item_rate_use_mvp      != battle_config.item_rate_use_mvp
-		||  prev_config.item_rate_treasure     != battle_config.item_rate_treasure
-		||  prev_config.item_rate_adddrop      != battle_config.item_rate_adddrop
-		||  prev_config.logarithmic_drops      != battle_config.logarithmic_drops
-		||  prev_config.item_drop_common_min   != battle_config.item_drop_common_min
-		||  prev_config.item_drop_common_max   != battle_config.item_drop_common_max
-		||  prev_config.item_drop_card_min     != battle_config.item_drop_card_min
-		||  prev_config.item_drop_card_max     != battle_config.item_drop_card_max
-		||  prev_config.item_drop_equip_min    != battle_config.item_drop_equip_min
-		||  prev_config.item_drop_equip_max    != battle_config.item_drop_equip_max
-		||  prev_config.item_drop_mvp_min      != battle_config.item_drop_mvp_min
-		||  prev_config.item_drop_mvp_max      != battle_config.item_drop_mvp_max
-		||  prev_config.item_drop_heal_min     != battle_config.item_drop_heal_min
-		||  prev_config.item_drop_heal_max     != battle_config.item_drop_heal_max
-		||  prev_config.item_drop_use_min      != battle_config.item_drop_use_min
-		||  prev_config.item_drop_use_max      != battle_config.item_drop_use_max
-		||  prev_config.item_drop_treasure_min != battle_config.item_drop_treasure_min
-		||  prev_config.item_drop_treasure_max != battle_config.item_drop_treasure_max
-		||  prev_config.base_exp_rate          != battle_config.base_exp_rate
-		||  prev_config.job_exp_rate           != battle_config.job_exp_rate
-		)
-		{	// Exp or Drop rates changed.
-			mob_reload(); //Needed as well so rate changes take effect.
-		}
-		clif_displaymessage(fd, msg_txt(sd,255)); // Battle configuration has been reloaded.
-	} else if (strstr(command, "statusdb") || strncmp(message, "statusdb", 3) == 0) {
-		status_readdb( true );
-		clif_displaymessage(fd, msg_txt(sd,256)); // Status database has been reloaded.
-	} else if (strstr(command, "pcdb") || strncmp(message, "pcdb", 2) == 0) {
-		pc_readdb();
-		clif_displaymessage(fd, msg_txt(sd,257)); // Player database has been reloaded.
-	} else if (strstr(command, "motd") || strncmp(message, "motd", 4) == 0) {
-		pc_read_motd();
-		clif_displaymessage(fd, msg_txt(sd,268)); // Reloaded the Message of the Day.
-	} else if (strstr(command, "script") || strncmp(message, "script", 3) == 0) {
-		struct s_mapiterator* iter;
-		map_session_data* pl_sd;
-		//atcommand_broadcast( fd, sd, "@broadcast", "Server is reloading scripts..." );
-		//atcommand_broadcast( fd, sd, "@broadcast", "You will feel a bit of lag at this point !" );
-
-		iter = mapit_getallusers();
-		for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) ){
-			pc_close_npc(pl_sd,1);
-			clif_cutin( *pl_sd, "", 255 );
-			pl_sd->state.block_action &= ~(PCBLOCK_ALL ^ PCBLOCK_IMMUNE);
-			bg_queue_leave(pl_sd);
-		}
-		mapit_free(iter);
-
-		for (auto &bg : bg_queues) {
-				for (auto &bg_sd : bg->teama_members)
-					bg_team_leave(bg_sd, false, false); // Kick Team A from battlegrounds
-				for (auto &bg_sd : bg->teamb_members)
-					bg_team_leave(bg_sd, false, false); // Kick Team B from battlegrounds
-				bg_queue_clear(bg, true);
-		}
-
-		flush_fifos();
-		map_reloadnpc(true); // reload config files seeking for npcs
-		script_reload();
-		npc_reload();
-
-		clif_displaymessage(fd, msg_txt(sd,100)); // Scripts have been reloaded.
-	} else if (strstr(command, "msgconf") || strncmp(message, "msgconf", 3) == 0) {
-		map_msg_reload();
-		clif_displaymessage(fd, msg_txt(sd,463)); // Message configuration has been reloaded.
-	} else if (strstr(command, "questdb") || strncmp(message, "questdb", 3) == 0) {
-		if (quest_db.reload())
-			clif_displaymessage(fd, msg_txt(sd,1377)); // Quest database has been reloaded.
-	} else if (strstr(command, "instancedb") || strncmp(message, "instancedb", 4) == 0) {
-		if (instance_db.reload())
-			clif_displaymessage(fd, msg_txt(sd,516)); // Instance database has been reloaded.
-	} else if (strstr(command, "achievementdb") || strncmp(message, "achievementdb", 4) == 0) {
-		achievement_db_reload();
-		clif_displaymessage(fd, msg_txt(sd,771)); // Achievement database has been reloaded.
-	} else if (strstr(command, "attendancedb") || strncmp(message, "attendancedb", 4) == 0) {
-		attendance_db.reload();
-		clif_displaymessage(fd, msg_txt(sd, 795)); // Attendance database has been reloaded.
-	}else if( strstr( command, "barterdb" ) || strncmp( message, "barterdb", 4 ) == 0 ){
-		barter_db.reload();
-		clif_displaymessage(fd, msg_txt(sd, 830)); // Barter database has been reloaded.
-	} else if (strstr(command, "logconf") || strncmp(message, "logconf", 3) == 0) {
-		log_config_read(LOG_CONF_NAME);
-		clif_displaymessage(fd, msg_txt(sd,1536)); // Log configuration has been reloaded.
-	}
+	cashshop_reloaddb();
+	clif_displaymessage( fd, msg_txt( sd, 832 ) ); // Cash shop database has been reloaded.
 
 	return 0;
 }
+
+ACMD_FUNC(reloaditemdb){
+	nullpo_retr(-1, sd);
+
+	itemdb_reload();
+	clif_displaymessage(fd, msg_txt(sd,97)); // Item database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadmobdb){
+	nullpo_retr(-1, sd);
+
+	mob_reload();
+	pet_db.reload();
+	hom_reload();
+	mercenary_db.reload();
+	elemental_db.reload();
+	clif_displaymessage(fd, msg_txt(sd,98)); // Monster database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadskilldb){
+	nullpo_retr(-1, sd);
+
+	skill_reload();
+	homunculus_db.reload();
+	clif_displaymessage(fd, msg_txt(sd,99)); // Skill database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadscript){
+	nullpo_retr(-1, sd);
+
+	struct s_mapiterator* iter;
+	map_session_data* pl_sd;
+	//atcommand_broadcast( fd, sd, "@broadcast", "Server is reloading scripts..." );
+	//atcommand_broadcast( fd, sd, "@broadcast", "You will feel a bit of lag at this point !" );
+
+	iter = mapit_getallusers();
+	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) ){
+		pc_close_npc(pl_sd,1);
+		clif_cutin( *pl_sd, "", 255 );
+		pl_sd->state.block_action &= ~(PCBLOCK_ALL ^ PCBLOCK_IMMUNE);
+		bg_queue_leave(pl_sd);
+	}
+	mapit_free(iter);
+
+	for (auto &bg : bg_queues) {
+		for (auto &bg_sd : bg->teama_members)
+			bg_team_leave(bg_sd, false, false); // Kick Team A from battlegrounds
+		for (auto &bg_sd : bg->teamb_members)
+			bg_team_leave(bg_sd, false, false); // Kick Team B from battlegrounds
+		bg_queue_clear(bg, true);
+	}
+
+	flush_fifos();
+	map_reloadnpc(true); // reload config files seeking for npcs
+	script_reload();
+	npc_reload();
+
+	clif_displaymessage(fd, msg_txt(sd,100)); // Scripts have been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadatcommand){
+	nullpo_retr(-1, sd);
+
+	atcommand_doload();
+	pc_groups_reload();
+	clif_displaymessage(fd, msg_txt(sd,254)); // GM command configuration has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadbattleconf){
+	nullpo_retr(-1, sd);
+
+	struct Battle_Config prev_config;
+	memcpy(&prev_config, &battle_config, sizeof(prev_config));
+
+	battle_config_read(BATTLE_CONF_FILENAME);
+
+	if( prev_config.item_rate_mvp          != battle_config.item_rate_mvp
+	||  prev_config.item_rate_common       != battle_config.item_rate_common
+	||  prev_config.item_rate_common_boss  != battle_config.item_rate_common_boss
+	||  prev_config.item_rate_common_mvp   != battle_config.item_rate_common_mvp
+	||  prev_config.item_rate_card         != battle_config.item_rate_card
+	||  prev_config.item_rate_card_boss    != battle_config.item_rate_card_boss
+	||  prev_config.item_rate_card_mvp     != battle_config.item_rate_card_mvp
+	||  prev_config.item_rate_equip        != battle_config.item_rate_equip
+	||  prev_config.item_rate_equip_boss   != battle_config.item_rate_equip_boss
+	||  prev_config.item_rate_equip_mvp    != battle_config.item_rate_equip_mvp
+	||  prev_config.item_rate_heal         != battle_config.item_rate_heal
+	||  prev_config.item_rate_heal_boss    != battle_config.item_rate_heal_boss
+	||  prev_config.item_rate_heal_mvp     != battle_config.item_rate_heal_mvp
+	||  prev_config.item_rate_use          != battle_config.item_rate_use
+	||  prev_config.item_rate_use_boss     != battle_config.item_rate_use_boss
+	||  prev_config.item_rate_use_mvp      != battle_config.item_rate_use_mvp
+	||  prev_config.item_rate_treasure     != battle_config.item_rate_treasure
+	||  prev_config.item_rate_adddrop      != battle_config.item_rate_adddrop
+	||  prev_config.logarithmic_drops      != battle_config.logarithmic_drops
+	||  prev_config.item_drop_common_min   != battle_config.item_drop_common_min
+	||  prev_config.item_drop_common_max   != battle_config.item_drop_common_max
+	||  prev_config.item_drop_card_min     != battle_config.item_drop_card_min
+	||  prev_config.item_drop_card_max     != battle_config.item_drop_card_max
+	||  prev_config.item_drop_equip_min    != battle_config.item_drop_equip_min
+	||  prev_config.item_drop_equip_max    != battle_config.item_drop_equip_max
+	||  prev_config.item_drop_mvp_min      != battle_config.item_drop_mvp_min
+	||  prev_config.item_drop_mvp_max      != battle_config.item_drop_mvp_max
+	||  prev_config.item_drop_heal_min     != battle_config.item_drop_heal_min
+	||  prev_config.item_drop_heal_max     != battle_config.item_drop_heal_max
+	||  prev_config.item_drop_use_min      != battle_config.item_drop_use_min
+	||  prev_config.item_drop_use_max      != battle_config.item_drop_use_max
+	||  prev_config.item_drop_treasure_min != battle_config.item_drop_treasure_min
+	||  prev_config.item_drop_treasure_max != battle_config.item_drop_treasure_max
+	||  prev_config.base_exp_rate          != battle_config.base_exp_rate
+	||  prev_config.job_exp_rate           != battle_config.job_exp_rate
+	)
+	{	// Exp or Drop rates changed.
+		mob_reload(); //Needed as well so rate changes take effect.
+	}
+	clif_displaymessage(fd, msg_txt(sd,255)); // Battle configuration has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadstatusdb){
+	nullpo_retr(-1, sd);
+
+	status_readdb( true );
+	clif_displaymessage(fd, msg_txt(sd,256)); // Status database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadpcdb){
+	nullpo_retr(-1, sd);
+
+	pc_readdb();
+	clif_displaymessage(fd, msg_txt(sd,257)); // Player database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadmotd){
+	nullpo_retr(-1, sd);
+
+	pc_read_motd();
+	clif_displaymessage(fd, msg_txt(sd,268)); // Reloaded the Message of the Day.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadquestdb){
+	nullpo_retr(-1, sd);
+
+	if (quest_db.reload())
+		clif_displaymessage(fd, msg_txt(sd,1377)); // Quest database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadmsgconf){
+	nullpo_retr(-1, sd);
+
+	map_msg_reload();
+	clif_displaymessage(fd, msg_txt(sd,463)); // Message configuration has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadinstancedb){
+	nullpo_retr(-1, sd);
+
+	if (instance_db.reload())
+		clif_displaymessage(fd, msg_txt(sd,516)); // Instance database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadachievementdb){
+	nullpo_retr(-1, sd);
+
+	achievement_db_reload();
+	clif_displaymessage(fd, msg_txt(sd,771)); // Achievement database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadattendancedb){
+	nullpo_retr(-1, sd);
+
+	attendance_db.reload();
+	clif_displaymessage(fd, msg_txt(sd, 795)); // Attendance database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadbarterdb){
+	nullpo_retr(-1, sd);
+
+	barter_db.reload();
+	clif_displaymessage(fd, msg_txt(sd, 830)); // Barter database has been reloaded.
+
+	return 0;
+}
+
+ACMD_FUNC(reloadlogconf){
+	nullpo_retr(-1, sd);
+
+	log_config_read(LOG_CONF_NAME);
+	clif_displaymessage(fd, msg_txt(sd,1536)); // Log configuration has been reloaded.
+
+	return 0;
+}
+
 /*==========================================
  * @partysharelvl <share_range> [Akinari]
  * Updates char server party share level range in runtime
@@ -4421,7 +4583,7 @@ ACMD_FUNC(mapinfo) {
 	struct chat_data *cd = nullptr;
 	char direction[12];
 	int32 i, m_id, chat_num = 0, list = 0, vend_num = 0;
-	unsigned short m_index;
+	uint16 m_index;
 	char mapname[MAP_NAME_LENGTH];
 
 	nullpo_retr(-1, sd);
@@ -4686,7 +4848,7 @@ ACMD_FUNC(mapinfo) {
 		{
 			if (pl_sd->mapindex == m_index) {
 				sprintf(atcmd_output, msg_txt(sd,481), // Player '%s' (session #%d) | Location: %d,%d
-				        pl_sd->status.name, pl_sd->fd, pl_sd->bl.x, pl_sd->bl.y);
+				        pl_sd->status.name, pl_sd->fd, pl_sd->x, pl_sd->y);
 				clif_displaymessage(fd, atcmd_output);
 			}
 		}
@@ -4710,10 +4872,10 @@ ACMD_FUNC(mapinfo) {
 			}
 			if(strcmp(nd->name,nd->exname) == 0)
 				sprintf(atcmd_output, msg_txt(sd,490), // NPC %d: %s | Direction: %s | Sprite: %d | Location: %d %d
-				    ++i, nd->name, direction, nd->class_, nd->bl.x, nd->bl.y);
+				    ++i, nd->name, direction, nd->class_, nd->x, nd->y);
 			else
 				sprintf(atcmd_output, msg_txt(sd,489), // NPC %d: %s::%s | Direction: %s | Sprite: %d | Location: %d %d
-				++i, nd->name, nd->exname, direction, nd->class_, nd->bl.x, nd->bl.y);
+				++i, nd->name, nd->exname, direction, nd->class_, nd->x, nd->y);
 			clif_displaymessage(fd, atcmd_output);
 		}
 		break;
@@ -4727,7 +4889,7 @@ ACMD_FUNC(mapinfo) {
 			    cd->usersd[0] == pl_sd)
 			{
 				sprintf(atcmd_output, msg_txt(sd,484), // Chat: %s | Player: %s | Location: %d %d
-					cd->title, pl_sd->status.name, cd->bl.x, cd->bl.y);
+					cd->title, pl_sd->status.name, cd->x, cd->y);
 				clif_displaymessage(fd, atcmd_output);
 				sprintf(atcmd_output, msg_txt(sd,485), //    Users: %d/%d | Password: %s | Public: %s
 					cd->users, cd->limit, cd->pass, (cd->pub) ? msg_txt(sd,486) : msg_txt(sd,487)); // Yes / No
@@ -4968,7 +5130,7 @@ ACMD_FUNC(repairall)
 	}
 
 	if (count > 0) {
-		clif_misceffect( sd->bl, NOTIFYEFFECT_REFINE_SUCCESS );
+		clif_misceffect(*sd, NOTIFYEFFECT_REFINE_SUCCESS);
 		clif_equiplist(sd);
 		clif_displaymessage(fd, msg_txt(sd,107)); // All items have been repaired.
 	} else {
@@ -4996,7 +5158,7 @@ ACMD_FUNC(nuke)
 
 	if ((pl_sd = map_nick2sd(atcmd_player_name,false)) != nullptr) {
 		if (pc_get_group_level(sd) >= pc_get_group_level(pl_sd)) { // you can kill only lower or same GM level
-			skill_castend_nodamage_id(&pl_sd->bl, &pl_sd->bl, NPC_SELFDESTRUCTION, 99, gettick(), 0);
+			skill_castend_nodamage_id(pl_sd, pl_sd, NPC_SELFDESTRUCTION, 99, gettick(), 0);
 			clif_displaymessage(fd, msg_txt(sd,109)); // Player has been nuked!
 		} else {
 			clif_displaymessage(fd, msg_txt(sd,81)); // Your GM level don't authorise you to do this action on this player.
@@ -5028,7 +5190,7 @@ ACMD_FUNC(tonpc)
 	}
 
 	if ((nd = npc_name2id(npcname)) != nullptr) {
-		if (pc_setpos(sd, map_id2index(nd->bl.m), nd->bl.x, nd->bl.y, CLR_TELEPORT) == SETPOS_OK)
+		if (pc_setpos(sd, map_id2index(nd->m), nd->x, nd->y, CLR_TELEPORT) == SETPOS_OK)
 			clif_displaymessage(fd, msg_txt(sd,0)); // Warped.
 		else
 			return -1;
@@ -5177,7 +5339,7 @@ char* txt_time(t_tick duration_)
 	memset(temp1, '\0', sizeof(temp1));
 
 	// Cap it
-	int32 duration = (int)duration_;
+	int32 duration = (int32)duration_;
 
 	days = duration / (60 * 60 * 24);
 	duration = duration - (60 * 60 * 24 * days);
@@ -5378,7 +5540,7 @@ ACMD_FUNC(jailfor) {
 	atcmd_output[sizeof(atcmd_output)-1] = '\0';
 
 	modif_p = atcmd_output;
-	jailtime = (int)solve_time(modif_p)/60; // Change to minutes
+	jailtime = (int32)solve_time(modif_p)/60; // Change to minutes
 
 	if (jailtime == 0) {
 		clif_displaymessage(fd, msg_txt(sd,1136)); // Invalid time for jail command.
@@ -5721,7 +5883,7 @@ ACMD_FUNC(localbroadcast)
 
 	sprintf(atcmd_output, "%s: %s", sd->status.name, message);
 
-	clif_broadcast(&sd->bl, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
+	clif_broadcast(sd, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
 
 	return 0;
 }
@@ -5781,7 +5943,7 @@ ACMD_FUNC(effect)
 		return -1;
 	}
 
-	clif_specialeffect(&sd->bl, type, ALL_CLIENT);
+	clif_specialeffect(sd, type, ALL_CLIENT);
 	clif_displaymessage(fd, msg_txt(sd,229)); // Your effect has changed.
 	return 0;
 }
@@ -5799,7 +5961,7 @@ ACMD_FUNC(killer)
 		clif_displaymessage(fd, msg_txt(sd,241)); // You can now attack and kill players freely.
 	else {
 		clif_displaymessage(fd, msg_txt(sd,292)); // Killer state reset.
-		pc_stop_attack(sd);
+		unit_stop_attack(sd);
 	}
 	return 0;
 }
@@ -5817,7 +5979,7 @@ ACMD_FUNC(killable)
 		clif_displaymessage(fd, msg_txt(sd,242)); // You can now be attacked and killed by players.
 	else {
 		clif_displaymessage(fd, msg_txt(sd,288)); // You are no longer killable.
-		map_foreachinallrange(unit_stopattack,&sd->bl, AREA_SIZE, BL_CHAR, sd->bl.id);
+		map_foreachinallrange(unit_stopattack,sd, AREA_SIZE, BL_CHAR, sd->id);
 	}
 	return 0;
 }
@@ -5829,7 +5991,7 @@ ACMD_FUNC(killable)
 ACMD_FUNC(skillon)
 {
 	nullpo_retr(-1, sd);
-	map_setmapflag(sd->bl.m, MF_NOSKILL, false);
+	map_setmapflag(sd->m, MF_NOSKILL, false);
 	clif_displaymessage(fd, msg_txt(sd,244)); // Skills have been enabled on this map.
 	return 0;
 }
@@ -5841,7 +6003,7 @@ ACMD_FUNC(skillon)
 ACMD_FUNC(skilloff)
 {
 	nullpo_retr(-1, sd);
-	map_setmapflag(sd->bl.m, MF_NOSKILL, true);
+	map_setmapflag(sd->m, MF_NOSKILL, true);
 	clif_displaymessage(fd, msg_txt(sd,243)); // Skills have been disabled on this map.
 	return 0;
 }
@@ -5852,7 +6014,7 @@ ACMD_FUNC(skilloff)
  *------------------------------------------*/
 ACMD_FUNC(npcmove)
 {
-	short x = 0, y = 0;
+	int16 x = 0, y = 0;
 	struct npc_data *nd = 0;
 	char npc_name[NPC_NAME_LENGTH];
 
@@ -5887,8 +6049,8 @@ ACMD_FUNC(npcmove)
 ACMD_FUNC(addwarp)
 {
 	char mapname[MAP_NAME_LENGTH_EXT], warpname[NPC_NAME_LENGTH];
-	short x,y;
-	unsigned short m;
+	int16 x,y;
+	uint16 m;
 	struct npc_data* nd;
 
 	nullpo_retr(-1, sd);
@@ -5907,7 +6069,7 @@ ACMD_FUNC(addwarp)
 		return -1;
 	}
 
-	nd = npc_add_warp(warpname, sd->bl.m, sd->bl.x, sd->bl.y, 2, 2, m, x, y);
+	nd = npc_add_warp(warpname, sd->m, sd->x, sd->y, 2, 2, m, x, y);
 	if( nd == nullptr )
 		return -1;
 
@@ -5942,11 +6104,11 @@ ACMD_FUNC(follow)
 		return -1;
 	}
 
-	if (sd->followtarget == pl_sd->bl.id) {
+	if (sd->followtarget == pl_sd->id) {
 		pc_stop_following (sd);
 		clif_displaymessage(fd, msg_txt(sd,1159)); // Follow mode OFF.
 	} else {
-		pc_follow(sd, pl_sd->bl.id);
+		pc_follow(sd, pl_sd->id);
 		clif_displaymessage(fd, msg_txt(sd,1160)); // Follow mode ON.
 	}
 
@@ -6282,14 +6444,14 @@ ACMD_FUNC(useskill)
 	}
 
 	if (SKILL_CHK_HOMUN(skill_id) && hom_is_active(sd->hd)) // (If used with @useskill, put the homunc as dest)
-		bl = &sd->hd->bl;
+		bl = sd->hd;
 	else
-		bl = &sd->bl;
+		bl = sd;
 
 	if (skill_get_inf(skill_id)&INF_GROUND_SKILL)
-		unit_skilluse_pos(bl, pl_sd->bl.x, pl_sd->bl.y, skill_id, skill_lv);
+		unit_skilluse_pos(bl, pl_sd->x, pl_sd->y, skill_id, skill_lv);
 	else
-		unit_skilluse_id(bl, pl_sd->bl.id, skill_id, skill_lv);
+		unit_skilluse_id(bl, pl_sd->id, skill_id, skill_lv);
 
 	return 0;
 }
@@ -6314,16 +6476,16 @@ ACMD_FUNC(displayskill)
 		return -1;
 	}
 
-	status_data* status = status_get_status_data(sd->bl);
+	status_data* status = status_get_status_data(*sd);
 	tick = gettick();
 	if (type == 0 || type == 1)
-		clif_skill_damage(&sd->bl, &sd->bl, tick, status->amotion, status->dmotion, 1, 1, skill_id, skill_lv, DMG_SINGLE);
+		clif_skill_damage(*sd, *sd, tick, status->amotion, status->dmotion, 1, 1, skill_id, skill_lv, DMG_SINGLE);
 	if (type == 0 || type == 2)
-		clif_skill_damage(&sd->bl, &sd->bl, tick, status->amotion, status->dmotion, 1, 1, skill_id, skill_lv, DMG_SPLASH);
+		clif_skill_damage(*sd, *sd, tick, status->amotion, status->dmotion, 1, 1, skill_id, skill_lv, DMG_SPLASH);
 	if (type == 0 || type == 3)
-		clif_skill_nodamage(&sd->bl, sd->bl, skill_id, skill_lv);
+		clif_skill_nodamage(sd, *sd, skill_id, skill_lv);
 	if (type == 0 || type == 4)
-		clif_skill_poseffect(&sd->bl, skill_id, skill_lv, sd->bl.x, sd->bl.y, tick);
+		clif_skill_poseffect(*sd, skill_id, skill_lv, sd->x, sd->y, tick);
 	return 0;
 }
 
@@ -6348,9 +6510,9 @@ ACMD_FUNC(displayskillcast)
 	}
 
 	if ( target_type == 1)
-		clif_skillcasting(&sd->bl, sd->bl.id, 0, sd->bl.x, sd->bl.y, skill_id, skill_lv, 0, cast_time);
+		clif_skillcasting(sd, sd->id, 0, sd->x, sd->y, skill_id, skill_lv, 0, cast_time);
 	else
-		clif_skillcasting(&sd->bl, sd->bl.id, sd->bl.id, 0, 0, skill_id, skill_lv, 0, cast_time);
+		clif_skillcasting(sd, sd->id, sd->id, 0, 0, skill_id, skill_lv, 0, cast_time);
 
 	return 0;
 }
@@ -6373,7 +6535,7 @@ ACMD_FUNC(displayskillunit)
 		return -1;
 	}
 
-	clif_skill_unit_test(&sd->bl, sd->bl.x, sd->bl.y, unit_id, range, skill_lv);
+	clif_skill_unit_test(sd, sd->x, sd->y, unit_id, range, skill_lv);
 
 	return 0;
 }
@@ -6473,32 +6635,32 @@ ACMD_FUNC(marry)
 	}
 
 	if (!pc_inventoryblank(sd)) {
-		clif_msg_color(sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED]);
+		clif_msg_color( *sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED] );
 		return -1;
 	}
 
 	if (!pc_inventoryblank(pl_sd)) {
-		clif_msg_color(pl_sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED]);
+		clif_msg_color( *pl_sd, MSI_CANT_GET_ITEM_BECAUSE_COUNT, color_table[COLOR_RED] );
 		return -1;
 	}
 
 	uint32 w = 0;
 
 	if (w = itemdb_weight((sd->status.sex) ? WEDDING_RING_M : WEDDING_RING_F) && w + sd->weight > sd->max_weight) {
-		clif_msg_color(sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED]);
+		clif_msg_color( *sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED] );
 		return -1;
 	}
 
 	if (w = itemdb_weight((pl_sd->status.sex) ? WEDDING_RING_M : WEDDING_RING_F) && w + pl_sd->weight > pl_sd->max_weight) {
-		clif_msg_color(pl_sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED]);
+		clif_msg_color( *pl_sd, MSI_CANT_GET_ITEM_BECAUSE_WEIGHT, color_table[COLOR_RED] );
 		return -1;
 	}
 
 	if (pc_marriage(sd, pl_sd)) {
 		clif_displaymessage(fd, msg_txt(sd,1173)); // They are married... wish them well.
-		clif_wedding_effect(&pl_sd->bl); //wedding effect and music [Lupus]
-		if( pl_sd->bl.m != sd->bl.m )
-			clif_wedding_effect(&sd->bl);
+		clif_wedding_effect(*pl_sd);
+		if( pl_sd->m != sd->m )
+			clif_wedding_effect(*sd);
 		getring(sd); // Auto-give named rings (Aru)
 		getring(pl_sd);
 		return 0;
@@ -6548,7 +6710,7 @@ ACMD_FUNC(changelook)
 		j = LOOK_HEAD_TOP;
 	}
 
-	clif_changelook(&sd->bl,j,k);
+	clif_changelook(sd,j,k);
 
 	return 0;
 }
@@ -6560,7 +6722,7 @@ ACMD_FUNC(changelook)
 ACMD_FUNC(autotrade) {
 	nullpo_retr(-1, sd);
 
-	if( map_getmapflag(sd->bl.m, MF_AUTOTRADE) != battle_config.autotrade_mapflag ) {
+	if( map_getmapflag(sd->m, MF_AUTOTRADE) != battle_config.autotrade_mapflag ) {
 		clif_displaymessage(fd, msg_txt(sd,1179)); // Autotrade is not allowed on this map.
 		return -1;
 	}
@@ -6587,7 +6749,7 @@ ACMD_FUNC(autotrade) {
 
 	if( battle_config.at_timeout ) {
 		int32 timeout = atoi(message);
-		status_change_start(nullptr,&sd->bl, SC_AUTOTRADE, 10000, 0, 0, 0, 0, ((timeout > 0) ? min(timeout,battle_config.at_timeout) : battle_config.at_timeout) * 60000, SCSTART_NONE);
+		status_change_start(nullptr,sd, SC_AUTOTRADE, 10000, 0, 0, 0, 0, ((timeout > 0) ? min(timeout,battle_config.at_timeout) : battle_config.at_timeout) * 60000, SCSTART_NONE);
 	}
 
 	if (battle_config.at_logout_event)
@@ -6617,7 +6779,7 @@ ACMD_FUNC(changegm)
 		return -1;
 	}
 
-	if( map_getmapflag(sd->bl.m, MF_GUILDLOCK) || map_getmapflag(sd->bl.m, MF_GVG_CASTLE) ) {
+	if( map_getmapflag(sd->m, MF_GUILDLOCK) || map_getmapflag(sd->m, MF_GVG_CASTLE) ) {
 		clif_displaymessage(fd, msg_txt(sd,1182)); // You cannot change guild leaders on this map.
 		return -1;
 	}
@@ -6634,7 +6796,7 @@ ACMD_FUNC(changegm)
 
 	if( !battle_config.guild_leaderchange_woe && is_agit_start() ){
 #if PACKETVER >= 20151001
-		clif_msg(sd, MSI_IMPOSSIBLE_CHANGE_GUILD_MASTER_IN_SIEGE_TIME);
+		clif_msg( *sd, MSI_IMPOSSIBLE_CHANGE_GUILD_MASTER_IN_SIEGE_TIME );
 #else
 		clif_displaymessage(fd, msg_txt(sd,1513)); // Currently in WoE hours, unable to delegate Guild leader
 #endif
@@ -6643,7 +6805,7 @@ ACMD_FUNC(changegm)
 
 	if( battle_config.guild_leaderchange_delay && DIFF_TICK(time(nullptr),sd->guild->guild.last_leader_change) < battle_config.guild_leaderchange_delay ){
 #if PACKETVER >= 20151001
-		clif_msg(sd, MSI_IMPOSSIBLE_CHANGE_GUILD_MASTER_NOT_TIME);
+		clif_msg( *sd, MSI_IMPOSSIBLE_CHANGE_GUILD_MASTER_NOT_TIME );
 #else
 		clif_displaymessage(fd, msg_txt(sd,1514)); // You have to wait for a while before delegating a new Guild leader
 #endif
@@ -6735,7 +6897,7 @@ ACMD_FUNC(autoloot)
 	} else {
 		double drate;
 		drate = atof(message);
-		rate = (int)(drate*100);
+		rate = (int32)(drate*100);
 	}
 	if (rate < 0) rate = 0;
 	if (rate > 10000) rate = 10000;
@@ -6969,13 +7131,13 @@ ACMD_FUNC(autoloottype)
 //ACMD_FUNC(rain)
 //{
 //	nullpo_retr(-1, sd);
-//	if (map_getmapflag(sd->bl.m, MF_RAIN)) {
-//		map_setmapflag(sd->bl.m, MF_RAIN, false);
-//		clif_weather(sd->bl.m);
+//	if (map_getmapflag(sd->m, MF_RAIN)) {
+//		map_setmapflag(sd->m, MF_RAIN, false);
+//		clif_weather(sd->m);
 //		clif_displaymessage(fd, msg_txt(sd,1201)); // The rain has stopped.
 //	} else {
-//		map_setmapflag(sd->bl.m, MF_RAIN, true);
-//		clif_weather(sd->bl.m);
+//		map_setmapflag(sd->m, MF_RAIN, true);
+//		clif_weather(sd->m);
 //		clif_displaymessage(fd, msg_txt(sd,1202)); // It has started to rain.
 //	}
 //	return 0;
@@ -6987,13 +7149,13 @@ ACMD_FUNC(autoloottype)
 ACMD_FUNC(snow)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_SNOW)) {
-		map_setmapflag(sd->bl.m, MF_SNOW, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_SNOW)) {
+		map_setmapflag(sd->m, MF_SNOW, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1203)); // Snow has stopped falling.
 	} else {
-		map_setmapflag(sd->bl.m, MF_SNOW, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_SNOW, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1204)); // It has started to snow.
 	}
 
@@ -7006,13 +7168,13 @@ ACMD_FUNC(snow)
 ACMD_FUNC(sakura)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_SAKURA)) {
-		map_setmapflag(sd->bl.m, MF_SAKURA, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_SAKURA)) {
+		map_setmapflag(sd->m, MF_SAKURA, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1205)); // Cherry tree leaves no longer fall.
 	} else {
-		map_setmapflag(sd->bl.m, MF_SAKURA, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_SAKURA, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1206)); // Cherry tree leaves have begun to fall.
 	}
 	return 0;
@@ -7024,13 +7186,13 @@ ACMD_FUNC(sakura)
 ACMD_FUNC(clouds)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_CLOUDS)) {
-		map_setmapflag(sd->bl.m, MF_CLOUDS, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_CLOUDS)) {
+		map_setmapflag(sd->m, MF_CLOUDS, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1207)); // The clouds has disappear.
 	} else {
-		map_setmapflag(sd->bl.m, MF_CLOUDS, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_CLOUDS, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1208)); // Clouds appear.
 	}
 
@@ -7043,13 +7205,13 @@ ACMD_FUNC(clouds)
 ACMD_FUNC(clouds2)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_CLOUDS2)) {
-		map_setmapflag(sd->bl.m, MF_CLOUDS2, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_CLOUDS2)) {
+		map_setmapflag(sd->m, MF_CLOUDS2, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1209)); // The alternative clouds disappear.
 	} else {
-		map_setmapflag(sd->bl.m, MF_CLOUDS2, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_CLOUDS2, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1210)); // Alternative clouds appear.
 	}
 
@@ -7062,13 +7224,13 @@ ACMD_FUNC(clouds2)
 ACMD_FUNC(fog)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_FOG)) {
-		map_setmapflag(sd->bl.m, MF_FOG, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_FOG)) {
+		map_setmapflag(sd->m, MF_FOG, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1211)); // The fog has gone.
 	} else {
-		map_setmapflag(sd->bl.m, MF_FOG, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_FOG, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1212)); // Fog hangs over.
 	}
 		return 0;
@@ -7080,13 +7242,13 @@ ACMD_FUNC(fog)
 ACMD_FUNC(leaves)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_LEAVES)) {
-		map_setmapflag(sd->bl.m, MF_LEAVES, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_LEAVES)) {
+		map_setmapflag(sd->m, MF_LEAVES, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1213)); // Leaves no longer fall.
 	} else {
-		map_setmapflag(sd->bl.m, MF_LEAVES, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_LEAVES, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1214)); // Fallen leaves fall.
 	}
 
@@ -7099,13 +7261,13 @@ ACMD_FUNC(leaves)
 ACMD_FUNC(fireworks)
 {
 	nullpo_retr(-1, sd);
-	if (map_getmapflag(sd->bl.m, MF_FIREWORKS)) {
-		map_setmapflag(sd->bl.m, MF_FIREWORKS, false);
-		clif_weather(sd->bl.m);
+	if (map_getmapflag(sd->m, MF_FIREWORKS)) {
+		map_setmapflag(sd->m, MF_FIREWORKS, false);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1215)); // Fireworks have ended.
 	} else {
-		map_setmapflag(sd->bl.m, MF_FIREWORKS, true);
-		clif_weather(sd->bl.m);
+		map_setmapflag(sd->m, MF_FIREWORKS, true);
+		clif_weather(sd->m);
 		clif_displaymessage(fd, msg_txt(sd,1216)); // Fireworks have launched.
 	}
 
@@ -7119,15 +7281,15 @@ ACMD_FUNC(clearweather)
 {
 	nullpo_retr(-1, sd);
 
-	//map_setmapflag(sd->bl.m, MF_RAIN, false); // No longer available, keeping here just in case it's back someday. [Ind]
-	map_setmapflag(sd->bl.m, MF_SNOW, false);
-	map_setmapflag(sd->bl.m, MF_SAKURA, false);
-	map_setmapflag(sd->bl.m, MF_CLOUDS, false);
-	map_setmapflag(sd->bl.m, MF_CLOUDS2, false);
-	map_setmapflag(sd->bl.m, MF_FOG, false);
-	map_setmapflag(sd->bl.m, MF_FIREWORKS, false);
-	map_setmapflag(sd->bl.m, MF_LEAVES, false);
-	clif_weather(sd->bl.m);
+	//map_setmapflag(sd->m, MF_RAIN, false); // No longer available, keeping here just in case it's back someday. [Ind]
+	map_setmapflag(sd->m, MF_SNOW, false);
+	map_setmapflag(sd->m, MF_SAKURA, false);
+	map_setmapflag(sd->m, MF_CLOUDS, false);
+	map_setmapflag(sd->m, MF_CLOUDS2, false);
+	map_setmapflag(sd->m, MF_FOG, false);
+	map_setmapflag(sd->m, MF_FIREWORKS, false);
+	map_setmapflag(sd->m, MF_LEAVES, false);
+	clif_weather(sd->m);
 	clif_displaymessage(fd, msg_txt(sd,291)); // Weather effects will dispell on warp/refresh
 
 	return 0;
@@ -7150,7 +7312,7 @@ ACMD_FUNC(sound)
 	if(strstr(sound_file, ".wav") == nullptr)
 		strcat(sound_file, ".wav");
 
-	clif_soundeffect( sd->bl, sound_file, 0, AREA );
+	clif_soundeffect(*sd, sound_file, 0, AREA);
 
 	return 0;
 }
@@ -7195,14 +7357,14 @@ ACMD_FUNC(mobsearch)
 		if( md == nullptr )
 			break;// no more mobs
 
-		if( md->bl.m != sd->bl.m )
+		if( md->m != sd->m )
 			continue;
 		if( md->mob_id != mob_id )
 			continue;
 
 		++number;
 		if( md->spawn_timer == INVALID_TIMER )
-			snprintf(atcmd_output, sizeof(atcmd_output), "%2d[%3d:%3d] %s", number, md->bl.x, md->bl.y, md->name);
+			snprintf(atcmd_output, sizeof(atcmd_output), "%2d[%3d:%3d] %s", number, md->x, md->y, md->name);
 		else
 			snprintf(atcmd_output, sizeof(atcmd_output), "%2d[%s] %s", number, "dead", md->name);
 		clif_displaymessage(fd, atcmd_output);
@@ -7226,23 +7388,23 @@ static int32 atcommand_cleanfloor_sub(struct block_list *bl, va_list ap)
 
 ACMD_FUNC(cleanmap)
 {
-	map_foreachinmap(atcommand_cleanfloor_sub, sd->bl.m, BL_ITEM);
+	map_foreachinmap(atcommand_cleanfloor_sub, sd->m, BL_ITEM);
 	clif_displaymessage(fd, msg_txt(sd,1221)); // All dropped items have been cleaned up.
 	return 0;
 }
 
 ACMD_FUNC(cleanarea)
 {
-	short x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+	int16 x0 = 0, y0 = 0, x1 = 0, y1 = 0;
 
 	if (!message || !*message || sscanf(message, "%6hd %6hd %6hd %6hd", &x0, &y0, &x1, &y1) < 1) {
-		map_foreachinallarea(atcommand_cleanfloor_sub, sd->bl.m, sd->bl.x - (AREA_SIZE * 2), sd->bl.y - (AREA_SIZE * 2), sd->bl.x + (AREA_SIZE * 2), sd->bl.y + (AREA_SIZE * 2), BL_ITEM);
+		map_foreachinallarea(atcommand_cleanfloor_sub, sd->m, sd->x - (AREA_SIZE * 2), sd->y - (AREA_SIZE * 2), sd->x + (AREA_SIZE * 2), sd->y + (AREA_SIZE * 2), BL_ITEM);
 	}
 	else if (sscanf(message, "%6hd %6hd %6hd %6hd", &x0, &y0, &x1, &y1) == 1) {
-		map_foreachinallarea(atcommand_cleanfloor_sub, sd->bl.m, sd->bl.x - x0, sd->bl.y - x0, sd->bl.x + x0, sd->bl.y + x0, BL_ITEM);
+		map_foreachinallarea(atcommand_cleanfloor_sub, sd->m, sd->x - x0, sd->y - x0, sd->x + x0, sd->y + x0, BL_ITEM);
 	}
 	else if (sscanf(message, "%6hd %6hd %6hd %6hd", &x0, &y0, &x1, &y1) == 4) {
-		map_foreachinallarea(atcommand_cleanfloor_sub, sd->bl.m, x0, y0, x1, y1, BL_ITEM);
+		map_foreachinallarea(atcommand_cleanfloor_sub, sd->m, x0, y0, x1, y1, BL_ITEM);
 	}
 
 	clif_displaymessage(fd, msg_txt(sd,1221)); // All dropped items have been cleaned up.
@@ -7284,8 +7446,8 @@ ACMD_FUNC(npctalk)
 	strtok(name, "#"); // discard extra name identifier if present
 	snprintf(temp, sizeof(temp), "%s : %s", name, mes);
 
-	if(ifcolor) clif_messagecolor(&nd->bl,color,temp,true,AREA_CHAT_WOC);
-	else clif_disp_overhead(&nd->bl, temp);
+	if(ifcolor) clif_messagecolor(nd,color,temp,true,AREA_CHAT_WOC);
+	else clif_disp_overhead(nd, temp);
 
 	return 0;
 }
@@ -7332,7 +7494,7 @@ ACMD_FUNC(pettalk)
 		};
 		int32 i;
 		ARR_FIND( 0, ARRAYLENGTH(emo), i, stricmp(message, emo[i]) == 0 );
-		if( i == ET_DICE1 ) i = rnd_value<int>(ET_DICE1, ET_DICE6); // randomize /dice
+		if( i == ET_DICE1 ) i = rnd_value<int32>(ET_DICE1, ET_DICE6); // randomize /dice
 		if( i < ARRAYLENGTH(emo) )
 		{
 			if (sd->emotionlasttime + 1 >= time(nullptr)) { // not more than 1 per second
@@ -7341,13 +7503,13 @@ ACMD_FUNC(pettalk)
 			}
 			sd->emotionlasttime = time(nullptr);
 
-			clif_emotion(&pd->bl, i);
+			clif_emotion(*pd, static_cast<emotion_type>(i));
 			return 0;
 		}
 	}
 
 	snprintf(temp, sizeof temp ,"%s : %s", pd->pet.name, mes);
-	clif_disp_overhead(&pd->bl, temp);
+	clif_disp_overhead(pd, temp);
 
 	return 0;
 }
@@ -7442,18 +7604,18 @@ ACMD_FUNC(summon)
 		return -1;
 	}
 
-	md = mob_once_spawn_sub(&sd->bl, sd->bl.m, -1, -1, "--ja--", mob_id, "", SZ_SMALL, AI_NONE);
+	md = mob_once_spawn_sub(sd, sd->m, -1, -1, "--ja--", mob_id, "", SZ_SMALL, AI_NONE);
 
 	if(!md)
 		return -1;
 
-	md->master_id=sd->bl.id;
+	md->master_id=sd->id;
 	md->special_state.ai=AI_ATTACK;
-	md->deletetimer=add_timer(tick+(duration*60000),mob_timer_delete,md->bl.id,0);
-	clif_specialeffect(&md->bl,EF_ENTRY2,AREA);
+	md->deletetimer=add_timer(tick+(duration*60000),mob_timer_delete,md->id,0);
+	clif_specialeffect(md,EF_ENTRY2,AREA);
 	mob_spawn(md);
-	sc_start4(nullptr,&md->bl, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 60000);
-	clif_skill_poseffect(&sd->bl,AM_CALLHOMUN,1,md->bl.x,md->bl.y,tick);
+	sc_start4(nullptr,md, SC_MODECHANGE, 100, 1, 0, MD_AGGRESSIVE, 0, 60000);
+	clif_skill_poseffect(*sd, AM_CALLHOMUN, 1, md->x, md->y, tick);
 	clif_displaymessage(fd, msg_txt(sd,39));	// All monster summoned!
 
 	return 0;
@@ -7568,7 +7730,7 @@ ACMD_FUNC(unmute)
 	}
 
 	pl_sd->status.manner = 0;
-	status_change_end(&pl_sd->bl, SC_NOCHAT);
+	status_change_end(pl_sd, SC_NOCHAT);
 	clif_displaymessage(sd->fd,msg_txt(sd,1236)); // Player unmuted.
 
 	return 0;
@@ -7672,13 +7834,13 @@ ACMD_FUNC(mute)
 
 	if( pl_sd->status.manner < manner ) {
 		pl_sd->status.manner -= manner;
-		sc_start(nullptr,&pl_sd->bl,SC_NOCHAT,100,0,0);
+		sc_start(nullptr,pl_sd,SC_NOCHAT,100,0,0);
 	} else {
 		pl_sd->status.manner = 0;
-		status_change_end(&pl_sd->bl, SC_NOCHAT);
+		status_change_end(pl_sd, SC_NOCHAT);
 	}
 
-	clif_GM_silence(sd, pl_sd, (manner > 0 ? 1 : 0));
+	clif_GM_silence( *sd, *pl_sd, manner > 0 );
 
 	return 0;
 }
@@ -7789,7 +7951,7 @@ ACMD_FUNC(misceffect)
 		return -1;
 	if (effect < NOTIFYEFFECT_BASE_LEVEL_UP || effect > NOTIFYEFFECT_TAEKWON_BASE_LEVEL_UP)
 		return -1;
-	clif_misceffect( sd->bl, static_cast<e_notify_effect>(effect) );
+	clif_misceffect(*sd, static_cast<e_notify_effect>(effect));
 
 	return 0;
 }
@@ -7826,7 +7988,8 @@ ACMD_FUNC(mobinfo)
 	}
 
 	// If monster identifier/name argument is a name
-	if ((i = mobdb_checkid(strtoul(message, nullptr, 10))))
+	i = util::strtoint32def(message);
+	if (i != 0 && (i = mobdb_checkid(i)))
 	{
 		mob_ids[0] = i;
 		count = 1;
@@ -7889,74 +8052,83 @@ ACMD_FUNC(mobinfo)
 		// drops
 		clif_displaymessage(fd, msg_txt(sd,1245)); //  Drops:
 		strcpy(atcmd_output, " ");
-		uint32 j = 0;
-		int32 drop_modifier = 100;
+
+		if( mob->dropitem.empty() ){
+			clif_displaymessage(fd, msg_txt(sd,1246)); // This monster has no drops.
+		}else{
+			uint32 j = 0;
+			int32 drop_modifier = 100;
 #ifdef RENEWAL_DROP
-		if( battle_config.atcommand_mobinfo_type ){
-			drop_modifier = pc_level_penalty_mod( sd, PENALTY_DROP, mob );
-		}
+			if( battle_config.atcommand_mobinfo_type ){
+				drop_modifier = pc_level_penalty_mod( sd, PENALTY_DROP, mob );
+			}
 #endif
 
-		for (i = 0; i < MAX_MOB_DROP_TOTAL; i++) {
-
-			if (mob->dropitem[i].nameid == 0 || mob->dropitem[i].rate < 1)
-				continue;
-
-			std::shared_ptr<item_data> id = item_db.find(mob->dropitem[i].nameid);
-
-			if (id == nullptr)
-				continue;
-
-			int32 droprate = mob_getdroprate( &sd->bl, mob, mob->dropitem[i].rate, drop_modifier );
-
-			sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), (float)droprate / 100);
-			strcat(atcmd_output, atcmd_output2);
-			if (++j % 3 == 0) {
-				clif_displaymessage(fd, atcmd_output);
-				strcpy(atcmd_output, " ");
-			}
-		}
-		if (j == 0)
-			clif_displaymessage(fd, msg_txt(sd,1246)); // This monster has no drops.
-		else if (j % 3 != 0)
-			clif_displaymessage(fd, atcmd_output);
-		// mvp
-		if( mob->get_bosstype() == BOSSTYPE_MVP ){
-			float mvppercent, mvpremain;
-			sprintf(atcmd_output, msg_txt(sd,1247), mob->mexp); //  MVP Bonus EXP:%llu
-			clif_displaymessage(fd, atcmd_output);
-			strcpy(atcmd_output, msg_txt(sd,1248)); //  MVP Items:
-			mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
-			j = 0;
-			for (i = 0; i < MAX_MVP_DROP_TOTAL; i++) {
-
-				if (mob->mvpitem[i].nameid == 0)
+			for( const std::shared_ptr<s_mob_drop>& entry : mob->dropitem ){
+				if (entry->nameid == 0 || entry->rate < 1)
 					continue;
 
-				std::shared_ptr<item_data> id = item_db.find(mob->mvpitem[i].nameid);
+				std::shared_ptr<item_data> id = item_db.find(entry->nameid);
 
 				if (id == nullptr)
 					continue;
 
-				//Because if there are 3 MVP drops at 50%, the first has a chance of 50%, the second 25% and the third 12.5%
-				mvppercent = (float)mob->mvpitem[i].rate * mvpremain / 10000.0f;
-				if(battle_config.item_drop_mvp_mode == 0) {
-					mvpremain -= mvppercent;
-				}
-				if (mvppercent > 0) {
-					j++;
-					if (j == 1) {
-						sprintf(atcmd_output2, " %s  %02.02f%%", item_db.create_item_link( id ).c_str(), mvppercent);
-					} else {
-						sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), mvppercent);
-					}
-					strcat(atcmd_output, atcmd_output2);
+				int32 droprate = mob_getdroprate( sd, mob, entry->rate, drop_modifier );
+
+				sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), (float)droprate / 100);
+				strcat(atcmd_output, atcmd_output2);
+				if (++j % 3 == 0) {
+					clif_displaymessage(fd, atcmd_output);
+					strcpy(atcmd_output, " ");
 				}
 			}
-			if (j == 0)
-				clif_displaymessage(fd, msg_txt(sd,1249)); // This monster has no MVP prizes.
-			else
+
+			if( j % 3 != 0 ){
 				clif_displaymessage(fd, atcmd_output);
+			}
+		}
+
+		// mvp
+		if( mob->get_bosstype() == BOSSTYPE_MVP ){
+			sprintf(atcmd_output, msg_txt(sd,1247), mob->mexp); //  MVP Bonus EXP:%llu
+			clif_displaymessage(fd, atcmd_output);
+			clif_displaymessage(fd, msg_txt(sd,1248)); //  MVP drops:
+			strcpy(atcmd_output, " ");
+
+			if( mob->mvpitem.empty() ){
+				clif_displaymessage(fd, msg_txt(sd,1249)); // This monster has no MVP drops.
+			}else{
+				float mvpremain = 100.0; //Remaining drop chance for official mvp drop mode
+				uint32 j = 0;
+
+				for( const std::shared_ptr<s_mob_drop>& entry : mob->mvpitem ){
+					if (entry->nameid == 0)
+						continue;
+
+					std::shared_ptr<item_data> id = item_db.find(entry->nameid);
+
+					if (id == nullptr)
+						continue;
+
+					//Because if there are 3 MVP drops at 50%, the first has a chance of 50%, the second 25% and the third 12.5%
+					float mvppercent = (float)entry->rate * mvpremain / 10000.0f;
+					if(battle_config.item_drop_mvp_mode == 0) {
+						mvpremain -= mvppercent;
+					}
+					if (mvppercent > 0) {
+						sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), mvppercent);
+						strcat(atcmd_output, atcmd_output2);
+						if (++j % 3 == 0) {
+							clif_displaymessage(fd, atcmd_output);
+							strcpy(atcmd_output, " ");
+						}
+					}
+				}
+
+				if( j % 3 != 0 ){
+					clif_displaymessage(fd, atcmd_output);
+				}
+			}
 		}
 	}
 	return 0;
@@ -8009,7 +8181,7 @@ ACMD_FUNC(showmobs)
 		if( md == nullptr )
 			break;// no more mobs
 
-		if( md->bl.m != sd->bl.m )
+		if( md->m != sd->m )
 			continue;
 		if( mob_id != -1 && md->mob_id != mob_id )
 			continue;
@@ -8019,7 +8191,7 @@ ACMD_FUNC(showmobs)
 			continue; // hide mobs waiting for respawn
 
 		++number;
-		clif_viewpoint( *sd, 1, 0, md->bl.x, md->bl.y, number, 0xFFFFFF );
+		clif_viewpoint( *sd, 1, 0, md->x, md->y, number, 0xFFFFFF );
 	}
 	mapit_free(it);
 
@@ -8055,8 +8227,8 @@ ACMD_FUNC(homlevel)
 	}
 
 	status_calc_homunculus(hd, SCO_NONE);
-	status_percent_heal(&hd->bl, 100, 100);
-	clif_specialeffect(&hd->bl,EF_HO_UP,AREA);
+	status_percent_heal(hd, 100, 100);
+	clif_specialeffect(hd,EF_HO_UP,AREA);
 
 	return 0;
 }
@@ -8105,7 +8277,7 @@ ACMD_FUNC(hommutate)
 	if (m_class != -1 && m_id != -1 && m_class&HOM_EVO && m_id&HOM_S && sd->hd->homunculus.level >= 99) {
 		hom_mutate(sd->hd, homun_id);
 	} else {
-		clif_emotion(&sd->hd->bl, ET_SWEAT);
+		clif_emotion(*sd->hd, ET_SWEAT );
 	}
 	return 0;
 }
@@ -8222,7 +8394,7 @@ ACMD_FUNC(homtalk)
 	}
 
 	snprintf(temp, sizeof temp ,"%s : %s", sd->hd->homunculus.name, mes);
-	clif_disp_overhead(&sd->hd->bl, temp);
+	clif_disp_overhead(sd->hd, temp);
 
 	return 0;
 }
@@ -8241,7 +8413,7 @@ ACMD_FUNC(hominfo)
 	}
 
 	hd = sd->hd;
-	status_data* status = status_get_status_data(hd->bl);
+	status_data* status = status_get_status_data(*hd);
 	clif_displaymessage(fd, msg_txt(sd,1261)); // Homunculus stats:
 
 	snprintf(atcmd_output, sizeof(atcmd_output) ,msg_txt(sd,1262), // HP: %d/%d - SP: %d/%d
@@ -8345,7 +8517,7 @@ ACMD_FUNC(homshuffle)
 		return -1;
 
 	clif_displaymessage(sd->fd, msg_txt(sd,1275)); // Homunculus stats altered.
-	atcommand_homstats(fd, sd, command, message); //Print32 out the new stats
+	atcommand_homstats(fd, sd, command, message); //Print out the new stats
 	return 0;
 }
 
@@ -8548,15 +8720,15 @@ static int32 atcommand_mutearea_sub(struct block_list *bl,va_list ap)
 	if (pl_sd == nullptr)
 		return 0;
 
-	id = va_arg(ap, int);
-	time = va_arg(ap, int);
+	id = va_arg(ap, int32);
+	time = va_arg(ap, int32);
 
 	if (id != bl->id && !pc_get_group_level(pl_sd)) {
 		pl_sd->status.manner -= time;
 		if (pl_sd->status.manner < 0)
-			sc_start(nullptr,&pl_sd->bl,SC_NOCHAT,100,0,0);
+			sc_start(nullptr,pl_sd,SC_NOCHAT,100,0,0);
 		else
-			status_change_end(&pl_sd->bl, SC_NOCHAT);
+			status_change_end(pl_sd, SC_NOCHAT);
 	}
 	return 0;
 }
@@ -8573,9 +8745,9 @@ ACMD_FUNC(mutearea)
 
 	time = atoi(message);
 
-	map_foreachinallarea(atcommand_mutearea_sub,sd->bl.m,
-		sd->bl.x-AREA_SIZE, sd->bl.y-AREA_SIZE,
-		sd->bl.x+AREA_SIZE, sd->bl.y+AREA_SIZE, BL_PC, sd->bl.id, time);
+	map_foreachinallarea(atcommand_mutearea_sub,sd->m,
+		sd->x-AREA_SIZE, sd->y-AREA_SIZE,
+		sd->x+AREA_SIZE, sd->y+AREA_SIZE, BL_PC, sd->id, time);
 
 	return 0;
 }
@@ -8643,7 +8815,7 @@ ACMD_FUNC(me)
 	}
 
 	sprintf(atcmd_output, msg_txt(sd,270), sd->status.name, tempmes);	// *%s %s*
-	clif_disp_overhead(&sd->bl, atcmd_output);
+	clif_disp_overhead(sd, atcmd_output);
 
 	return 0;
 
@@ -8662,14 +8834,14 @@ ACMD_FUNC(size)
 
 	if(sd->state.size) {
 		sd->state.size = SZ_SMALL;
-		pc_setpos(sd, sd->mapindex, sd->bl.x, sd->bl.y, CLR_TELEPORT);
+		pc_setpos(sd, sd->mapindex, sd->x, sd->y, CLR_TELEPORT);
 	}
 
 	sd->state.size = size;
 	if( size == SZ_MEDIUM )
-		clif_specialeffect(&sd->bl,EF_BABYBODY,AREA);
+		clif_specialeffect(sd,EF_BABYBODY,AREA);
 	else if( size == SZ_BIG )
-		clif_specialeffect(&sd->bl,EF_GIANTBODY,AREA);
+		clif_specialeffect(sd,EF_GIANTBODY,AREA);
 
 	clif_displaymessage(fd, msg_txt(sd,1303)); // Size change applied.
 	return 0;
@@ -8689,14 +8861,14 @@ ACMD_FUNC(sizeall)
 		if( pl_sd->state.size != size ) {
 			if( pl_sd->state.size ) {
 				pl_sd->state.size = SZ_SMALL;
-				pc_setpos(pl_sd, pl_sd->mapindex, pl_sd->bl.x, pl_sd->bl.y, CLR_TELEPORT);
+				pc_setpos(pl_sd, pl_sd->mapindex, pl_sd->x, pl_sd->y, CLR_TELEPORT);
 			}
 
 			pl_sd->state.size = size;
 			if( size == SZ_MEDIUM )
-				clif_specialeffect(&pl_sd->bl,EF_BABYBODY,AREA);
+				clif_specialeffect(pl_sd,EF_BABYBODY,AREA);
 			else if( size == SZ_BIG )
-				clif_specialeffect(&pl_sd->bl,EF_GIANTBODY,AREA);
+				clif_specialeffect(pl_sd,EF_GIANTBODY,AREA);
 		}
 	}
 	mapit_free(iter);
@@ -8731,14 +8903,14 @@ ACMD_FUNC(sizeguild)
 		if( (pl_sd = g->guild.member[i].sd) && pl_sd->state.size != size ) {
 			if( pl_sd->state.size ) {
 				pl_sd->state.size = SZ_SMALL;
-				pc_setpos(pl_sd, pl_sd->mapindex, pl_sd->bl.x, pl_sd->bl.y, CLR_TELEPORT);
+				pc_setpos(pl_sd, pl_sd->mapindex, pl_sd->x, pl_sd->y, CLR_TELEPORT);
 			}
 
 			pl_sd->state.size = size;
 			if( size == SZ_MEDIUM )
-				clif_specialeffect(&pl_sd->bl,EF_BABYBODY,AREA);
+				clif_specialeffect(pl_sd,EF_BABYBODY,AREA);
 			else if( size == SZ_BIG )
-				clif_specialeffect(&pl_sd->bl,EF_GIANTBODY,AREA);
+				clif_specialeffect(pl_sd,EF_GIANTBODY,AREA);
 		}
 	}
 
@@ -8777,9 +8949,9 @@ ACMD_FUNC(fakename)
 		if( sd->fakename[0] )
 		{
 			sd->fakename[0] = '\0';
-			clif_name_area(&sd->bl);
+			clif_name_area(sd);
 			if (sd->disguise)
-				clif_name_self(&sd->bl);
+				clif_name_self(sd);
 			clif_displaymessage(sd->fd, msg_txt(sd,1307)); // Returned to real name.
 			return 0;
 		}
@@ -8795,9 +8967,9 @@ ACMD_FUNC(fakename)
 	}
 
 	safestrncpy(sd->fakename, message, sizeof(sd->fakename));
-	clif_name_area(&sd->bl);
+	clif_name_area(sd);
 	if (sd->disguise) // Another packet should be sent so the client updates the name for sd
-		clif_name_self(&sd->bl);
+		clif_name_self(sd);
 	clif_displaymessage(sd->fd, msg_txt(sd,1310)); // Fake name enabled.
 
 	return 0;
@@ -8808,7 +8980,7 @@ ACMD_FUNC(fakename)
  *------------------------------------------*/
 ACMD_FUNC(mapflag) {
 	char flag_name[50];
-	short flag = 0, i, j;
+	int16 flag = 0, i, j;
 	std::string buf;
 
 	nullpo_retr(-1, sd);
@@ -8821,7 +8993,7 @@ ACMD_FUNC(mapflag) {
 		for( i = MF_MIN; i < MF_MAX; i++ ){
 			union u_mapflag_args args = {};
 
-			if( map_getmapflag_name(static_cast<e_mapflag>(i), flag_name) && map_getmapflag_sub( sd->bl.m, static_cast<e_mapflag>(i), &args ) ){
+			if( map_getmapflag_name(static_cast<e_mapflag>(i), flag_name) && map_getmapflag_sub( sd->m, static_cast<e_mapflag>(i), &args ) ){
 				clif_displaymessage(sd->fd, flag_name);
 			}
 		}
@@ -8853,7 +9025,7 @@ ACMD_FUNC(mapflag) {
 				sprintf(atcmd_output,"[ @mapflag ] %s flag cannot be enabled as it requires unique values.", flag_name);
 				clif_displaymessage(sd->fd,atcmd_output);
 			} else {
-				map_setmapflag(sd->bl.m, mapflag, flag != 0);
+				map_setmapflag(sd->m, mapflag, flag != 0);
 				sprintf(atcmd_output,"[ @mapflag ] %s flag has been set to %s value = %hd",flag_name,flag?"On":"Off",flag);
 				clif_displaymessage(sd->fd,atcmd_output);
 			}
@@ -8973,7 +9145,7 @@ ACMD_FUNC(invite)
 		return 0;
 	}
 
-	if(battle_config.duel_only_on_same_map && target_sd->bl.m != sd->bl.m)
+	if(battle_config.duel_only_on_same_map && target_sd->m != sd->m)
 	{
 		sprintf(atcmd_output, msg_txt(sd,364), atcmd_player_name); // Duel: You can't invite %s because he/she isn't on the same map.
 		clif_displaymessage(fd, atcmd_output);
@@ -9119,49 +9291,62 @@ ACMD_FUNC(cash)
 		return -1;
 	}
 
-	parent_cmd = atcommand_alias_db.checkAlias(command+1);
-
-	if( !strcmpi(parent_cmd,"cash") )
-	{
-		if( value > 0 ) {
-			if( (ret=pc_getcash(sd, value, 0, LOG_TYPE_COMMAND)) >= 0){
-				// If this option is set, the message is already sent by pc function
-				if( !battle_config.cashshop_show_points ){
-					sprintf(output, msg_txt(sd,505), ret, sd->cashPoints); // Gained %d cash points. Total %d points.
-					clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
-				}
+	if( value > 0 ) {
+		if( (ret=pc_getcash(sd, value, 0, LOG_TYPE_COMMAND)) >= 0){
+			// If this option is set, the message is already sent by pc function
+			if( !battle_config.cashshop_show_points ){
+				sprintf(output, msg_txt(sd,505), ret, sd->cashPoints); // Gained %d cash points. Total %d points.
+				clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 			}
-			else clif_displaymessage(fd, msg_txt(sd,149)); // Impossible to increase the number/value.
-		} else {
-			if (-value > sd->cashPoints) //By command, if cash < value, force it to remove all
-				value = -sd->cashPoints;
-			if( (ret=pc_paycash(sd, -value, 0, LOG_TYPE_COMMAND)) >= 0){
-				// If this option is set, the message is already sent by pc function
-				if( !battle_config.cashshop_show_points ){
-					sprintf(output, msg_txt(sd,410), ret, sd->cashPoints); // Removed %d cash points. Total %d points.
-					clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
-				}
-			}
-			else clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
 		}
+		else clif_displaymessage(fd, msg_txt(sd,149)); // Impossible to increase the number/value.
+	} else {
+		if (-value > sd->cashPoints) //By command, if cash < value, force it to remove all
+			value = -sd->cashPoints;
+		if( (ret=pc_paycash(sd, -value, 0, LOG_TYPE_COMMAND)) >= 0){
+			// If this option is set, the message is already sent by pc function
+			if( !battle_config.cashshop_show_points ){
+				sprintf(output, msg_txt(sd,410), ret, sd->cashPoints); // Removed %d cash points. Total %d points.
+				clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
+			}
+		}
+		else clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
 	}
-	else
-	{ // @points
-		if( value > 0 ) {
-			if( (ret=pc_getcash(sd, 0, value, LOG_TYPE_COMMAND)) >= 0){
-				sprintf(output, msg_txt(sd,506), ret, sd->kafraPoints); // Gained %d kafra points. Total %d points.
-				clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
-			}
-			else clif_displaymessage(fd, msg_txt(sd,149)); // Impossible to increase the number/value.
-		} else {
-			if (-value > sd->kafraPoints) //By command, if cash < value, force it to remove all
-				value = -sd->kafraPoints;
-			if( (ret=pc_paycash(sd, 0, -value, LOG_TYPE_COMMAND)) >= 0){
-				sprintf(output, msg_txt(sd,411), ret, sd->kafraPoints); // Removed %d kafra points. Total %d points.
-				clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
-			}
-			else clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
+
+	return 0;
+}
+
+ACMD_FUNC(points){
+	char output[128];
+	int32 value;
+	int32 ret=0;
+	nullpo_retr(-1, sd);
+
+	// Since there is no cashpoint update packet we need to force updating like this
+	if( sd->state.cashshop_open ){
+		clif_displaymessage(fd, msg_txt(sd, 1376)); // Please close the cashshop before using this command.
+		return -1;
+	}
+
+	if( !message || !*message || (value = atoi(message)) == 0 ) {
+		clif_displaymessage(fd, msg_txt(sd,1322)); // Please enter an amount.
+		return -1;
+	}
+
+	if( value > 0 ) {
+		if( (ret=pc_getcash(sd, 0, value, LOG_TYPE_COMMAND)) >= 0){
+			sprintf(output, msg_txt(sd,506), ret, sd->kafraPoints); // Gained %d kafra points. Total %d points.
+			clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
 		}
+		else clif_displaymessage(fd, msg_txt(sd,149)); // Impossible to increase the number/value.
+	} else {
+		if (-value > sd->kafraPoints) //By command, if cash < value, force it to remove all
+			value = -sd->kafraPoints;
+		if( (ret=pc_paycash(sd, 0, -value, LOG_TYPE_COMMAND)) >= 0){
+			sprintf(output, msg_txt(sd,411), ret, sd->kafraPoints); // Removed %d kafra points. Total %d points.
+			clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], output, false, SELF);
+		}
+		else clif_displaymessage(fd, msg_txt(sd,41)); // Unable to decrease the number/value.
 	}
 
 	return 0;
@@ -9200,25 +9385,25 @@ ACMD_FUNC(clone)
 		    clif_displaymessage(fd, msg_txt(sd,129+flag*2));
 		    return 0;
 		}
-		master = sd->bl.id;
+		master = sd->id;
 		if (battle_config.atc_slave_clone_limit
-			&& mob_countslave(&sd->bl) >= battle_config.atc_slave_clone_limit) {
+			&& mob_countslave(sd) >= battle_config.atc_slave_clone_limit) {
 			clif_displaymessage(fd, msg_txt(sd,127));	// You've reached your slave clones limit.
 			return 0;
 		}
 	}
 
 	do {
-		x = sd->bl.x + rnd_value(-5, 5);
-		y = sd->bl.y + rnd_value(-5, 5);
-	} while (map_getcell(sd->bl.m,x,y,CELL_CHKNOPASS) && i++ < 10);
+		x = sd->x + rnd_value(-5, 5);
+		y = sd->y + rnd_value(-5, 5);
+	} while (map_getcell(sd->m,x,y,CELL_CHKNOPASS) && i++ < 10);
 
 	if (i >= 10) {
-		x = sd->bl.x;
-		y = sd->bl.y;
+		x = sd->x;
+		y = sd->y;
 	}
 
-	if((x = mob_clone_spawn(pl_sd, sd->bl.m, x, y, "", master, MD_NONE, flag?1:0, 0)) > 0) {
+	if((x = mob_clone_spawn(pl_sd, sd->m, x, y, "", master, MD_NONE, flag?1:0, 0)) > 0) {
 		clif_displaymessage(fd, msg_txt(sd,128+flag*2));	// Evil Clone spawned. Clone spawned. Slave clone spawned.
 		return 0;
 	}
@@ -9256,7 +9441,7 @@ ACMD_FUNC(request)
 
 	sprintf(atcmd_output, msg_txt(sd,278), message);	// (@request): %s
 	intif_wis_message_to_gm(sd->status.name, PC_PERM_RECEIVE_REQUESTS, atcmd_output);
-	clif_messagecolor(&sd->bl, color_table[COLOR_LIGHT_GREEN], atcmd_output, false, SELF);
+	clif_messagecolor(sd, color_table[COLOR_LIGHT_GREEN], atcmd_output, false, SELF);
 	clif_displaymessage(sd->fd,msg_txt(sd,279));	// @request sent.
 	return 0;
 }
@@ -9301,7 +9486,7 @@ ACMD_FUNC(auction)
 	nullpo_ret(sd);
 
 	if (!battle_config.feature_auction) {
-		clif_messagecolor(&sd->bl, color_table[COLOR_RED], msg_txt(sd, 517), false, SELF);
+		clif_messagecolor(sd, color_table[COLOR_RED], msg_txt(sd, 517), false, SELF);
 		return 0;
 	}
 
@@ -9350,11 +9535,11 @@ ACMD_FUNC(allowks)
 {
 	nullpo_retr(-1,sd);
 
-	if( map_getmapflag(sd->bl.m, MF_ALLOWKS) ) {
-		map_setmapflag(sd->bl.m, MF_ALLOWKS, false);
+	if( map_getmapflag(sd->m, MF_ALLOWKS) ) {
+		map_setmapflag(sd->m, MF_ALLOWKS, false);
 		clif_displaymessage(fd, msg_txt(sd,1330)); // [ Map K.S Protection Active ]
 	} else {
-		map_setmapflag(sd->bl.m, MF_ALLOWKS, true);
+		map_setmapflag(sd->m, MF_ALLOWKS, true);
 		clif_displaymessage(fd, msg_txt(sd,1331)); // [ Map K.S Protection Inactive ]
 	}
 	return 0;
@@ -9849,33 +10034,26 @@ ACMD_FUNC(mount2) {
 	clif_displaymessage(sd->fd,msg_txt(sd,1362)); // NOTICE: If you crash with mount your LUA is outdated.
 	if (!sd->sc.getSCE(SC_ALL_RIDING)) {
 		clif_displaymessage(sd->fd,msg_txt(sd,1363)); // You have mounted.
-		sc_start(nullptr, &sd->bl, SC_ALL_RIDING, 10000, 1, INFINITE_TICK);
+		sc_start(nullptr, sd, SC_ALL_RIDING, 10000, 1, INFINITE_TICK);
 	} else {
 		clif_displaymessage(sd->fd,msg_txt(sd,1364)); // You have released your mount.
-		status_change_end(&sd->bl, SC_ALL_RIDING);
+		status_change_end(sd, SC_ALL_RIDING);
 	}
 	return 0;
 }
 
 ACMD_FUNC(accinfo) {
 	char query[NAME_LENGTH];
-	char type = 0; // type = 1, get only account name
 
 	if (!message || !*message || strlen(message) > NAME_LENGTH
-		|| ( sscanf(message, "%23s %c", query, &type) < 1))
+		|| ( sscanf(message, "%23s", query) < 1))
 	{
 		clif_displaymessage(fd, msg_txt(sd,1365)); // Usage: @accinfo/@accountinfo <account_id/char name>
 		clif_displaymessage(fd, msg_txt(sd,1366)); // You may search partial name by making use of '%' in the search, ex. "@accinfo %Mario%" lists all characters whose name contains "Mario".
 		return -1;
-	} else if (type != 0) {
-		type = type-'0'; //make it int32
-		if (type != 1) {
-			clif_displaymessage(fd, "accinfo : Unknow type specified\n");
-			return -1;
-		}
- 	}
+	}
 
-	intif_request_accinfo( sd->fd, sd->bl.id, pc_get_group_level(sd), query, type);
+	intif_request_accinfo( sd->fd, sd->id, pc_get_group_level(sd), query);
 	return 0;
 }
 
@@ -9994,14 +10172,10 @@ ACMD_FUNC(set) {
 
 	return 0;
 }
+
 ACMD_FUNC(addperm) {
 	int32 perm_size = ARRAYLENGTH(pc_g_permission_name);
-	bool add;
 	int32 i;
-
-	parent_cmd = atcommand_alias_db.checkAlias(command+1);
-
-	add = (strcmpi(parent_cmd, "addperm") == 0);
 
 	if( !message || !*message ) {
 		sprintf(atcmd_output,  msg_txt(sd,1378),command); // Usage: %s <permission_name>
@@ -10027,11 +10201,49 @@ ACMD_FUNC(addperm) {
 		return -1;
 	}
 
-	if( add && pc_has_permission( sd, pc_g_permission_name[i].permission) ){
+	if( pc_has_permission( sd, pc_g_permission_name[i].permission) ){
 		sprintf(atcmd_output,  msg_txt(sd,1381),sd->status.name,pc_g_permission_name[i].name); // User '%s' already possesses the '%s' permission.
 		clif_displaymessage(fd, atcmd_output);
 		return -1;
-	}else if( !add && !pc_has_permission( sd, pc_g_permission_name[i].permission ) ){
+	}
+
+	sd->permissions.set( pc_g_permission_name[i].permission );
+
+	sprintf(atcmd_output, msg_txt(sd,1384),sd->status.name); // User '%s' permissions updated successfully. The changes are temporary.
+	clif_displaymessage(fd, atcmd_output);
+
+	return 0;
+}
+
+ACMD_FUNC(rmvperm) {
+	int32 perm_size = ARRAYLENGTH(pc_g_permission_name);
+	int32 i;
+
+	if( !message || !*message ) {
+		sprintf(atcmd_output,  msg_txt(sd,1378),command); // Usage: %s <permission_name>
+		clif_displaymessage(fd, atcmd_output);
+		clif_displaymessage(fd, msg_txt(sd,1379)); // -- Permission List
+		for( i = 0; i < perm_size; i++ ) {
+			sprintf(atcmd_output,"- %s",pc_g_permission_name[i].name);
+			clif_displaymessage(fd, atcmd_output);
+		}
+		return -1;
+	}
+
+	ARR_FIND(0, perm_size, i, strcmpi(pc_g_permission_name[i].name, message) == 0);
+
+	if( i == perm_size ) {
+		sprintf(atcmd_output,msg_txt(sd,1380),message); // '%s' is not a known permission.
+		clif_displaymessage(fd, atcmd_output);
+		clif_displaymessage(fd, msg_txt(sd,1379)); // -- Permission List
+		for( i = 0; i < perm_size; i++ ) {
+			sprintf(atcmd_output,"- %s",pc_g_permission_name[i].name);
+			clif_displaymessage(fd, atcmd_output);
+		}
+		return -1;
+	}
+
+	if( !pc_has_permission( sd, pc_g_permission_name[i].permission ) ){
 		sprintf(atcmd_output,  msg_txt(sd,1382),sd->status.name,pc_g_permission_name[i].name); // User '%s' doesn't possess the '%s' permission.
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output,msg_txt(sd,1383),sd->status.name); // -- User '%s' Permissions
@@ -10046,18 +10258,14 @@ ACMD_FUNC(addperm) {
 		return -1;
 	}
 
-	if( add ){
-		sd->permissions.set( pc_g_permission_name[i].permission );
-	}else{
-		sd->permissions.reset( pc_g_permission_name[i].permission );
-	}
-
+	sd->permissions.reset( pc_g_permission_name[i].permission );
 
 	sprintf(atcmd_output, msg_txt(sd,1384),sd->status.name); // User '%s' permissions updated successfully. The changes are temporary.
 	clif_displaymessage(fd, atcmd_output);
 
 	return 0;
 }
+
 ACMD_FUNC(unloadnpcfile) {
 
 	if( !message || !*message ) {
@@ -10333,8 +10541,8 @@ ACMD_FUNC(langtype)
 	return -1;
 }
 
-#ifdef VIP_ENABLE
 ACMD_FUNC(vip) {
+#ifdef VIP_ENABLE
 	map_session_data* pl_sd = nullptr;;
 	char * modif_p;
 	int32 vipdifftime = 0;
@@ -10365,39 +10573,54 @@ ACMD_FUNC(vip) {
 	}
 
 	if (pc_get_group_level(pl_sd) > pc_get_group_level(sd)) {
-		clif_displaymessage(fd, msg_txt(sd,81)); // Your GM level don't authorise you to do this action on this player.
+		clif_displaymessage(fd, msg_txt(sd,81)); // Your GM level doesn't authorize you to perform this action on the specified player.
 		return -1;
 	}
+
+	if( pc_get_group_level( pl_sd ) > 0 ){
+		clif_displaymessage( sd->fd, msg_txt( sd, 437 ) ); // GM's cannot become a VIP.
+		return -1;
+	}
+
 	if(pl_sd->vip.time==0) pl_sd->vip.time=now;
 	pl_sd->vip.time += vipdifftime; //increase or reduce VIP duration
 	
 	if (pl_sd->vip.time <= now) {
 		clif_displaymessage(pl_sd->fd, msg_txt(pl_sd,703)); // GM has removed your VIP time.
-		clif_displaymessage(fd, msg_txt(sd,704)); // Player is no longer VIP.
+
+		if( pl_sd != sd ){
+			sprintf( atcmd_output, msg_txt( sd, 704 ), pl_sd->status.name ); // Player '%s' is no longer VIP.
+			clif_displaymessage( fd, atcmd_output );
+		}
 	} else {
 		int32 year,month,day,hour,minute,second;
 		char timestr[21];
 		
-		split_time((int)(pl_sd->vip.time-now),&year,&month,&day,&hour,&minute,&second);
-		sprintf(atcmd_output,msg_txt(pl_sd,705),year,month,day,hour,minute); // Your VIP status is valid for %d years, %d months, %d days, %d hours and %d minutes.
+		split_time((int32)(pl_sd->vip.time-now),&year,&month,&day,&hour,&minute,&second);
+		sprintf(atcmd_output,msg_txt(pl_sd,705),year,month,day,hour,minute,second); // Your VIP status is valid for %d years, %d months, %d days, %d hours, %d minutes and %d seconds.
 		clif_displaymessage(pl_sd->fd,atcmd_output);
-		timestamp2string(timestr,20,pl_sd->vip.time,"%Y-%m-%d %H:%M");
-		sprintf(atcmd_output,msg_txt(pl_sd,707),timestr); // You are VIP until : %s
+		timestamp2string(timestr,20,pl_sd->vip.time,"%Y-%m-%d %H:%M:%S");
+		sprintf(atcmd_output,msg_txt(pl_sd,707),timestr); // You are VIP until: %s
 		clif_displaymessage(pl_sd->fd,atcmd_output);
 
 		if (pl_sd != sd) {
-			sprintf(atcmd_output,msg_txt(sd,706),pl_sd->status.name,year,month,day,hour,minute); // Player '%s' is now VIP for %d years, %d months, %d days, %d hours and %d minutes.
+			sprintf(atcmd_output,msg_txt(sd,706),pl_sd->status.name,year,month,day,hour,minute,second); // Player '%s' is now VIP for %d years, %d months, %d days, %d hours, %d minutes and %d seconds.
 			clif_displaymessage(fd,atcmd_output);
-			sprintf(atcmd_output,msg_txt(sd,708),timestr); // The player is now VIP until : %s
+			sprintf(atcmd_output,msg_txt(sd,708),timestr); // The player is now VIP until: %s
 			clif_displaymessage(fd,atcmd_output);
 		}
 	}
 	chrif_req_login_operation(pl_sd->status.account_id, pl_sd->status.name, CHRIF_OP_LOGIN_VIP, vipdifftime, 7, 0); 
 	return 0;
+#else
+	clif_displaymessage( fd, msg_txt( sd, 774 ) ); // This command is disabled via configuration.
+	return -1;
+#endif
 }
 
 /** Enable/disable rate info */
 ACMD_FUNC(showrate) {
+#ifdef VIP_ENABLE
 	nullpo_retr(-1,sd);
 	if (!sd->vip.disableshowrate) {
 		safestrncpy(atcmd_output,msg_txt(sd,718),CHAT_SIZE_MAX); //Personal rate information is not displayed now.
@@ -10408,8 +10631,11 @@ ACMD_FUNC(showrate) {
 	}
 	clif_displaymessage(fd,atcmd_output);
 	return 0;
-}
+#else
+	clif_displaymessage( fd, msg_txt( sd, 774 ) ); // This command is disabled via configuration.
+	return -1;
 #endif
+}
 
 ACMD_FUNC(fullstrip) {
 	int32 i;
@@ -10448,7 +10674,7 @@ ACMD_FUNC(changedress){
 
 	for( sc_type type : name2id ) {
 		if( sd->sc.getSCE(type) ) {
-			status_change_end( &sd->bl, type );
+			status_change_end( sd, type );
 			// You should only be able to have one - so we cancel here
 			break;
 		}
@@ -10474,14 +10700,14 @@ ACMD_FUNC(costume) {
 		SC_HANBOK,
 		SC_OKTOBERFEST
 	};
-	unsigned short k = 0, len = ARRAYLENGTH(names);
+	uint16 k = 0, len = ARRAYLENGTH(names);
 
 	if( !message || !*message ) {
 		for( k = 0; k < len; k++ ) {
 			if( sd->sc.getSCE(name2id[k]) ) {
 				sprintf(atcmd_output, msg_txt(sd, 727), names[k]); // '%s' Costume removed.
 				clif_displaymessage(sd->fd, atcmd_output);
-				status_change_end(&sd->bl, (sc_type)name2id[k]);
+				status_change_end(sd, (sc_type)name2id[k]);
 				return 0;
 			}
 		}
@@ -10512,7 +10738,7 @@ ACMD_FUNC(costume) {
 		return -1;
 	}
 
-	sc_start(&sd->bl, &sd->bl, (sc_type)name2id[k], 100, name2id[k] == SC_DRESSUP ? 1 : 0, INFINITE_TICK);
+	sc_start(sd, sd, (sc_type)name2id[k], 100, name2id[k] == SC_DRESSUP ? 1 : 0, INFINITE_TICK);
 
 	return 0;
 }
@@ -10558,7 +10784,7 @@ ACMD_FUNC(cloneequip) {
 	else {
 		int8 i;
 		for (i = 0; i < EQI_MAX; i++) {
-			short idx;
+			int16 idx;
 			char flag = 0;
 			struct item tmp_item;
 			if ((idx = pl_sd->equip_index[i]) < 0)
@@ -10630,7 +10856,7 @@ ACMD_FUNC(clonestat) {
 	}
 	else {
 		uint8 i;
-		short max_status[PARAM_MAX] = {};
+		int16 max_status[PARAM_MAX] = {};
 
 		pc_resetstate(sd);
 		if (pc_has_permission(sd, PC_PERM_BYPASS_STAT_ONCLONE)) {
@@ -10784,8 +11010,7 @@ ACMD_FUNC(resurrect) {
 	return 0;
 }
 
-ACMD_FUNC(quest) {
-	uint8 i;
+ACMD_FUNC(setquest){
 	int32 quest_id = 0;
 	nullpo_retr(-1, sd);
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -10801,46 +11026,94 @@ ACMD_FUNC(quest) {
 		return -1;
 	}
 
-	const char* type[] = { "setquest", "erasequest", "completequest", "checkquest" };
-	ARR_FIND( 0, ARRAYLENGTH(type), i, strcmpi(command+1, type[i]) == 0 );
-
-	switch(i) {
-	case 0:
-		if (quest_check(sd, quest_id, HAVEQUEST) >= 0) {
-			sprintf(atcmd_output,  msg_txt(sd,1507), quest_id); // Character already has quest %d.
-			clif_displaymessage(fd, atcmd_output);
-			return -1;
-		}
-		quest_add(sd, quest_id);
-		pc_show_questinfo(sd);
-		break;
-	case 1:
-		if (quest_check(sd, quest_id, HAVEQUEST) < 0) {
-			sprintf(atcmd_output,  msg_txt(sd,1508), quest_id); // Character doesn't have quest %d.
-			clif_displaymessage(fd, atcmd_output);
-			return -1;
-		}
-		quest_delete(sd, quest_id);
-		pc_show_questinfo(sd);
-		break;
-	case 2:
-		if (quest_check(sd, quest_id, HAVEQUEST) < 0)
-			quest_add(sd, quest_id);
-		if (quest_check(sd, quest_id, HAVEQUEST) < 2)
-			quest_update_status(sd, quest_id, Q_COMPLETE);
-		pc_show_questinfo(sd);
-		break;
-	case 3:
-		sprintf(atcmd_output, msg_txt(sd,1509), quest_id); // Checkquest value for quest %d
+	if (quest_check(sd, quest_id, HAVEQUEST) >= 0) {
+		sprintf(atcmd_output,  msg_txt(sd,1507), quest_id); // Character already has quest %d.
 		clif_displaymessage(fd, atcmd_output);
-		sprintf(atcmd_output, msg_txt(sd,1510), quest_check(sd, quest_id, HAVEQUEST));	// HAVEQUEST : %d
-		clif_displaymessage(fd, atcmd_output);
-		sprintf(atcmd_output, msg_txt(sd,1511), quest_check(sd, quest_id, HUNTING));	// HUNTING   : %d
-		clif_displaymessage(fd, atcmd_output);
-		sprintf(atcmd_output, msg_txt(sd,1512), quest_check(sd, quest_id, PLAYTIME));	// PLAYTIME  : %d
-		clif_displaymessage(fd, atcmd_output);
-		break;
+		return -1;
 	}
+	quest_add(sd, quest_id);
+	pc_show_questinfo(sd);
+
+	return 0;
+}
+
+ACMD_FUNC(erasequest) {
+	int32 quest_id = 0;
+	nullpo_retr(-1, sd);
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message || sscanf(message, "%11d", &quest_id) < 1 || quest_id == 0) {
+		sprintf(atcmd_output, msg_txt(sd,1505), command); // Usage: %s <quest ID>
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+	if (!quest_search(quest_id)) {
+		sprintf(atcmd_output,  msg_txt(sd,1506), quest_id); // Quest %d not found in DB.
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+
+	if (quest_check(sd, quest_id, HAVEQUEST) < 0) {
+		sprintf(atcmd_output,  msg_txt(sd,1508), quest_id); // Character doesn't have quest %d.
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+	quest_delete(sd, quest_id);
+	pc_show_questinfo(sd);
+
+	return 0;
+}
+
+ACMD_FUNC(completequest){
+	int32 quest_id = 0;
+	nullpo_retr(-1, sd);
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message || sscanf(message, "%11d", &quest_id) < 1 || quest_id == 0) {
+		sprintf(atcmd_output, msg_txt(sd,1505), command); // Usage: %s <quest ID>
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+	if (!quest_search(quest_id)) {
+		sprintf(atcmd_output,  msg_txt(sd,1506), quest_id); // Quest %d not found in DB.
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+
+	if (quest_check(sd, quest_id, HAVEQUEST) < 0)
+		quest_add(sd, quest_id);
+	if (quest_check(sd, quest_id, HAVEQUEST) < 2)
+		quest_update_status(sd, quest_id, Q_COMPLETE);
+	pc_show_questinfo(sd);
+
+	return 0;
+}
+
+ACMD_FUNC(checkquest){
+	int32 quest_id = 0;
+	nullpo_retr(-1, sd);
+	memset(atcmd_output, '\0', sizeof(atcmd_output));
+
+	if (!message || !*message || sscanf(message, "%11d", &quest_id) < 1 || quest_id == 0) {
+		sprintf(atcmd_output, msg_txt(sd,1505), command); // Usage: %s <quest ID>
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+	if (!quest_search(quest_id)) {
+		sprintf(atcmd_output,  msg_txt(sd,1506), quest_id); // Quest %d not found in DB.
+		clif_displaymessage(fd, atcmd_output);
+		return -1;
+	}
+
+	sprintf(atcmd_output, msg_txt(sd,1509), quest_id); // Checkquest value for quest %d
+	clif_displaymessage(fd, atcmd_output);
+	sprintf(atcmd_output, msg_txt(sd,1510), quest_check(sd, quest_id, HAVEQUEST));	// HAVEQUEST : %d
+	clif_displaymessage(fd, atcmd_output);
+	sprintf(atcmd_output, msg_txt(sd,1511), quest_check(sd, quest_id, HUNTING));	// HUNTING   : %d
+	clif_displaymessage(fd, atcmd_output);
+	sprintf(atcmd_output, msg_txt(sd,1512), quest_check(sd, quest_id, PLAYTIME));	// PLAYTIME  : %d
+	clif_displaymessage(fd, atcmd_output);
+
 	return 0;
 }
 
@@ -10991,6 +11264,7 @@ ACMD_FUNC(setcard)
 		sprintf(atcmd_output, msg_txt(sd,1005), EQP_HEAD_TOP); // %d: Top Headgear
 		clif_displaymessage(fd, atcmd_output);
 		sprintf(atcmd_output, msg_txt(sd,1006), EQP_HEAD_MID); // %d: Mid Headgear
+		clif_displaymessage(fd, atcmd_output);
 		return -1;
 	}
 	if (position < EQP_HEAD_LOW || position > EQP_HEAD_MID) {
@@ -11033,6 +11307,78 @@ ACMD_FUNC(setcard)
 	return 0;
 }
 
+int32 atcommand_macrochecker_sub( block_list* bl, va_list ap ){
+	uint32 reporter_aid = va_arg( ap, uint32 );
+	uint32 reporter_gmlv = va_arg( ap, uint32 );
+
+	map_session_data* tsd = reinterpret_cast<map_session_data*>( bl );
+
+	// Dont start the macro checking on self
+	if( tsd->status.account_id == reporter_aid ){
+		return 0;
+	}
+
+	// Dont start it on other GMs with same or higher level
+	if( pc_get_group_level( tsd ) >= reporter_gmlv ){
+		return 0;
+	}
+
+	// Dont start it on autotraders
+	if( !session_isActive( tsd->fd ) ){
+		return 0;
+	}
+
+	// Start the macro checking on the player
+	pc_macro_reporter_process( *tsd, reporter_aid );
+
+	return 1;
+}
+
+ACMD_FUNC(macrochecker){
+	int16 mapid;
+
+	if( !message || !*message ){
+		mapid = sd->m;
+	}else{
+		mapid = map_mapname2mapid( message );
+
+		if( mapid < 0 ){
+			clif_macro_checker( *sd, MACROCHECKER_UNKNOWN_MAP );
+			return -1;
+		}
+	}
+
+	map_data* mapdata = map_getmapdata( mapid );
+
+	if( !mapdata ){
+		// Should not happen
+		return -1;
+	}
+
+	if( mapdata->getMapFlag( MF_NOMACROCHECKER ) ){
+		clif_macro_checker( *sd, MACROCHECKER_MAPFLAG );
+		return -1;
+	}
+
+	if( DIFF_TICK( gettick(), mapdata->last_macrocheck ) < battle_config.macrochecker_delay ){
+		clif_macro_checker( *sd, MACROCHECKER_COOLDOWN );
+		return -1;
+	}
+
+	int32 count = map_foreachinmap( atcommand_macrochecker_sub, mapid, BL_PC, sd->status.account_id, pc_get_group_level( sd ) );
+
+	clif_macro_checker( *sd, MACROCHECKER_SUCCESS );
+
+	sprintf( atcmd_output, msg_txt( sd, 1538 ), count ); // Macro detection has been started on %d players.
+	clif_displaymessage( fd, atcmd_output );
+
+	if( count > 0 ){
+		mapdata->last_macrocheck = gettick();
+	}
+
+	return 0;
+}
+
 #include <custom/atcommand.inc>
 
 /**
@@ -11050,7 +11396,7 @@ void atcommand_basecommands(void) {
 	 **/
 	AtCommandInfo atcommand_base[] = {
 #include <custom/atcommand_def.inc>
-		ACMD_DEF2R("warp", mapmove, ATCMD_NOCONSOLE),
+		ACMD_DEF(mapmove),
 		ACMD_DEF(where),
 		ACMD_DEF(jumpto),
 		ACMD_DEF(jump),
@@ -11073,9 +11419,9 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(kill),
 		ACMD_DEF(alive),
 		ACMD_DEF(kami),
-		ACMD_DEF2("kamib", kami),
-		ACMD_DEF2("kamic", kami),
-		ACMD_DEF2("lkami", kami),
+		ACMD_DEF(kamib),
+		ACMD_DEF(kamic),
+		ACMD_DEF(lkami),
 		ACMD_DEF(heal),
 		ACMD_DEF(healap),
 		ACMD_DEF(item),
@@ -11086,8 +11432,8 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(clearstorage),
 		ACMD_DEF(cleargstorage),
 		ACMD_DEF(clearcart),
-		ACMD_DEF2R("blvl", baselevelup, ATCMD_NOCONSOLE),
-		ACMD_DEF2("jlvl", joblevelup),
+		ACMD_DEF(baselevelup),
+		ACMD_DEF(joblevelup),
 		ACMD_DEF(help),
 		ACMD_DEF(pvpoff),
 		ACMD_DEF(pvpon),
@@ -11106,9 +11452,9 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(memo),
 		ACMD_DEF(gat),
 		ACMD_DEF(displaystatus),
-		ACMD_DEF2("stpoint", statuspoint),
-		ACMD_DEF2("trpoint", traitpoint),
-		ACMD_DEF2("skpoint", skillpoint),
+		ACMD_DEF(statuspoint),
+		ACMD_DEF(traitpoint),
+		ACMD_DEF(skillpoint),
 		ACMD_DEF(zeny),
 		ACMD_DEF2("str", param),
 		ACMD_DEF2("agi", param),
@@ -11122,7 +11468,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF2("spl", param),
 		ACMD_DEF2("con", param),
 		ACMD_DEF2("crt", param),
-		ACMD_DEF2("glvl", guildlevelup),
+		ACMD_DEF(guildlevelup),
 		ACMD_DEF(makeegg),
 		ACMD_DEF(hatch),
 		ACMD_DEF(petfriendly),
@@ -11152,37 +11498,37 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(broadcast), // + /b and /nb
 		ACMD_DEF(localbroadcast), // + /lb and /nlb
 		ACMD_DEF(recallall),
-		ACMD_DEFR(reload,ATCMD_NOSCRIPT),
-		ACMD_DEF2("reloaditemdb", reload),
-		ACMD_DEF2("reloadcashdb", reload),
-		ACMD_DEF2("reloadmobdb", reload),
-		ACMD_DEF2("reloadskilldb", reload),
-		ACMD_DEF2R("reloadscript", reload, ATCMD_NOSCRIPT),
-		ACMD_DEF2("reloadatcommand", reload),
-		ACMD_DEF2("reloadbattleconf", reload),
-		ACMD_DEF2("reloadstatusdb", reload),
-		ACMD_DEF2("reloadpcdb", reload),
-		ACMD_DEF2("reloadmotd", reload),
-		ACMD_DEF2("reloadquestdb", reload),
-		ACMD_DEF2("reloadmsgconf", reload),
-		ACMD_DEF2("reloadinstancedb", reload),
-		ACMD_DEF2("reloadachievementdb",reload),
-		ACMD_DEF2("reloadattendancedb",reload),
-		ACMD_DEF2("reloadbarterdb",reload),
+		ACMD_DEF(reloaditemdb),
+		ACMD_DEF(reloadcashdb),
+		ACMD_DEF(reloadmobdb),
+		ACMD_DEF(reloadskilldb),
+		ACMD_DEFR(reloadscript, ATCMD_NOSCRIPT),
+		ACMD_DEF(reloadatcommand),
+		ACMD_DEF(reloadbattleconf),
+		ACMD_DEF(reloadstatusdb),
+		ACMD_DEF(reloadpcdb),
+		ACMD_DEF(reloadmotd),
+		ACMD_DEF(reloadquestdb),
+		ACMD_DEF(reloadmsgconf),
+		ACMD_DEF(reloadinstancedb),
+		ACMD_DEF(reloadachievementdb),
+		ACMD_DEF(reloadattendancedb),
+		ACMD_DEF(reloadbarterdb),
+		ACMD_DEF(reloadlogconf),
 		ACMD_DEF(partysharelvl),
 		ACMD_DEF(mapinfo),
 		ACMD_DEF(dye),
-		ACMD_DEF2("hairstyle", hair_style),
-		ACMD_DEF2("haircolor", hair_color),
-		ACMD_DEF2("allstats", stat_all),
-		ACMD_DEF2("alltraits", trait_all),
-		ACMD_DEF2("block", char_block),
-		ACMD_DEF2("ban", char_ban),
-		ACMD_DEF2("unblock", char_unblock),
-		ACMD_DEF2("unban", char_unban),
-		ACMD_DEF2("charban", char_ban),
-		ACMD_DEF2("charunban", char_unban),
-		ACMD_DEF2("mount", mount_peco),
+		ACMD_DEF(hair_style),
+		ACMD_DEF(hair_color),
+		ACMD_DEF(stat_all),
+		ACMD_DEF(trait_all),
+		ACMD_DEF(char_block),
+		ACMD_DEF(ban),
+		ACMD_DEF(char_ban),
+		ACMD_DEF(char_unblock),
+		ACMD_DEF(unban),
+		ACMD_DEF(char_unban),
+		ACMD_DEF(mount_peco),
 		ACMD_DEF(guildspy),
 		ACMD_DEF(partyspy),
 		ACMD_DEF(clanspy),
@@ -11195,7 +11541,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(loadnpc),
 		ACMD_DEF(unloadnpc),
 		ACMD_DEF(reloadnpcfile),
-		ACMD_DEF2("time", servertime),
+		ACMD_DEF(servertime),
 		ACMD_DEF(jail),
 		ACMD_DEF(unjail),
 		ACMD_DEF(jailfor),
@@ -11258,7 +11604,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(disguiseall),
 		ACMD_DEF(changelook),
 		ACMD_DEF(autoloot),
-		ACMD_DEF2("alootid", autolootitem),
+		ACMD_DEF(autolootitem),
 		ACMD_DEF(autoloottype),
 		ACMD_DEF(mobinfo),
 		ACMD_DEF(exp),
@@ -11307,17 +11653,17 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(hatereset),
 		ACMD_DEF(auction),
 		ACMD_DEF(mail),
-		ACMD_DEF2("noks", ksprotection),
+		ACMD_DEF(ksprotection),
 		ACMD_DEF(allowks),
 		ACMD_DEF(cash),
-		ACMD_DEF2("points", cash),
+		ACMD_DEF(points),
 		ACMD_DEF(agitstart2),
 		ACMD_DEF(agitend2),
 		ACMD_DEF(resetskill),
 		ACMD_DEF(resetstat),
 		ACMD_DEF2("storagelist", itemlist),
 		ACMD_DEF2("cartlist", itemlist),
-		ACMD_DEF2("itemlist", itemlist),
+		ACMD_DEF(itemlist),
 		ACMD_DEF(stats),
 		ACMD_DEF(delitem),
 		ACMD_DEF(charcommands),
@@ -11329,7 +11675,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(sizeall),
 		ACMD_DEF(sizeguild),
 		ACMD_DEF(addperm),
-		ACMD_DEF2("rmvperm", addperm),
+		ACMD_DEF(rmvperm),
 		ACMD_DEF(unloadnpcfile),
 		ACMD_DEF(cart),
 		ACMD_DEF(mount2),
@@ -11337,10 +11683,8 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(channel,ATCMD_NOSCRIPT),
 		ACMD_DEF(fontcolor),
 		ACMD_DEF(langtype),
-#ifdef VIP_ENABLE
 		ACMD_DEF(vip),
 		ACMD_DEF(showrate),
-#endif
 		ACMD_DEF(fullstrip),
 		ACMD_DEF(costume),
 		ACMD_DEF(cloneequip),
@@ -11353,16 +11697,17 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(changedress, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(camerainfo, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(resurrect, ATCMD_NOCONSOLE),
-		ACMD_DEF2("setquest", quest),
-		ACMD_DEF2("erasequest", quest),
-		ACMD_DEF2("completequest", quest),
-		ACMD_DEF2("checkquest", quest),
+		ACMD_DEF(setquest),
+		ACMD_DEF(erasequest),
+		ACMD_DEF(completequest),
+		ACMD_DEF(checkquest),
 		ACMD_DEF(refineui),
 		ACMD_DEFR(stylist, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(addfame),
 		ACMD_DEFR(enchantgradeui, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(roulette, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(setcard),
+		ACMD_DEF(macrochecker),
 	};
 	AtCommandInfo* atcommand;
 	int32 i;
@@ -11387,6 +11732,10 @@ void atcommand_basecommands(void) {
 bool atcommand_exists(const char* name)
 {
 	return strdb_exists(atcommand_db, name);
+}
+
+const char* atcommand_alias_lookup( const std::string& cmd ){
+	return atcommand_alias_db.checkAlias( cmd.c_str() );
 }
 
 static AtCommandInfo* get_atcommandinfo_byname(const char *name)
@@ -11522,7 +11871,7 @@ bool is_atcommand(const int32 fd, map_session_data* sd, const char* message, int
 	// type value 0|2 = script|console invoked: bypass restrictions
 	if ( type == 1 || type == 3) {
 		//Commands are disabled on maps flagged as 'nocommand'
-		if ( pc_get_group_level(sd) < map_getmapflag(sd->bl.m, MF_NOCOMMAND) ) {
+		if ( pc_get_group_level(sd) < map_getmapflag(sd->m, MF_NOCOMMAND) ) {
 			clif_displaymessage(fd, msg_txt(sd,143)); // Commands are disabled on this map.
 			return false;
 		}
@@ -11695,6 +12044,28 @@ void atcommand_doload(void) {
 	atcommand_db = stridb_alloc((DBOptions)(DB_OPT_DUP_KEY|DB_OPT_RELEASE_DATA), ATCOMMAND_LENGTH);
 	atcommand_basecommands(); //fills initial atcommand_db with known commands
 	atcommand_alias_db.load();
+
+#if defined(BUILDBOT)
+	DBIterator* atcommand_iter = db_iterator( atcommand_db );
+
+	for( AtCommandInfo* command_info = static_cast<AtCommandInfo*>( dbi_first( atcommand_iter ) ); dbi_exists( atcommand_iter ); command_info = static_cast<AtCommandInfo*>( dbi_next( atcommand_iter ) ) ){
+		// Attempt to find the command
+		std::shared_ptr<s_atcommand_alias_info> info = atcommand_alias_db.find( command_info->command );
+
+		// Failed to find the help property in the configuration file
+		if( info == nullptr ){
+			ShowError( "atcommand_doload: No entry for atcommand \"%s\" found in \"%s\"\n", command_info->command, atcommand_alias_db.getDefaultLocation().c_str() );
+			continue;
+		}
+
+		if( info->help.empty() ){
+			ShowError( "atcommand_doload: No help for atcommand \"%s\" contained in \"%s\"\n", command_info->command, atcommand_alias_db.getDefaultLocation().c_str() );
+			continue;
+		}
+	}
+
+	dbi_destroy( atcommand_iter );
+#endif
 }
 
 void do_init_atcommand(void) {

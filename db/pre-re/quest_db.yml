@@ -681,11 +681,6 @@ Body:
         Count: 50
   - Id: 2222
     Title: Wanderer Job Change Quest
-  - Id: 2223
-    Title: Generic Job Change Quest
-    Targets:
-      - Mob: G_POISON_SPORE
-        Count: 100
   - Id: 2271
     Title: Secret in the Woods
   - Id: 2272
@@ -5693,51 +5688,18 @@ Body:
   - Id: 13142
     Title: Combat Acidus - Wait
     TimeLimit: +1h
-  - Id: 13143
-    Title: Egnigem Story
-    Targets:
-      - Mob: YGNIZEM
-        Count: 30
   - Id: 13144
     Title: Egnigem Story - Wait
     TimeLimit: +1h
-  - Id: 13145
-    Title: Armeyer Story
-    Targets:
-      - Mob: ARMAIA
-        Count: 30
   - Id: 13146
     Title: Armeyer Story - Wait
     TimeLimit: +1h
-  - Id: 13147
-    Title: Whikebain Story
-    Targets:
-      - Mob: WHIKEBAIN
-        Count: 30
-  - Id: 13148
-    Title: Whikebain Story - Wait
-    TimeLimit: +1h
-  - Id: 13149
-    Title: Kavach Story
-    Targets:
-      - Mob: KAVAC
-        Count: 30
   - Id: 13150
     Title: Kavach Story - Wait
     TimeLimit: +1h
-  - Id: 13151
-    Title: Errende Story
-    Targets:
-      - Mob: EREND
-        Count: 30
   - Id: 13152
     Title: Errende Story - Wait
     TimeLimit: +1h
-  - Id: 13153
-    Title: Laurell Story
-    Targets:
-      - Mob: RAWREL
-        Count: 30
   - Id: 13154
     Title: Laurell Story - Wait
     TimeLimit: +1h
